@@ -436,13 +436,14 @@ nav .user-icon:hover {
   text-decoration: none;
 }
 
-.read-more:hover {
+.read-more:hover, .post .author:hover {
   text-decoration: underline;
 }
 
-.post p {
+.post p, .post .author {
   color: #555;
   padding: 5px 10px;
+  text-decoration: none;
 }
 
 .tag {
