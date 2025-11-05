@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap">
+    <title>My Posts - BuzzInk</title>
+</head>
+
+<body>
+    <div class="header write-header">
+        <div class="logo-img">
+            <img src="Images/file_00000000578c620a96dd07f74956d7c3.png" alt="Logo" class="logo"
+                onclick="location.href='index.html'">
+        </div>
+
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Search posts..." onkeyup="searchPosts()">
+            <i class="fas fa-search"></i>
+        </div>
+
+        <div class="icons write-icons">
+            <i class="fas fa-search search-icon"></i>
+            <i class="fas fa-user-circle user-icon"></i>
+            <i class="fas fa-bars menu-toggle"></i>
+        </div>
+
+        <nav>
+            <a href="#">Home</a>
+            <a href="all-posts.html">Posts</a>
+            <a href="#">Categories</a>
+            <a href="#">About</a>
+            <i class="fas fa-user-circle user-icon"></i>
+        </nav>
+    </div>
+    <div class="mobile-nav" id="mobileMenu">
+        <a href="index.html">Home</a>
+        <a href="all-posts.html">Posts</a>
+        <a href="#">Categories</a>
+        <a href="#">About</a>
+    </div>
+    <div class="mobile-search" id="mobileSearch">
+        <input type="text" placeholder="Search posts..." onkeyup="searchPosts()">
+    </div>
+
+    <div class="user-menu-details" id="userMenuDetails">
+        <p id="profile-edit">Profile</p>
+        <p id="myPosts" onclick="location.href='my-posts.html'">My Posts</p>
+        <p>Settings</p>
+        <button id="logoutBtn" class="hidden">Logout</button>
+    </div>
+
+    <section class="my-posts-section">
+        <h2>My Posts</h2>
+        <div id="myPostsContainer" class="posts-container"></div>
+    </section>
+
+    <div id="pagination"></div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-about">
+                <h3>BuzzInk</h3>
+                <p>From fashion to food, travel to life - blog it all here.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="all-posts.html">All Posts</a></li>
+                    <li><a href="write.html" class="write-post">Write Post</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-subscribe">
+                <h4>Subscribe</h4>
+                <form>
+                    <input type="email" placeholder="Your email" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 BuzzInk. Made with ❤️</p>
+        </div>
+    </footer>
+    <div id="authModal" class="auth-modal hidden">
+        <div class="auth-modal-content">
+            <span id="closeModal" class="close">&times;</span>
+
+            <div class="auth-tabs">
+                <button id="loginTab" class="active">Login</button>
+                <button id="registerTab">Register</button>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+
+            <form id="registerForm" class="auth-form hidden">
+                <input type="text" id="registerName" placeholder="Name" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            checkUser();
+            fetchMyPosts();
+        });
+    </script>
+
+    <script src="js/app.js"></script>
+</body>
+
+</html>
