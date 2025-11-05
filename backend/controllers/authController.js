@@ -144,3 +144,19 @@ exports.logout = async (req, res) => {
     res.status(500).json({ message: "Logout failed" });
   }
 };
+
+exports.verify = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const payload = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(payload.sub).select("name email");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ id: user._id, email: user.email, name: user.name });
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+}

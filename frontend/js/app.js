@@ -5,6 +5,33 @@ const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
 
+window.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("token");
+  if(token) {
+    try {
+      const res = await fetch(`${AUTH_URL}/verify`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const user = await res.json();
+        console.log("User verified:", user);
+        updateUI(user);
+        window.currentUser = user;
+      } else {
+        console.warn("Token invalid or expired");
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        window.currentUser = null;
+      }
+    } catch {
+      console.error("Auth check failed:")
+      localStorage.removeItem("token");
+      window.currentUser = null;
+    }
+  }
+});
+
 // Mobile search toggle
 searchIcon?.addEventListener("click", () => {
   mobileSearch.classList.toggle("show");
@@ -98,9 +125,6 @@ if (window.location.pathname.endsWith("my-posts.html")) {
   fetchMyPosts();
 }
 
-const token = localStorage.getItem("token");
-console.log(token);
-
 // Display posts in specified container
 function displayPosts(containerId, limit = null) {
   const container = document.getElementById(containerId);
@@ -162,7 +186,7 @@ function displayPosts(containerId, limit = null) {
             </button>
             <button class="comment-btn">
               <i class="fa-regular fa-comment"></i>
-              <span class="comment-count"></span>
+              <span class="comment-count">${post.commentsCount || 0}</span>
             </button>
             <button class="share-btn">
               <i class="fa-solid fa-share"></i>
@@ -170,6 +194,13 @@ function displayPosts(containerId, limit = null) {
             </button>
           </div>
           <span class="liked-by likes-info">No likes yet</span>
+        </div>
+        <div class="comments-section">
+          <form class="comment-form">
+            <input type="text" class="comment-input" placeholder="Write a comment..." required />
+            <button type="submit">Comment</button>
+          </form>
+          <div class="comments-list"></div>
         </div>
         ${isAuthor ? `
         <div class="post-actions">
@@ -204,6 +235,9 @@ function displayPosts(containerId, limit = null) {
     } else {
       likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
     }
+
+    const commentCountSpan = div.querySelector(".comment-count");
+    updateCommentCount(post._id, commentCountSpan);
   });
 }
 
@@ -527,6 +561,7 @@ loginForm?.addEventListener("submit", async (e) => {
     localStorage.setItem("token", data.token);
     localStorage.setItem("refreshToken", data.refreshToken)
     localStorage.setItem("user", JSON.stringify(data.user));
+    window.currentUser = data.user;
     showToast(`Welcome back, ${data.user.name}!`, "success");
     authModal.classList.add("hidden");
     updateUI(data.user);
@@ -710,8 +745,9 @@ function showToast(message, type = "info", duration = 5000) {
   }, duration);
 }
 
-// Like button handling
+// Like button and comment functionality
 document.addEventListener("DOMContentLoaded", () => {
+  // Like button click handling
   document.addEventListener("click", async (e) => {
     const btn = e.target.closest(".like-btn");
     if (!btn) return;
@@ -769,8 +805,258 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Error updating like. Please try again.", "error");
     }
   });
+
+  // Comment button toggle and fetch comments
+  document.addEventListener("click", async (e) => {
+    const commentBtn = e.target.closest(".comment-btn");
+    if (commentBtn) {
+      e.preventDefault();
+      const postElement = commentBtn.closest(".post");
+      const commentsSection = postElement.querySelector(".comments-section");
+      const commentsList = commentsSection.querySelector(".comments-list");
+      const postId = postElement.querySelector(".like-btn").dataset.postId;
+
+      commentsSection.classList.toggle("show");
+      if (commentsSection.classList.contains("show")) {
+        await fetchComments(postId, commentsList);
+      }
+    }
+  });
+
+  // Comment form submission
+  document.addEventListener("submit", async (e) => {
+    const commentForm = e.target.closest(".comment-form");
+    if (commentForm) {
+      e.preventDefault();
+      const form = e.target;
+      const commentInput = form.querySelector(".comment-input");
+      const commentText = commentInput.value.trim();
+      if (!commentText) return;
+
+      const postElement = form.closest(".post");
+      const commentsList = postElement.querySelector(".comments-list");
+      const postId = postElement.querySelector(".like-btn").dataset.postId;
+
+      if (!window.currentUser) {
+        showToast("Please log in to comment.", "error");
+        commentInput.value = "";
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      try {
+        const verifyRes = await fetch(`${AUTH_URL}/auth/verify`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!verifyRes.ok) {
+          localStorage.removeItem("token");
+          window.currentUser = null;
+          showToast("Session expired. Please log in again to comment.", "error");
+          commentInput.value = "";
+          return;
+        }
+      } catch {
+        showToast("Could not verify session. Please try again.", "error");
+        return;
+      }
+
+      await postComment(postId, commentText, commentsList);
+      commentInput.value = "";
+
+      const commentCountSpan = postElement.querySelector(".comment-count");
+      await updateCommentCount(postId, commentCountSpan);
+    }
+  });
+
+  // Toggle comment menu
+document.addEventListener("click", (e) => {
+  const menuBtn = e.target.closest(".menu-btn");
+  const options = e.target.closest(".menu-options");
+
+  // Close all menus if clicking elsewhere
+  if (!menuBtn && !options) {
+    document.querySelectorAll(".menu-options").forEach(opt => opt.classList.add("hidden"));
+    return;
+  }
+
+  if (menuBtn) {
+    const menu = menuBtn.nextElementSibling;
+    menu.classList.toggle("hidden");
+  }
 });
 
+// Delete comment handler
+document.addEventListener("click", async (e) => {
+  const deleteBtn = e.target.closest(".delete-comment-btn");
+  if (deleteBtn) {
+    e.preventDefault();
+    const commentId = deleteBtn.dataset.commentId;
+    const confirmDelete = confirm("Are you sure you want to delete this comment?");
+    if (!confirmDelete) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${COMMENTS_URL}/${commentId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        showToast("Comment deleted successfully.", "success");
+        deleteBtn.closest(".comment").remove();
+        const commentCountSpan = postElement.querySelector(".comment-count");
+        await updateCommentCount(postId, commentCountSpan);
+      } else {
+        showToast(data.message || "Failed to delete comment", "error");
+      }
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      showToast("Error deleting comment. Please try again.", "error");
+    }
+  }
+});
+
+});
+
+// Comments functionality
+const COMMENTS_URL = "http://localhost:5000/api/comments";
+
+async function fetchComments(postId, commentsList, limit = 3) {
+  try {
+    commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
+
+    const res = await apiFetch(`${COMMENTS_URL}/${postId}`);
+    if (!res.ok) throw new Error("Failed to fetch comments");
+
+    const comments = await res.json();
+
+    commentsList.innerHTML = ""; // Clear old comments
+
+    if(comments.length === 0) {
+      commentsList.innerHTML = "<p class='no-comments'>No comments yet. Be the first to comment!</p>";
+      return;
+    }
+
+    const limitedComments = comments.slice(0, limit);
+    renderComments(limitedComments, commentsList);
+
+    if (comments.length > limit) {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.classList.add("view-more-btn");
+      toggleBtn.textContent = `View all ${comments.length} comments`;
+
+      const fullContainer = document.createElement("div");
+      fullContainer.classList.add("comments-scroll-container");
+      fullContainer.style.display = "none";
+      renderComments(comments, fullContainer);
+
+      let expanded = false;
+
+      toggleBtn.addEventListener("click", () => {
+        expanded = !expanded;
+        if (expanded) {
+          commentsList.innerHTML = "";
+          commentsList.appendChild(fullContainer);
+          commentsList.appendChild(toggleBtn);
+          fullContainer.style.display = "block";
+          toggleBtn.textContent = "View less comments";
+        } else {
+          commentsList.innerHTML = "";
+          renderComments(limitedComments, commentsList);
+          toggleBtn.textContent = `View all ${comments.length} comments`;
+          commentsList.appendChild(toggleBtn);
+        }
+      });
+      commentsList.appendChild(toggleBtn);
+    }
+  } catch (err) {
+    console.error("Error fetching comments:", err);
+    commentsList.innerHTML = "<p class='error-comments'>Failed to load comments.</p>";
+  }
+}
+
+function renderComments(comments, commentsList) {
+  commentsList.innerHTML = "";
+  comments.forEach((comment) => {
+    const div = document.createElement("div");
+    div.classList.add("comment");
+
+    const isOwner = window.currentUser && comment.authorId?._id === window.currentUser._id;
+
+    div.innerHTML = `
+      <div class="comment-header">
+        <p><strong onclick="window.location.href='profile.html?user=${comment.authorId?.name}'">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
+        ${
+          isOwner 
+            ? `<div class="comment-menu">
+                  <button class="menu-btn">⋮</button>
+                  <div class="menu-options hidden">
+                    <button class="delete-comment-btn" data-comment-id="${comment._id}">Delete</button>
+                  </div>
+                </div>` 
+            : ""
+        }
+      </div>  
+      <small>${new Date(comment.createdAt).toLocaleString()}</small>
+    `;
+    commentsList.appendChild(div);
+  });
+}
+
+async function postComment(postId, text, commentsList) {
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await apiFetch(`${COMMENTS_URL}/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ text }),
+    });
+
+    if (res.ok) {
+      const newComment = await res.json();
+      const div = document.createElement("div");
+      div.classList.add("comment");
+      div.innerHTML = `
+        <p><strong>You:</strong> ${newComment.text}</p>
+        <small>${new Date(newComment.createdAt).toLocaleString()}</small>
+      `;
+      commentsList.prepend(div);
+    } else {
+      throw new Error("Failed to post comment");
+    }
+  } catch (err) {
+    console.error("Error posting comment:", err);
+  }
+}
+
+// Update comment count for a post
+async function updateCommentCount(postId, commentCountSpan) {
+  try {
+    const res = await fetch(`${COMMENTS_URL}/${postId}`);
+    if (!res.ok) throw new Error("Failed to fetch comment count");
+
+    const comments = await res.json();
+    const count = comments.length;
+
+    if (count === 0) {
+      commentCountSpan.textContent = "0";
+      commentCountSpan.title = "No comments yet";
+    } else {
+      commentCountSpan.textContent = count;
+      commentCountSpan.title = `${count} comment${count > 1 ? "s" : ""}`;
+    }
+  } catch (err) {
+    console.error("Error fetching comment count:", err);
+    commentCountSpan.textContent = "0";
+  }
+}
 
 // Load single post details
 async function loadSinglePost() {
@@ -792,7 +1078,7 @@ async function loadSinglePost() {
       ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
-      <p onclick="window.location.href='post.html?id=${post._id}'" style="cursor: pointer;"><em>By ${post.authorName || "Unknown"}</em></p>
+      <p onclick="window.location.href='profile.html?user=${post.authorName}'" style="cursor: pointer;"><em>By ${post.authorName || "Unknown"}</em></p>
       <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
         <p>${post.content}</p>
@@ -805,7 +1091,7 @@ async function loadSinglePost() {
           </button>
           <button class="comment-btn">
             <i class="fa-regular fa-comment"></i>
-            <span class="comment-count"></span>
+            <span class="comment-count">${post.commentsCount || 0}</span>
           </button>
           <button class="share-btn">
             <i class="fa-solid fa-share"></i>
@@ -813,6 +1099,13 @@ async function loadSinglePost() {
           </button>
         </div>
         <span class="liked-by likes-info">No likes yet</span>
+      </div>
+      <div class="comments-section">
+        <form class="comment-form">
+          <input type="text" class="comment-input" placeholder="Write a comment..." required />
+          <button type="submit">Comment</button>
+        </form>
+        <div class="comments-list"></div>
       </div>
       ${isAuthor ? `
       <div class="post-actions">
@@ -845,8 +1138,10 @@ async function loadSinglePost() {
       likedByEl.textContent = `Liked by ${post.likedBy[0]}`;
     } else {
       likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
-    }
-  
+    }  
+
+    const commentCountSpan = div.querySelector(".comment-count");
+    updateCommentCount(post._id, commentCountSpan);  
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
