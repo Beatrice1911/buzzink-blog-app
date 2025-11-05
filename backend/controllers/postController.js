@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const multer = require("multer");
 const Post = require("../models/Post");
 
@@ -17,7 +18,7 @@ const getPosts = async (req, res) => {
     }
 
     if (req.query.authorId) {
-      filter.authorId = req.query.authorId;
+      filter.authorId = new mongoose.Types.ObjectId(req.query.authorId);
     }
 
     const total = await Post.countDocuments(filter);
