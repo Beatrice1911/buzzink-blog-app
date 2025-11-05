@@ -26,7 +26,7 @@ async function fetchUserProfile(name) {
         document.getElementById("user-name-label").textContent = user.name;
 
         // Fetch and display user's posts
-        const postsRes = await fetch(`${API_URI}/posts?author=${user._id}`);
+        const postsRes = await fetch(`${API_URI}/posts?authorId=${user._id}`);
         if (!postsRes.ok) throw new Error("Failed to fetch user's posts");
         const posts = await postsRes.json();
         const postsList = document.getElementById("posts-list");
@@ -35,7 +35,7 @@ async function fetchUserProfile(name) {
                 <h3>${p.title}</h3>
                 <p>${p.content.substring(0, 120) + "..."}</p>
             </div>
-            `).join('') : "<p>No posts available.</p>";
+            `).join('') : "<p class='no-posts'>No posts available.</p>";
     } catch (error) {
         document.body.innerHTML = `<p>${error.message}</p>`;
     }

@@ -16,8 +16,8 @@ const getPosts = async (req, res) => {
       filter = { authorId: userId };
     }
 
-    if (req.query.author) {
-      filter.authorId = req.query.author;
+    if (req.query.authorId) {
+      filter.authorId = req.query.authorId;
     }
 
     const total = await Post.countDocuments(filter);
