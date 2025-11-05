@@ -387,12 +387,19 @@ function searchPosts() {
         <p class="tag">${post.category}</p>
         <h2>${post.title}</h2>
         <p>${post.content}</p>
-        <p><em>By ${post.authorId ? post.authorId.name : post.authorName}</em></p>
+        <p><em>By ${post.authorName || "Unknown"}</em></p>
         <small>${new Date(post.date).toLocaleString()}</small>
       </div>
     `;
     container.appendChild(div);
+    div.onclick = () => {
+      window.location.href = `post.html?id=${post._id}`;
+    };
   });
+
+  if (searchValue === "") {
+    refreshPage();
+  }
 }
 
 // Render pagination buttons
@@ -785,7 +792,7 @@ async function loadSinglePost() {
       ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
-      <p><em>By ${post.authorName || "Unknown"}</em></p>
+      <p onclick="window.location.href='post.html?id=${post._id}'" style="cursor: pointer;"><em>By ${post.authorName || "Unknown"}</em></p>
       <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
         <p>${post.content}</p>
@@ -817,32 +824,29 @@ async function loadSinglePost() {
     const container = document.getElementById("singlePostContainer");
     const likeBtn = container?.querySelector(".like-btn");
     const heart = likeBtn?.querySelector("i");
+    const likedByEl = container?.querySelector(".liked-by");
+    const userId = user?._id || user?.id;
 
-    // Defensive check — apply visual state based on backend data
-    if (likeBtn && heart) {
-      if (post.likedByUser) {
-        likeBtn.classList.add("liked");
-        heart.classList.remove("fa-regular");
-        heart.classList.add("fa-solid");
-      } else {
-        likeBtn.classList.remove("liked");
-        heart.classList.remove("fa-solid");
-        heart.classList.add("fa-regular");
-      }
+    const likedByIds = Array.isArray(post.likes)
+      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
+      : [];
+
+    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
+      likeBtn.classList.add("liked");
+      heart.className = "fa-solid fa-heart";
+    } else {
+      likeBtn.classList.remove("liked");
+      heart.className = "fa-regular fa-heart";
     }
 
-    const likesInfo = document.querySelector(".likes-info");
-    if (likesInfo) {
-      if (post.likedBy && post.likedBy.length > 0) {
-        if (post.likedBy.length === 1) {
-          likesInfo.textContent = `Liked by ${post.likedBy[0]}`;
-        } else {
-          likesInfo.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
-        }
-      } else {
-        likesInfo.textContent = "No likes yet";
-      }
+    if (!post.likedBy || post.likedBy.length === 0) {
+      likedByEl.textContent = "No likes yet";
+    } else if (post.likedBy.length === 1) {
+      likedByEl.textContent = `Liked by ${post.likedBy[0]}`;
+    } else {
+      likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
     }
+  
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";

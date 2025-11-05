@@ -59,7 +59,12 @@
       border-radius: 8px;
       padding: 1rem;
       margin-bottom: 1rem;
-      transition: box-shadow 0.3s;
+      transition: transform 0.3s ease;
+      box-shadow: 0 5px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .post-card:hover {
+      transform: translateY(-5px);
     }
 
     .post-card h3 {
@@ -70,6 +75,10 @@
     .post-card p, .no-posts {
       color: #555;
       margin: 0.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+
     }
   </style>
 </head>
