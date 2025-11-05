@@ -13,6 +13,7 @@ dotenv.config();
 const authRoutes = require("./routes/authRoutes");
 const postsRoutes = require("./routes/postRoutes");
 const userRoutes = require("./routes/userRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 
 const app = express();
 
@@ -53,6 +54,7 @@ app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", userRoutes);
 app.use("/uploads", cors(corsOptions), express.static(path.join(__dirname, "uploads")));
+app.use("/api/comments", commentRoutes);
 
 
 app.use((err, req, res, next) => {
