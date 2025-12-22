@@ -7,6 +7,7 @@ const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
 
+
 function normalizeUser(user) {
   if (!user) return null;
   return {
@@ -532,7 +533,7 @@ loginForm?.addEventListener("submit", async (e) => {
   const password = document.getElementById("loginPassword").value;
   console.log("Login Triggered");
 
-  const res = await fetch(`${AUTH_URL}/login`, {
+  const res = await apiFetch(`${AUTH_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password })
@@ -565,7 +566,7 @@ registerForm?.addEventListener("submit", async (e) => {
   const email = document.getElementById("registerEmail").value;
   const password = document.getElementById("registerPassword").value;
 
-  const res = await fetch(`${AUTH_URL}/register`, {
+  const res = await apiFetch(`${AUTH_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password })
@@ -617,16 +618,40 @@ async function checkUser() {
   }
 
   try {
-    const res = await apiFetch(`${AUTH_URL}/me`);
+    const res = await apiFetch(`${AUTH_URL}/me`, {
+      headers: { "Authorization": `Bearer ${token}` },
+    });
+
+    if (res.status === 401) {
+      const newToken = await refreshToken();
+      if (!newToken) {
+        logout(true);
+        return;
+      }
+
+      const retryRes = await fetch(`${AUTH_URL}/me`, {
+        headers: { "Authorization": `Bearer ${newToken}` },
+      });
+
+      if (!retryRes.ok) throw new Error("Not authenticated after refresh");
+
+      const data = await retryRes.json();
+      // if (!data.user) throw new Error("No user data");
+
+      const user = normalizeUser(data.user);
+      localStorage.setItem("user", JSON.stringify(user));
+      window.currentUser = user;
+      updateUI(user);
+      return;
+    }
+
     if (!res.ok) throw new Error("Not authenticated");
-
     const data = await res.json();
-    if (!data.user) throw new Error("No user data");
-
     const user = normalizeUser(data.user);
     localStorage.setItem("user", JSON.stringify(user));
     window.currentUser = user;
     updateUI(user);
+
   } catch {
     logout(true);
   }
@@ -685,7 +710,7 @@ async function refreshToken() {
     if (!res.ok) throw new Error("Refresh failed");
     const data = await res.json();
     localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken);
+    if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
 
     const user = normalizeUser(data.user);
     localStorage.setItem("user", JSON.stringify(user));
@@ -695,7 +720,6 @@ async function refreshToken() {
     return data.token;
     
   } catch (err) {
-    logout(true);
     return null;
   }
 }
@@ -1166,8 +1190,9 @@ profileEdit?.addEventListener("click", () => {
 });
 
 // Initial user check
-document.addEventListener("DOMContentLoaded", () => {
-  checkUser();
+document.addEventListener("DOMContentLoaded", async () => {
+  const user = await checkUser();
+  window.currentUser = user;
 
   if (window.location.pathname.endsWith("index.html")) {
     fetchPosts();
