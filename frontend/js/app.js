@@ -644,55 +644,6 @@ function updateUI(user) {
   }
 }
 
-// Refresh token function
-async function refreshToken() {
-  const storedRefreshToken = localStorage.getItem("refreshToken");
-  if (!storedRefreshToken) return null;
-
-  try {
-    const res = await fetch(`${AUTH_URL}/refresh`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: storedRefreshToken })
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.token) {
-      localStorage.setItem("token", data.token);
-
-      if (data.refreshToken) {
-        localStorage.setItem("refreshToken", data.refreshToken);
-      }
-
-      const userRes = await fetch(`${AUTH_URL}/me`, {
-        headers: { Authorization: `Bearer ${data.token}` }
-      });
-      if (userRes.ok) {
-        const user = await userRes.json();
-        localStorage.setItem("user", JSON.stringify(user));
-        updateUI(user);
-      }
-      showToast("Session refreshed", "success");
-      return data.token;
-    } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-      updateUI(null);
-      showToast("Session expired, please log in again", "error");
-      return null;
-    }
-  } catch (err) {
-    console.error("Refresh error:", err);
-    localStorage.removeItem("token");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    updateUI(null);
-    return null;
-  }
-}
-
 // Generic API fetch with token refresh
 async function apiFetch(url, options = {}) {
   let token = localStorage.getItem("token");
@@ -1215,8 +1166,8 @@ profileEdit?.addEventListener("click", () => {
 });
 
 // Initial user check
-document.addEventListener("DOMContentLoaded", async () => {
-  await checkUser();
+document.addEventListener("DOMContentLoaded", () => {
+  checkUser();
 
   if (window.location.pathname.endsWith("index.html")) {
     fetchPosts();
