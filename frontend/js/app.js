@@ -1,5 +1,3 @@
-const { log } = require("node:console");
-
 const API_BASE = "http://localhost:5000";
 const API_URL = "http://localhost:5000/api/posts";
 const AUTH_URL = "http://localhost:5000/api/auth";
@@ -109,11 +107,6 @@ async function fetchMyPosts(page = 1, limit = 6) {
     console.error("Error fetching my posts:", err);
     showToast("Failed to load your posts!", "error");
   }
-}
-
-// Initial fetch based on page
-if (window.location.pathname.endsWith("my-posts.html")) {
-  fetchMyPosts();
 }
 
 // Display posts in specified container
@@ -1228,6 +1221,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (window.location.pathname.endsWith("index.html")) {
     fetchPosts();
     fetchTrendingPosts();
+  } else if (window.location.pathname.endsWith("my-posts.html")) {
+    fetchMyPosts();
   }
   refreshPage();
 });
