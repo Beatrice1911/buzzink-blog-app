@@ -1,3 +1,5 @@
+const { log } = require("node:console");
+
 const API_BASE = "http://localhost:5000";
 const API_URL = "http://localhost:5000/api/posts";
 const AUTH_URL = "http://localhost:5000/api/auth";
@@ -644,6 +646,7 @@ function updateUI(user) {
     logoutBtn.classList.remove("hidden");
   } else {
     userIcon.forEach(icon => icon.title = "Click to Login/Register");
+    logoutBtn.classList.add("hidden");
     userMenuDetails?.classList.remove("show");
   }
 }
@@ -875,24 +878,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!window.currentUser || !localStorage.getItem("token")) {
         showToast("Please log in to comment.", "error");
         commentInput.value = "";
-        return;
-      }
-
-      const token = localStorage.getItem("token");
-      try {
-        const verifyRes = await fetch(`${AUTH_URL}/auth/verify`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (!verifyRes.ok) {
-          localStorage.removeItem("token");
-          window.currentUser = null;
-          showToast("Session expired. Please log in again to comment.", "error");
-          commentInput.value = "";
-          return;
-        }
-      } catch {
-        showToast("Could not verify session. Please try again.", "error");
         return;
       }
 
