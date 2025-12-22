@@ -1,36 +1,25 @@
+const API_BASE = "http://localhost:5000";
 const API_URL = "http://localhost:5000/api/posts";
 const AUTH_URL = "http://localhost:5000/api/auth";
+const COMMENTS_URL = "http://localhost:5000/api/comments";
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
 
-window.addEventListener("DOMContentLoaded", async () => {
-  const token = localStorage.getItem("token");
-  if(token) {
-    try {
-      const res = await fetch(`${AUTH_URL}/verify`, {
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const user = await res.json();
-        console.log("User verified:", user);
-        updateUI(user);
-        window.currentUser = user;
-      } else {
-        console.warn("Token invalid or expired");
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        window.currentUser = null;
-      }
-    } catch {
-      console.error("Auth check failed:")
-      localStorage.removeItem("token");
-      window.currentUser = null;
-    }
-  }
-});
+function normalizeUser(user) {
+  if (!user) return null;
+  return {
+    ...user,
+    id: user.id || user._id
+  };
+}
+
+window.currentUser = (() => {
+  const stored = localStorage.getItem("user");
+  return stored ? normalizeUser(JSON.parse(stored)) : null;
+})();
+
 
 // Mobile search toggle
 searchIcon?.addEventListener("click", () => {
@@ -557,19 +546,21 @@ loginForm?.addEventListener("submit", async (e) => {
   const data = await res.json();
   console.log("Login response:", data);
 
-  if (res.ok && data.token && data.refreshToken) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken)
-    localStorage.setItem("user", JSON.stringify(data.user));
-    window.currentUser = data.user;
-    showToast(`Welcome back, ${data.user.name}!`, "success");
-    authModal.classList.add("hidden");
-    updateUI(data.user);
-    loginForm.reset();
-    refreshPage();
-  } else {
+  if (!res.ok) {
     showToast(`Login failed: ${data.message || "Unknown error"}`, "error");
   }
+ 
+  const user = normalizeUser(data.user);
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("refreshToken", data.refreshToken)
+  localStorage.setItem("user", JSON.stringify(user));
+  window.currentUser = user;
+
+  updateUI(user);
+  authModal.classList.add("hidden");
+  loginForm.reset();
+  showToast(`Welcome back, ${user.name}!`, "success");
+  refreshPage();
 });
 
 // Register form submission
@@ -588,47 +579,67 @@ registerForm?.addEventListener("submit", async (e) => {
   const data = await res.json();
   console.log("Register response:", data);
 
-  if (res.ok) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-
-    showToast(`Welcome, ${data.user.name}! Your account has been created.`, "success");
-    authModal.classList.add("hidden");
-    updateUI(data.user);
-    registerForm.reset();
-  } else {
+  if (!res.ok) {
     showToast(`Registration failed: ${data.message || "Unknown error"}`, "error");
   }
+
+  const user = normalizeUser(data.user);
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("refreshToken", data.refreshToken);
+  localStorage.setItem("user", JSON.stringify(user));
+  window.currentUser = user;
+  
+  updateUI(user);
+  authModal.classList.add("hidden");
+  registerForm.reset();
+  showToast(`Welcome, ${user.name}! Your account has been created.`, "success");
 });
+
+// Logout function
+function logout(silent = false) {
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("user");
+  window.currentUser = null;
+  updateUI(null);
+
+  if (!silent) showToast("You have been logged out.", "info");
+}
 
 // Logout button handling
 logoutBtn?.addEventListener("click", () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  showToast("You have been logged out.", "info");
-  updateUI(null);
+  logout();
   window.location.href = "index.html";
 });
 
 // Check user authentication status on page load
 async function checkUser() {
-  const savedUser = localStorage.getItem("user");
-  if (savedUser) updateUI(JSON.parse(savedUser));
-
-  const res = await apiFetch(`${AUTH_URL}/me`);
-  const data = await res.json();
-
-  if (data.user) {
-    localStorage.setItem("user", JSON.stringify(data.user));
-    updateUI(data.user);
-  } else {
+  const token = localStorage.getItem("token");
+  if(!token) {
     updateUI(null);
+    window.currentUser = null;
+    return;
+  }
+
+  try {
+    const res = await apiFetch(`${AUTH_URL}/me`);
+    if (!res.ok) throw new Error("Not authenticated");
+
+    const data = await res.json();
+    if (!data.user) throw new Error("No user data");
+
+    const user = normalizeUser(data.user);
+    localStorage.setItem("user", JSON.stringify(user));
+    window.currentUser = user;
+    updateUI(user);
+  } catch {
+    logout(true);
   }
 }
 
 // Update UI based on user status
 function updateUI(user) {
-  if (user && user.id) {
+  if (user?.id) {
     userIcon.forEach(icon => icon.title = `Logged in as ${user.name}`);
     logoutBtn.classList.remove("hidden");
   } else {
@@ -687,8 +698,6 @@ async function refreshToken() {
 }
 
 // Generic API fetch with token refresh
-const API_BASE = "http://localhost:5000";
-
 async function apiFetch(url, options = {}) {
   let token = localStorage.getItem("token");
 
@@ -707,15 +716,41 @@ async function apiFetch(url, options = {}) {
       options.headers["Authorization"] = `Bearer ${token}`;
       res = await fetch(fullUrl, options);
     } else {
-      localStorage.removeItem("token");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-      window.location.href = "index.html";
       return res;
     }
   }
 
   return res;
+}
+
+// Refresh token function
+async function refreshToken() {
+  const storedRefreshToken = localStorage.getItem("refreshToken");
+  if (!storedRefreshToken) return null;
+
+  try {
+    const res = await fetch(`${AUTH_URL}/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken: storedRefreshToken })
+    });
+
+    if (!res.ok) throw new Error("Refresh failed");
+    const data = await res.json();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("refreshToken", data.refreshToken);
+
+    const user = normalizeUser(data.user);
+    localStorage.setItem("user", JSON.stringify(user));
+    window.currentUser = user;
+    updateUI(user);
+
+    return data.token;
+    
+  } catch (err) {
+    logout(true);
+    return null;
+  }
 }
 
 // Toast notification function
@@ -837,7 +872,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const commentsList = postElement.querySelector(".comments-list");
       const postId = postElement.querySelector(".like-btn").dataset.postId;
 
-      if (!window.currentUser) {
+      if (!window.currentUser || !localStorage.getItem("token")) {
         showToast("Please log in to comment.", "error");
         commentInput.value = "";
         return;
@@ -907,6 +942,8 @@ document.addEventListener("click", async (e) => {
       if (res.ok) {
         showToast("Comment deleted successfully.", "success");
         deleteBtn.closest(".comment").remove();
+        const postElement = deleteBtn.closest(".post");
+        const postId = postElement.querySelector(".like-btn").dataset.postId;
         const commentCountSpan = postElement.querySelector(".comment-count");
         await updateCommentCount(postId, commentCountSpan);
       } else {
@@ -922,7 +959,7 @@ document.addEventListener("click", async (e) => {
 });
 
 // Comments functionality
-const COMMENTS_URL = "http://localhost:5000/api/comments";
+
 
 async function fetchComments(postId, commentsList, limit = 3) {
   try {
@@ -979,12 +1016,21 @@ async function fetchComments(postId, commentsList, limit = 3) {
 }
 
 function renderComments(comments, commentsList) {
-  commentsList.innerHTML = "";
+  const currentUserId = window.currentUser?.id || window.currentUser?._id;
   comments.forEach((comment) => {
     const div = document.createElement("div");
     div.classList.add("comment");
 
-    const isOwner = window.currentUser && comment.authorId?._id === window.currentUser._id;
+    // const isOwner = window.currentUser && comment.authorId?._id === window.currentUser._id;
+    const commentAuthorId =
+      typeof comment.authorId === "object"
+        ? comment.authorId._id
+        : comment.authorId;
+
+    const isOwner =
+      currentUserId &&
+      commentAuthorId &&
+      commentAuthorId.toString() === currentUserId.toString();
 
     div.innerHTML = `
       <div class="comment-header">
@@ -1024,15 +1070,25 @@ async function postComment(postId, text, commentsList) {
       const div = document.createElement("div");
       div.classList.add("comment");
       div.innerHTML = `
-        <p><strong>You:</strong> ${newComment.text}</p>
+        <div class="comment-header">
+          <p><strong>You:</strong> ${newComment.text}</p>
+          <div class="comment-menu">
+            <button class="menu-btn">⋮</button>
+            <div class="menu-options hidden">
+              <button class="delete-comment-btn" data-comment-id="${newComment._id}">Delete</button>
+            </div>
+          </div>
+        </div>
         <small>${new Date(newComment.createdAt).toLocaleString()}</small>
       `;
       commentsList.prepend(div);
+
     } else {
       throw new Error("Failed to post comment");
     }
   } catch (err) {
     console.error("Error posting comment:", err);
+    showToast("Failed to post comment", "error");
   }
 }
 
@@ -1140,7 +1196,7 @@ async function loadSinglePost() {
       likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
     }  
 
-    const commentCountSpan = div.querySelector(".comment-count");
+    const commentCountSpan = container.querySelector(".comment-count");
     updateCommentCount(post._id, commentCountSpan);  
   } catch (err) {
     console.error(err);
@@ -1172,11 +1228,7 @@ const fetchTrendingPosts = async () => {
 };
 
 // Load featured and trending posts on index.html
-if (window.location.pathname.endsWith("index.html")) {
-  checkUser();
-  fetchPosts();
-  fetchTrendingPosts();
-}
+
 
 // Profile edit button handling
 const profileEdit = document.getElementById("profile-edit");
@@ -1185,8 +1237,13 @@ profileEdit?.addEventListener("click", () => {
 });
 
 // Initial user check
-document.addEventListener("DOMContentLoaded", () => {
-  checkUser();
+document.addEventListener("DOMContentLoaded", async () => {
+  await checkUser();
+
+  if (window.location.pathname.endsWith("index.html")) {
+    fetchPosts();
+    fetchTrendingPosts();
+  }
   refreshPage();
 });
 
