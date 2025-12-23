@@ -85,7 +85,7 @@ exports.login = async (req, res, next) => {
 exports.me = async (req, res, next) => {
   try {
     if (!req.user) {
-      return res.json({ user: null });
+      return res.status(401).json({ message: "Not authenticated" });
     }
 
     const user = await User.findById(req.user.id).select("-password");

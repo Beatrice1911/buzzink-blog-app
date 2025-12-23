@@ -611,51 +611,31 @@ logoutBtn?.addEventListener("click", () => {
 // Check user authentication status on page load
 async function checkUser() {
   const token = localStorage.getItem("token");
-  if(!token) {
+  if (!token) {
     updateUI(null);
-    window.currentUser = null;
-    return;
+    return null;
   }
 
   try {
-    const res = await apiFetch(`${AUTH_URL}/me`, {
-      headers: { "Authorization": `Bearer ${token}` },
-    });
-
-    if (res.status === 401) {
-      const newToken = await refreshToken();
-      if (!newToken) {
-        logout(true);
-        return;
-      }
-
-      const retryRes = await fetch(`${AUTH_URL}/me`, {
-        headers: { "Authorization": `Bearer ${newToken}` },
-      });
-
-      if (!retryRes.ok) throw new Error("Not authenticated after refresh");
-
-      const data = await retryRes.json();
-      // if (!data.user) throw new Error("No user data");
-
-      const user = normalizeUser(data.user);
-      localStorage.setItem("user", JSON.stringify(user));
-      window.currentUser = user;
-      updateUI(user);
-      return;
-    }
+    const res = await apiFetch(`${AUTH_URL}/me`);
 
     if (!res.ok) throw new Error("Not authenticated");
+
     const data = await res.json();
     const user = normalizeUser(data.user);
+
     localStorage.setItem("user", JSON.stringify(user));
     window.currentUser = user;
     updateUI(user);
 
+    return user;
+
   } catch {
     logout(true);
+    return null;
   }
 }
+
 
 // Update UI based on user status
 function updateUI(user) {
@@ -879,6 +859,9 @@ document.addEventListener("click", async (e) => {
   const deleteBtn = e.target.closest(".delete-comment-btn");
   if (deleteBtn) {
     e.preventDefault();
+    e.stopPropagation();
+     if (deleteBtn.dataset.deleting === "true") return;
+     deleteBtn.dataset.deleting = "true";  
     const commentId = deleteBtn.dataset.commentId;
     const confirmDelete = confirm("Are you sure you want to delete this comment?");
     if (!confirmDelete) return;
@@ -893,14 +876,18 @@ document.addEventListener("click", async (e) => {
       const data = await res.json();
 
       if (res.ok) {
-        showToast("Comment deleted successfully.", "success");
-        deleteBtn.closest(".comment").remove();
+        // deleteBtn.closest(".comment").remove();
+        const commentEl = deleteBtn.closest(".comment");
         const postElement = deleteBtn.closest(".post");
-        const postId = postElement.querySelector(".like-btn").dataset.postId;
+        // const postId = postElement.querySelector(".like-btn").dataset.postId;
         const commentCountSpan = postElement.querySelector(".comment-count");
-        await updateCommentCount(postId, commentCountSpan);
+        // await updateCommentCount(postId, commentCountSpan);
+        commentEl.remove();
+        const currentCount = parseInt(commentCountSpan.textContent) || 0;
+        commentCountSpan.textContent = Math.max(0, currentCount - 1);
+        showToast("Comment deleted successfully.", "success");
       } else {
-        showToast(data.message || "Failed to delete comment", "error");
+        throw new Error(data.message || "Delete failed");
       }
     } catch (err) {
       console.error("Error deleting comment:", err);
@@ -912,8 +899,6 @@ document.addEventListener("click", async (e) => {
 });
 
 // Comments functionality
-
-
 async function fetchComments(postId, commentsList, limit = 3) {
   try {
     commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
