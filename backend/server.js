@@ -81,3 +81,9 @@ connectDB()
     console.error("Failed to start server:", err);
     process.exit(1);
   });
+
+  // Serve frontend static files
+app.use(express.static(path.join(__dirname, "frontend"))); 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
