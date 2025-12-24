@@ -17,9 +17,4 @@ const postSchema = new mongoose.Schema(
   { timestamps: true } 
 );
 
-postSchema.pre("save", function (next) {
-  this.trendingScore = this.likes.length * 2 + this.commentCount + (this.views / 5);
-  next();
-});
-
 module.exports = mongoose.model("Post", postSchema);

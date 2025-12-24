@@ -1165,8 +1165,6 @@ const fetchTrendingPosts = async () => {
   `}).join("");
 };
 
-// Load featured and trending posts on index.html
-
 
 // Profile edit button handling
 const profileEdit = document.getElementById("profile-edit");

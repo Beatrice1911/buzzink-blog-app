@@ -11,7 +11,6 @@ const getPosts = async (req, res) => {
     const { page = 1, limit = 6 } = req.query;
     const userId = req.user?.id || null;
 
-    // Determine if we’re fetching all posts or the user’s posts
     let filter = {};
     if (req.path.includes("/mine")) {
       filter = { authorId: userId };
@@ -57,13 +56,33 @@ const getPosts = async (req, res) => {
 const getPostById = async (req, res) => {
   try {
     const userId = req.user?.id || null;
+    const postId = req.params.id;
+
+    const viewerKey = req.user ? `user-${req.user.id}` : `guest`;
+
+    if(!req.session.viewedPosts) {
+      req.session.viewedPosts = {};
+    }
+
+    if (!req.session.viewedPosts[viewerKey]) {
+      req.session.viewedPosts[viewerKey] = [];
+    }
 
     const post = await Post.findById(req.params.id)
-      .populate("likes", "name"); // Important: populate the likes field
+      .populate("likes", "name");
 
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    // Check if the logged-in user liked this post
+    const hasViewed = req.session.viewedPosts[viewerKey].includes(postId);
+
+    if (!hasViewed) {
+      post.views += 1;
+      updateTrendingScore(post);
+      await post.save();
+
+      req.session.viewedPosts[viewerKey].push(postId);
+    }
+
     const likedByUser = userId
       ? post.likes.some(like => like._id.toString() === userId)
       : false;
@@ -223,10 +242,13 @@ const getTrendingPosts = async (req, res) => {
 }
 
 const updateTrendingScore = (post) => {
-  const likesCount = post.like?.length || 0;
+  const likesCount = post.likes?.length || 0;
   const commentCount = post.commentCount || 0;
   const viewsCount = post.views || 0;
-  post.trendingScore = (likesCount * 2) + commentCount + (viewsCount / 5);
+
+  const hoursSincePost = (Date.now() - post.createdAt.getTime()) / (1000 * 60 * 60);
+
+  post.trendingScore = ((likesCount * 2) + commentCount + (viewsCount / 5)) / (hoursSincePost + 1);
 };
 
 
