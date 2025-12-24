@@ -399,7 +399,7 @@ document.getElementById("categoryFilter")?.addEventListener("change", () => {
 
 // Search posts functionality
 function searchPosts() {
-  const searchValue = document.getElementById("search")?.value.toLowerCase() || "";
+  const searchValue = document.querySelector(".search")?.value.toLowerCase() || "";
   const containerId = document.getElementById("allPostsContainer")
     ? "allPostsContainer"
     : "featuredPostsContainer";
@@ -436,9 +436,9 @@ function searchPosts() {
       </div>
     `;
     container.appendChild(div);
-    div.onclick = () => {
+    div.addEventListener("click", () => {
       window.location.href = `post.html?id=${post._id}`;
-    };
+    });
   });
 
   if (searchValue === "") {

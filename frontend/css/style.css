@@ -177,7 +177,6 @@ nav .user-icon:hover {
   opacity: 0;
   overflow: hidden;
   transition: all 0.3s ease;
-  background-color: #f4f6f9;
   z-index: 1000;
 }
 
