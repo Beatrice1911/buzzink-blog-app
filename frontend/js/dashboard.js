@@ -1,6 +1,6 @@
 const API_BASE = window.location.hostname === "localhost" 
     ? "http://localhost:5000" 
-    : "https://buzzink.onrender.com";
+    : `${window.location.protocol}//${window.location.hostname}`;
 const API_URI = `${API_BASE}/api/users/me`;
 const REFRESH_URI = `${API_BASE}/api/auth/refresh`;
 

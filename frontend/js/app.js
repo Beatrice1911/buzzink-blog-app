@@ -1,6 +1,6 @@
 const API_BASE = window.location.hostname === "localhost" 
     ? "http://localhost:5000" 
-    : "https://buzzink.onrender.com";
+    : `${window.location.protocol}//${window.location.hostname}`;
 const API_URL = `${API_BASE}/api/posts`;
 const AUTH_URL = `${API_BASE}/api/auth`;
 const COMMENTS_URL = `${API_BASE}/api/comments`;
