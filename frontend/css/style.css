@@ -184,7 +184,7 @@ nav .user-icon:hover {
 /* Hero Section */
 .hero {
   background: url("/frontend/Images/work-3938875_1280.jpg");
-  height: 90vh;
+  height: 60vh;
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -203,7 +203,9 @@ nav .user-icon:hover {
 
 .hero-content {
   position: absolute;
-  margin: 70px auto 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   color: #f4f6f9;
   text-align: center;
 }
