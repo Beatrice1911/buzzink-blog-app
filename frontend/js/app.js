@@ -1,8 +1,6 @@
-const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-const API_BASE = isLocalhost ? "http://localhost:5000" : "";
-const API_URL = `${API_BASE}/api/posts`;
-const AUTH_URL = `${API_BASE}/api/auth`;
-const COMMENTS_URL = `${API_BASE}/api/comments`;
+const API_URL = `/api/posts`;
+const AUTH_URL = `api/auth`;
+const COMMENTS_URL = `/api/comments`;
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
@@ -60,7 +58,7 @@ function renderNoAuthorPost(container) {
 // Get full image URL
 function getImageUrl(path) {
   if (!path) return "";
-  return path.startsWith("http") ? path : `${API_BASE}${path}`;
+  return path.startsWith("http") ? path : path;
 }
 
 // Fetch posts with pagination
@@ -235,7 +233,7 @@ async function addPost(title, content, category, imageFile) {
   formData.append("category", category);
   if (imageFile) formData.append("image", imageFile);
 
-  const res = await apiFetch(`${API_BASE}/api/posts`, {
+  const res = await apiFetch(`${API_URL}`, {
     method: "POST",
     body: formData
   });
@@ -659,7 +657,7 @@ async function apiFetch(url, options = {}) {
     options.headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const fullUrl = url.startsWith("http") ? url : `${API_BASE}${url}`;
+  const fullUrl = url
 
   let res = await fetch(fullUrl, options);
 

@@ -1,7 +1,5 @@
-const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-const API_BASE = isLocalhost ? "http://localhost:5000" : "";
-const API_URI = `${API_BASE}/api/users/me`;
-const REFRESH_URI = `${API_BASE}/api/auth/refresh`;
+const API_URI = `/api/users/me`;
+const REFRESH_URI = `/api/auth/refresh`;
 
 let tokenDashboard = localStorage.getItem("token");
 let refreshTokenDashboard = localStorage.getItem("refreshToken");
@@ -21,9 +19,9 @@ async function refreshAccessToken() {
 
     if (res.ok && data.token && data.refreshToken) {
       localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken); // new one
+      localStorage.setItem("refreshToken", data.refreshToken);
       tokenDashboard = data.token;
-      refreshTokenDashboard = data.refreshToken; // update variable
+      refreshTokenDashboard = data.refreshToken;
       console.log("Token refreshed successfully!");
       return true;
     }
@@ -49,7 +47,7 @@ async function loadProfile() {
       console.warn("Access token expired, trying refresh...");
       const refreshed = await refreshAccessToken();
       if (refreshed) {
-        return loadProfile(); // retry after refreshing
+        return loadProfile();
       } else {
         showToastUser("Session expired. Please log in again.", "error");
         window.location.href = "index.html";
@@ -59,28 +57,23 @@ async function loadProfile() {
 
     if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
 
-    // ✅ Update UI
+    // Update UI
     document.getElementById("userName").textContent = data.name;
     document.getElementById("userEmail").textContent = data.email;
     document.getElementById("userBio").textContent = data.bio || "No bio added yet.";
     document.getElementById("joinedDate").textContent = new Date(data.createdAt).toDateString();
 
     // Profile image logic
-    const DEFAULT_PROFILE_PHOTO = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
-    let profileImage;
+   const DEFAULT_PROFILE_PHOTO =
+    "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 
-    if (data.profilePhoto) {
-      if (data.profilePhoto.startsWith("http")) {
-        profileImage = data.profilePhoto;
-      } else {
-        profileImage = `${API_BASE}${data.profilePhoto}`;
-      }
-      document.getElementById("removePhotoBtn").style.display =  "block";
-    } else {
-      profileImage = DEFAULT_PROFILE_PHOTO;
-    }
+   const profileImage = data.profilePhoto
+   ? data.profilePhoto
+   : DEFAULT_PROFILE_PHOTO;
 
-    
+  if (data.profilePhoto) {
+    document.getElementById("removePhotoBtn").style.display = "block";
+  }
 
     document.getElementById("profilePhotoPreview").src = profileImage;
     console.log("Profile image URL: ", profileImage);
@@ -129,7 +122,7 @@ saveChangesBtn.addEventListener("click", async (e) => {
       if (data.profilePhoto) {
         const newPhoto = data.profilePhoto.startsWith("http")
           ? data.profilePhoto
-          : `${API_BASE}${data.profilePhoto}`;
+          : data.profilePhoto;
         document.getElementById("profilePhotoPreview").src = newPhoto;
       }
 
