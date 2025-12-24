@@ -1,6 +1,5 @@
-const API_BASE = window.location.hostname === "localhost" 
-    ? "http://localhost:5000" 
-    : `${window.location.protocol}//${window.location.hostname}`;
+const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_BASE = isLocalhost ? "http://localhost:5000" : "";
 const API_URL = `${API_BASE}/api/posts`;
 const AUTH_URL = `${API_BASE}/api/auth`;
 const COMMENTS_URL = `${API_BASE}/api/comments`;
