@@ -133,8 +133,10 @@ function displayPosts(containerId, limit = null) {
   if (!container) return;
 
   container.innerHTML = "";
-  const loggedInUser = localStorage.getItem("user");
-  const user = loggedInUser ? JSON.parse(loggedInUser) : null;
+  // const loggedInUser = localStorage.getItem("user");
+  // const user = loggedInUser ? JSON.parse(loggedInUser) : null;
+
+  const user = window.currentUser;
 
   let displayList = [...posts];
 
@@ -149,7 +151,7 @@ function displayPosts(containerId, limit = null) {
   }
 
   if (containerId === "myPostsContainer" && user) {
-    displayList = displayList.filter(post => post.authorId === user.id);
+    displayList = displayList.filter(post => String(post.authorId) === String(user));
   }
 
   if (limit) displayList = displayList.slice(0, limit);
@@ -165,7 +167,7 @@ function displayPosts(containerId, limit = null) {
     const preview = post.content.length > 150
       ? post.content.substring(0, 150) + "..."
       : post.content;
-    const isAuthor = user && user.id === post.authorId;
+    const isAuthor = user && String(post.authorId) === String(user.id);
     div.innerHTML = `
       ${post.image
         ? `<a href="post.html?id=${post._id}">
@@ -213,8 +215,8 @@ function displayPosts(containerId, limit = null) {
     `;
     container.appendChild(div);
 
-    const editPostBtn = document.querySelector(".edit-btn");
-    const deletePostBtn = document.querySelector(".delete-btn");
+    const editPostBtn = div.querySelector(".edit-btn");
+    const deletePostBtn = div.querySelector(".delete-btn");
 
     editPostBtn?.addEventListener("click", () => {
       editPost(`${post._id}`);
@@ -993,7 +995,6 @@ function renderComments(comments, commentsList) {
     const div = document.createElement("div");
     div.classList.add("comment");
 
-    // const isOwner = window.currentUser && comment.authorId?._id === window.currentUser._id;
     const commentAuthorId =
       typeof comment.authorId === "object"
         ? comment.authorId._id
@@ -1099,11 +1100,13 @@ async function loadSinglePost() {
     if (!res.ok) throw new Error("Failed to fetch post");
     const post = await res.json();
 
-    const loggedInUser = localStorage.getItem("user");
-    const user = loggedInUser ? JSON.parse(loggedInUser) : null;
-    const isAuthor = user && user.id === post.authorId;
+    // const loggedInUser = localStorage.getItem("user");
+    // const user = loggedInUser ? JSON.parse(loggedInUser) : null;
+    const user = window.currentUser;
+    const isAuthor = user && String(post.authorId) === String(user.id);
+    const container = document.getElementById("singlePostContainer");
 
-    document.getElementById("singlePostContainer").innerHTML = `
+    container.innerHTML = `
       ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
@@ -1143,8 +1146,8 @@ async function loadSinglePost() {
       </div>` : ""}
     `;
 
-    const editPostBtn = document.querySelector(".edit-btn");
-    const deletePostBtn = document.querySelector(".delete-btn");
+    const editPostBtn = container.querySelector(".edit-btn");
+    const deletePostBtn = container.querySelector(".delete-btn");
 
     editPostBtn?.addEventListener("click", () => {
       editPost(`${post._id}`);
@@ -1154,7 +1157,7 @@ async function loadSinglePost() {
       deletePost(`${post._id}`);
     });
 
-    const container = document.getElementById("singlePostContainer");
+    
     const likeBtn = container?.querySelector(".like-btn");
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
