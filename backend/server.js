@@ -71,6 +71,11 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message || "Server error" });
 });
 
+  // Serve frontend static files
+app.use(express.static(path.join(__dirname, "frontend"))); 
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "frontend", "index.html"));
+});
 
 const PORT = process.env.PORT || 5000;
 connectDB()
@@ -82,8 +87,4 @@ connectDB()
     process.exit(1);
   });
 
-  // Serve frontend static files
-app.use(express.static(path.join(__dirname, "frontend"))); 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "index.html"));
-});
+
