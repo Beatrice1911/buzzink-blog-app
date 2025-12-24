@@ -1,5 +1,5 @@
 const API_URL = `/api/posts`;
-const AUTH_URL = `api/auth`;
+const AUTH_URL = `/api/auth`;
 const COMMENTS_URL = `/api/comments`;
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
@@ -133,8 +133,6 @@ function displayPosts(containerId, limit = null) {
   if (!container) return;
 
   container.innerHTML = "";
-  // const loggedInUser = localStorage.getItem("user");
-  // const user = loggedInUser ? JSON.parse(loggedInUser) : null;
 
   const userId = window.currentUser?._id || window.currentUser?.id;
 
@@ -143,7 +141,7 @@ function displayPosts(containerId, limit = null) {
   if (containerId === "allPostsContainer") {
     const categoryFilter = document.getElementById("categoryFilter");
     if (categoryFilter) {
-      const selectedCategory = categoryFilter.value;
+      const selectedCategory = categoryFilter?.value;
       if (selectedCategory !== "all") {
         displayList = displayList.filter((post) => post.category === selectedCategory);
       }
@@ -164,10 +162,13 @@ function displayPosts(containerId, limit = null) {
   displayList.forEach((post) => {
     const div = document.createElement("div");
     div.classList.add("post");
+
     const preview = post.content.length > 150
       ? post.content.substring(0, 150) + "..."
       : post.content;
+
     const isAuthor = userId && String(post.authorId) === String(userId);
+    
     div.innerHTML = `
       ${post.image
         ? `<a href="post.html?id=${post._id}">
@@ -215,16 +216,12 @@ function displayPosts(containerId, limit = null) {
     `;
     container.appendChild(div);
 
-    const editPostBtn = div.querySelector(".edit-btn");
-    const deletePostBtn = div.querySelector(".delete-btn");
-
-    editPostBtn?.addEventListener("click", () => {
-      editPost(`${post._id}`);
-    });
-
-    deletePostBtn?.addEventListener("click", () => {
-      deletePost(`${post._id}`);
-    });
+    if (isAuthor) {
+      const editBtn = div.querySelector(".edit-btn");
+      const deleteBtn = div.querySelector(".delete-btn");
+      editBtn?.addEventListener("click", () => editPost(post._id));
+      deleteBtn?.addEventListener("click", () => deletePost(post._id));
+    }
 
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
