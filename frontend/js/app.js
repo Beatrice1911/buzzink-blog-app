@@ -39,6 +39,9 @@ myPosts?.addEventListener("click", () => {
 // Mobile search toggle
 searchIcon?.addEventListener("click", () => {
   mobileSearch.classList.toggle("show");
+  if (mobileSearch.classList.contains("show")) {
+    mobileSearch.querySelector("input").focus();
+  }
 });
 
 // Menu toggle for mobile
