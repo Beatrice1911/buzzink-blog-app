@@ -149,10 +149,6 @@ nav .user-icon:hover {
   transition: all 0.3s ease;
 }
 
-#logoutBtn.hidden {
-  display: none;
-}
-
 #logoutBtn:hover {
   background: #555;
 }

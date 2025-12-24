@@ -17,9 +17,12 @@ async function fetchUserProfile(name) {
         document.getElementById("profile-bio").textContent = user.bio || "This user has no bio.";
         document.getElementById("profile-date").textContent = `Joined: ${new Date(user.createdAt).toDateString()}`;
 
+        const DEFAULT_PROFILE_PHOTO = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
         const photoUrl = user.profilePhoto
-            ? (user.profilePhoto.startsWith("http") ? user.profilePhoto : `/uploads/${user.profilePhoto}`)
-            : "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
+            ? user.profilePhoto.startsWith("http")
+                ? user.profilePhoto
+                : user.profilePhoto
+            : DEFAULT_PROFILE_PHOTO;
 
         document.getElementById("profile-photo").src = photoUrl;
 

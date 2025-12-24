@@ -26,7 +26,8 @@ const getPosts = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit))
-      .populate("likes", "name profilePhoto");
+      .populate("likes", "name profilePhoto")
+      .populate("authorId", "_id name profilePhoto");
 
     const updatedPosts = posts.map(post => {
       const likedByUser = userId
@@ -56,32 +57,12 @@ const getPosts = async (req, res) => {
 const getPostById = async (req, res) => {
   try {
     const userId = req.user?.id || null;
-    const postId = req.params.id;
-
-    const viewerKey = req.user ? `user-${req.user.id}` : `guest`;
-
-    if(!req.session.viewedPosts) {
-      req.session.viewedPosts = {};
-    }
-
-    if (!req.session.viewedPosts[viewerKey]) {
-      req.session.viewedPosts[viewerKey] = [];
-    }
 
     const post = await Post.findById(req.params.id)
-      .populate("likes", "name");
+      .populate("likes", "name profilePhoto")
+      .populate("authorId", "_id name profilePhoto");
 
     if (!post) return res.status(404).json({ message: "Post not found" });
-
-    const hasViewed = req.session.viewedPosts[viewerKey].includes(postId);
-
-    if (!hasViewed) {
-      post.views += 1;
-      updateTrendingScore(post);
-      await post.save();
-
-      req.session.viewedPosts[viewerKey].push(postId);
-    }
 
     const likedByUser = userId
       ? post.likes.some(like => like._id.toString() === userId)
@@ -251,6 +232,27 @@ const updateTrendingScore = (post) => {
   post.trendingScore = ((likesCount * 2) + commentCount + (viewsCount / 5)) / (hoursSincePost + 1);
 };
 
+const incrementView = async (req, res) => {
+  const post = await Post.findById(req.params.id);
+
+  if (!post) return res.status(404).json({ message: "Post not found" });
+
+  if (req.user) {
+    const hasViewed = post.viewedBy.includes(req.user._id);
+
+    if (!hasViewed) {
+      post.views += 1;
+      post.viewedBy.push(req.user._id);
+      await post.save();
+    }
+  } else {
+    post.views += 1;
+    await post.save();
+  }
+
+  res.json({ views: post.views });
+}
+
 
 module.exports = {
   getPosts,
@@ -261,4 +263,5 @@ module.exports = {
   likePost,
   unlikePost,
   getTrendingPosts,
+  incrementView,
 };
