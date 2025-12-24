@@ -264,7 +264,8 @@ async function addPost(title, content, category, imageFile) {
 
   const res = await apiFetch(`${API_URL}`, {
     method: "POST",
-    body: formData
+    body: formData,
+    credentials: "include"
   });
 
   if (!res.ok) throw new Error("Failed to add post");
@@ -671,10 +672,8 @@ async function checkUser() {
 function updateUI(user) {
   if (user?.id) {
     userIcon.forEach(icon => icon.title = `Logged in as ${user.name}`);
-    logoutBtn.classList.remove("hidden");
   } else {
     userIcon.forEach(icon => icon.title = "Click to Login/Register");
-    logoutBtn.classList.add("hidden");
     userMenuDetails?.classList.remove("show");
   }
 }
@@ -691,7 +690,7 @@ async function apiFetch(url, options = {}) {
   const fullUrl = url;
 
   let res = await fetch(fullUrl, {
-    credentials: "include",   // ⭐ THIS IS THE FIX
+    credentials: "include",
     ...options
   });
 
@@ -700,7 +699,7 @@ async function apiFetch(url, options = {}) {
     if (token) {
       options.headers["Authorization"] = `Bearer ${token}`;
       res = await fetch(fullUrl, {
-        credentials: "include", // ⭐ AGAIN
+        credentials: "include",
         ...options
       });
     }

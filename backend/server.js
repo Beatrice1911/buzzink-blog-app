@@ -1,5 +1,4 @@
 const express = require("express");
-const session = require("express-session");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const path = require("path");
@@ -37,17 +36,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({
-  secret: process.env.SESSION_SECRET || "mini-blog-secret",
-  resave: false,
-  saveUninitialized: true,
-  cookie: {
-  maxAge: 1000 * 60 * 60 * 24,
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-}
-}))
 
 const allowedOrigins = [
   "http://127.0.0.1:5500",
