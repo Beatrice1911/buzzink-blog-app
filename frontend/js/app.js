@@ -1,7 +1,9 @@
-const API_BASE = "http://localhost:5000";
-const API_URL = "http://localhost:5000/api/posts";
-const AUTH_URL = "http://localhost:5000/api/auth";
-const COMMENTS_URL = "http://localhost:5000/api/comments";
+const API_BASE = window.location.hostname === "localhost" 
+    ? "http://localhost:5000" 
+    : "https://buzzink.onrender.com";
+const API_URL = `${API_BASE}/api/posts`;
+const AUTH_URL = `${API_BASE}/api/auth`;
+const COMMENTS_URL = `${API_BASE}/api/comments`;
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
@@ -59,7 +61,7 @@ function renderNoAuthorPost(container) {
 // Get full image URL
 function getImageUrl(path) {
   if (!path) return "";
-  return path.startsWith("http") ? path : `http://localhost:5000${path}`;
+  return path.startsWith("http") ? path : `${API_BASE}${path}`;
 }
 
 // Fetch posts with pagination

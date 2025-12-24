@@ -1,5 +1,8 @@
-const API_URI = "http://localhost:5000/api/users/me";
-const REFRESH_URI = "http://localhost:5000/api/auth/refresh";
+const API_BASE = window.location.hostname === "localhost" 
+    ? "http://localhost:5000" 
+    : "https://buzzink.onrender.com";
+const API_URI = `${API_BASE}/api/users/me`;
+const REFRESH_URI = `${API_BASE}/api/auth/refresh`;
 
 let tokenDashboard = localStorage.getItem("token");
 let refreshTokenDashboard = localStorage.getItem("refreshToken");
@@ -71,7 +74,7 @@ async function loadProfile() {
       if (data.profilePhoto.startsWith("http")) {
         profileImage = data.profilePhoto;
       } else {
-        profileImage = `http://localhost:5000${data.profilePhoto}`;
+        profileImage = `${API_BASE}${data.profilePhoto}`;
       }
       document.getElementById("removePhotoBtn").style.display =  "block";
     } else {
@@ -127,7 +130,7 @@ saveChangesBtn.addEventListener("click", async (e) => {
       if (data.profilePhoto) {
         const newPhoto = data.profilePhoto.startsWith("http")
           ? data.profilePhoto
-          : `http://localhost:5000${data.profilePhoto}`;
+          : `${API_BASE}${data.profilePhoto}`;
         document.getElementById("profilePhotoPreview").src = newPhoto;
       }
 
