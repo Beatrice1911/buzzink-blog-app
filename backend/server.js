@@ -17,6 +17,8 @@ const commentRoutes = require("./routes/commentRoutes");
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
@@ -28,9 +30,12 @@ app.use(session({
   secret: process.env.SESSION_SECRET || "mini-blog-secret",
   resave: false,
   saveUninitialized: true,
-  cookie: { 
-    maxAge: 1000 * 60 * 60 * 24,
-  }
+  cookie: {
+  maxAge: 1000 * 60 * 60 * 24,
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+}
 }))
 
 const allowedOrigins = [
