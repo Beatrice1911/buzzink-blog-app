@@ -167,7 +167,7 @@ function displayPosts(containerId, limit = null) {
     const preview = post.content.length > 150
       ? post.content.substring(0, 150) + "..."
       : post.content;
-    const isAuthor = user && String(post.authorId) === String(user.id);
+    const isAuthor = userId && String(post.authorId) === String(userId);
     div.innerHTML = `
       ${post.image
         ? `<a href="post.html?id=${post._id}">
