@@ -1,5 +1,3 @@
-const { all } = require("../../backend/routes/authRoutes");
-
 const API_URL = `/api/posts`;
 const AUTH_URL = `api/auth`;
 const COMMENTS_URL = `/api/comments`;
