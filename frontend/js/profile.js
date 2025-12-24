@@ -18,9 +18,11 @@ async function fetchUserProfile(name) {
         document.getElementById("profile-date").textContent = `Joined: ${new Date(user.createdAt).toDateString()}`;
 
         const photoUrl = user.profilePhoto
-            ? (user.profilePhoto.startsWith("http") ? user.profilePhoto : `${API_URI}${user.profilePhoto}`)
+            ? (user.profilePhoto.startsWith("http") ? user.profilePhoto : `/uploads/${user.profilePhoto}`)
             : "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
+
         document.getElementById("profile-photo").src = photoUrl;
+
 
         document.getElementById("user-name-label").textContent = user.name;
 
