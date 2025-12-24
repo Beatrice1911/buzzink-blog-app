@@ -15,12 +15,11 @@
 <body>
     <div class="header write-header">
         <div class="logo-img">
-            <img src="Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png" alt="Logo" class="logo"
-                onclick="location.href='index.html'">
+            <img src="Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png" alt="Logo" class="logo">
         </div>
 
         <div class="search-bar">
-            <input type="text" id="search" placeholder="Search posts..." onkeyup="searchPosts()">
+            <input type="text" class="search" placeholder="Search posts...">
             <i class="fas fa-search"></i>
         </div>
 
@@ -45,12 +44,12 @@
         <a href="#">About</a>
     </div>
     <div class="mobile-search" id="mobileSearch">
-        <input type="text" placeholder="Search posts..." onkeyup="searchPosts()">
+        <input type="text" placeholder="Search posts..." class="search">
     </div>
 
     <div class="user-menu-details" id="userMenuDetails">
         <p id="profile-edit">Profile</p>
-        <p id="myPosts" onclick="location.href='my-posts.html'">My Posts</p>
+        <p id="myPosts">My Posts</p>
         <p>Settings</p>
         <button id="logoutBtn" class="hidden">Logout</button>
     </div>

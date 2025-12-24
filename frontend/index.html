@@ -17,12 +17,11 @@
     <section class="hero">
         <div class="header">
             <div class="logo-img">
-                <img src="Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png" alt="Logo" class="logo"
-                    onclick="location.href='index.html'">
+                <img src="Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png" alt="Logo" class="logo">
             </div>
 
             <div class="search-bar">
-                <input type="text" id="search" placeholder="Search posts..." onkeyup="searchPosts()">
+                <input type="text" class="search" placeholder="Search posts...">
                 <i class="fas fa-search"></i>
             </div>
 
@@ -44,7 +43,7 @@
         </div>
 
         <div class="mobile-search" id="mobileSearch">
-            <input type="text" placeholder="Search posts..." onkeyup="searchPosts()">
+            <input type="text" class="search" placeholder="Search posts...">
         </div>
 
         <div class="mobile-nav" id="mobileMenu">
@@ -55,7 +54,7 @@
         </div>
         <div class="user-menu-details" id="userMenuDetails">
             <p id="profile-edit">Profile</p>
-            <p id="myPosts" onclick="location.href='my-posts.html'">My Posts</p>
+            <p id="myPosts">My Posts</p>
             <p>Settings</p>
             <button id="logoutBtn">Logout</button>
         </div>
@@ -71,7 +70,7 @@
     <section class="featured-posts" id="featured">
         <h2>Featured Posts</h2>
         <div id="featuredPostsContainer" class="posts-container"></div>
-        <button onclick="window.location.href= 'all-posts.html'" class="all-posts-btn btn">See all Posts</button>
+        <button class="all-posts-btn btn">See all Posts</button>
     </section>
 
     <section class="trending-posts">

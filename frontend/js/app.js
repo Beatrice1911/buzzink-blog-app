@@ -1,3 +1,5 @@
+const { all } = require("../../backend/routes/authRoutes");
+
 const API_URL = `/api/posts`;
 const AUTH_URL = `api/auth`;
 const COMMENTS_URL = `/api/comments`;
@@ -5,6 +7,10 @@ const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
+const logo = document.querySelector(".logo");
+const allPostsBtn = document.querySelector(".all-posts-btn");
+const myPosts = document.getElementById("myPosts");
+const search = document.querySelector(".search");
 
 
 function normalizeUser(user) {
@@ -20,6 +26,17 @@ window.currentUser = (() => {
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
+logo?.addEventListener("click", () => {
+  window.location.href = "index.html";
+});
+
+allPostsBtn?.addEventListener("click", () => {
+  window.location.href = "all-posts.html";
+});
+
+myPosts?.addEventListener("click", () => {
+  window.location.href = "my-posts.html";
+});
 
 // Mobile search toggle
 searchIcon?.addEventListener("click", () => {
@@ -188,12 +205,23 @@ function displayPosts(containerId, limit = null) {
         </div>
         ${isAuthor ? `
         <div class="post-actions">
-            <button onclick="editPost('${post._id}')" class="edit-btn btn">Edit</button>
-            <button onclick="deletePost('${post._id}')" class="delete-btn btn">Delete</button>
+            <button class="edit-btn btn">Edit</button>
+            <button class="delete-btn btn">Delete</button>
         </div>
         ` : ""}
     `;
     container.appendChild(div);
+
+    const editPostBtn = document.querySelector(".edit-btn");
+    const deletePostBtn = document.querySelector(".delete-btn");
+
+    editPostBtn?.addEventListener("click", () => {
+      editPost(`${post._id}`);
+    });
+
+    deletePostBtn?.addEventListener("click", () => {
+      deletePost(`${post._id}`);
+    });
 
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
@@ -419,6 +447,8 @@ function searchPosts() {
     refreshPage();
   }
 }
+
+search?.addEventListener("keyup", searchPosts);
 
 // Render pagination buttons
 function renderPagination() {
@@ -1108,10 +1138,21 @@ async function loadSinglePost() {
       </div>
       ${isAuthor ? `
       <div class="post-actions">
-        <button onclick="editPost('${post._id}')" class="edit-btn btn">Edit</button>
-        <button onclick="deletePost('${post._id}')" class="delete-btn btn">Delete</button>
+        <button class="edit-btn btn">Edit</button>
+        <button class="delete-btn btn">Delete</button>
       </div>` : ""}
     `;
+
+    const editPostBtn = document.querySelector(".edit-btn");
+    const deletePostBtn = document.querySelector(".delete-btn");
+
+    editPostBtn?.addEventListener("click", () => {
+      editPost(`${post._id}`);
+    });
+
+    deletePostBtn?.addEventListener("click", () => {
+      deletePost(`${post._id}`);
+    });
 
     const container = document.getElementById("singlePostContainer");
     const likeBtn = container?.querySelector(".like-btn");
