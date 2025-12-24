@@ -657,22 +657,27 @@ async function apiFetch(url, options = {}) {
     options.headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const fullUrl = url
+  const fullUrl = url;
 
-  let res = await fetch(fullUrl, options);
+  let res = await fetch(fullUrl, {
+    credentials: "include",   // ⭐ THIS IS THE FIX
+    ...options
+  });
 
   if (res.status === 401) {
     token = await refreshToken();
     if (token) {
       options.headers["Authorization"] = `Bearer ${token}`;
-      res = await fetch(fullUrl, options);
-    } else {
-      return res;
+      res = await fetch(fullUrl, {
+        credentials: "include", // ⭐ AGAIN
+        ...options
+      });
     }
   }
 
   return res;
 }
+
 
 // Refresh token function
 async function refreshToken() {
@@ -867,7 +872,7 @@ document.addEventListener("click", async (e) => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${COMMENTS_URL}/${commentId}`, {
+      const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -1032,7 +1037,7 @@ async function postComment(postId, text, commentsList) {
 // Update comment count for a post
 async function updateCommentCount(postId, commentCountSpan) {
   try {
-    const res = await fetch(`${COMMENTS_URL}/${postId}`);
+    const res = await apiFetch(`${COMMENTS_URL}/${postId}`);
     if (!res.ok) throw new Error("Failed to fetch comment count");
 
     const comments = await res.json();

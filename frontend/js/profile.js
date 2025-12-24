@@ -1,6 +1,7 @@
 const API_URI = `/api`;
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get("user");
+import { apiFetch } from "./app.js";
 
 if(!username) {
     document.body.innerHTML = "<h2>User not specified</h2>";
@@ -10,7 +11,7 @@ if(!username) {
 
 async function fetchUserProfile(name) {
     try {
-        const res = await fetch(`${API_URI}/users/${username}`);
+        const res = await apiFetch(`${API_URI}/users/${username}`);
         if (!res.ok) throw new Error("User not found");
         const user = await res.json();
         document.getElementById("profile-name").textContent = user.name;
@@ -25,7 +26,7 @@ async function fetchUserProfile(name) {
         document.getElementById("user-name-label").textContent = user.name;
 
         // Fetch and display user's posts
-        const postsRes = await fetch(`${API_URI}/posts?authorId=${user._id}`);
+        const postsRes = await apiFetch(`${API_URI}/posts?authorId=${user._id}`);
         if (!postsRes.ok) throw new Error("Failed to fetch user's posts");
         const { posts } = await postsRes.json();
         const postsList = document.getElementById("posts-list");
