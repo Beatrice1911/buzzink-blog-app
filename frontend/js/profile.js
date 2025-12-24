@@ -1,5 +1,7 @@
-const API_URI = "http://localhost:5000/api";
-
+const API_BASE = window.location.hostname === "localhost" 
+    ? "http://localhost:5000" 
+    : "https://buzzink.onrender.com";
+const API_URI = `${API_BASE}/api`;
 const urlParams = new URLSearchParams(window.location.search);
 const username = urlParams.get("user");
 
@@ -19,7 +21,7 @@ async function fetchUserProfile(name) {
         document.getElementById("profile-date").textContent = `Joined: ${new Date(user.createdAt).toDateString()}`;
 
         const photoUrl = user.profilePhoto
-            ? (user.profilePhoto.startsWith("http") ? user.profilePhoto : `http://localhost:5000${user.profilePhoto}`)
+            ? (user.profilePhoto.startsWith("http") ? user.profilePhoto : `${API_BASE}${user.profilePhoto}`)
             : "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
         document.getElementById("profile-photo").src = photoUrl;
 
