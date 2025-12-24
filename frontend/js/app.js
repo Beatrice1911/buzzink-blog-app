@@ -1024,6 +1024,7 @@ async function postComment(postId, text, commentsList) {
         <small>${new Date(newComment.createdAt).toLocaleString()}</small>
       `;
       commentsList.prepend(div);
+      showToast("Comment posted successfully!", "success");
 
     } else {
       throw new Error("Failed to post comment");
