@@ -136,7 +136,7 @@ function displayPosts(containerId, limit = null) {
   // const loggedInUser = localStorage.getItem("user");
   // const user = loggedInUser ? JSON.parse(loggedInUser) : null;
 
-  const user = window.currentUser;
+  const userId = window.currentUser?._id || window.currentUser?.id;
 
   let displayList = [...posts];
 
@@ -150,8 +150,8 @@ function displayPosts(containerId, limit = null) {
     }
   }
 
-  if (containerId === "myPostsContainer" && user) {
-    displayList = displayList.filter(post => String(post.authorId) === String(user));
+  if (containerId === "myPostsContainer" && userId) {
+    displayList = displayList.filter(post => String(post.authorId) === String(userId));
   }
 
   if (limit) displayList = displayList.slice(0, limit);
@@ -229,7 +229,7 @@ function displayPosts(containerId, limit = null) {
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
-    const userId = user?._id || user?.id;
+    const userId = window.currentUser?._id || window.currentUser?.id;
 
     const likedByIds = Array.isArray(post.likes)
       ? post.likes.map(l => (typeof l === "object" ? l._id : l))
@@ -1102,8 +1102,8 @@ async function loadSinglePost() {
 
     // const loggedInUser = localStorage.getItem("user");
     // const user = loggedInUser ? JSON.parse(loggedInUser) : null;
-    const user = window.currentUser;
-    const isAuthor = user && String(post.authorId) === String(user.id);
+    const userId = window.currentUser?._id || window.currentUser?.id;
+    const isAuthor = userId && String(post.authorId) === String(userId);
     const container = document.getElementById("singlePostContainer");
 
     container.innerHTML = `
@@ -1161,7 +1161,6 @@ async function loadSinglePost() {
     const likeBtn = container?.querySelector(".like-btn");
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
-    const userId = user?._id || user?.id;
 
     const likedByIds = Array.isArray(post.likes)
       ? post.likes.map(l => (typeof l === "object" ? l._id : l))
