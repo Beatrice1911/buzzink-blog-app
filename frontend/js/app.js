@@ -215,8 +215,8 @@ function displayPosts(containerId, limit = null) {
     `;
     container.appendChild(div);
 
-    const editPostBtn = container.querySelector(".edit-btn");
-    const deletePostBtn = container.querySelector(".delete-btn");
+    const editPostBtn = div.querySelector(".edit-btn");
+    const deletePostBtn = div.querySelector(".delete-btn");
 
     editPostBtn?.addEventListener("click", () => {
       editPost(`${post._id}`);
