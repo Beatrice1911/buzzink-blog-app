@@ -8,7 +8,7 @@ const mobileSearch = document.getElementById("mobileSearch");
 const logo = document.querySelector(".logo");
 const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
-const search = document.querySelector(".search");
+const search = document.querySelectorAll(".search");
 
 
 function normalizeUser(user) {
@@ -461,7 +461,7 @@ function searchPosts() {
   }
 }
 
-search?.addEventListener("keyup", searchPosts);
+search.forEach(input => input.addEventListener("keyup", searchPosts));
 
 // Render pagination buttons
 function renderPagination() {

@@ -168,7 +168,7 @@ nav .user-icon:hover {
 
 .mobile-search {
   width: 80%;
-  margin: 0 auto;
+  margin: 0 auto 15px;
   max-height: 0;
   opacity: 0;
   overflow: hidden;
@@ -1101,6 +1101,7 @@ nav .user-icon:hover {
     padding: 8px;
     border-radius: 5px;
     border: 1px solid;
+    outline: none;
   }
 
   .user-menu-details{
