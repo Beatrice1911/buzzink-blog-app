@@ -1,3 +1,4 @@
+const API_BASE = "https://buzzink.onrender.com";
 const API_URL = `/api/posts`;
 const AUTH_URL = `/api/auth`;
 const COMMENTS_URL = `/api/comments`;
@@ -76,7 +77,8 @@ function renderNoAuthorPost(container) {
 // Get full image URL
 function getImageUrl(path) {
   if (!path) return "";
-  return path.startsWith("http") ? path : path;
+  if (path.startsWith("http")) return path;
+  return `${API_BASE}${path}`;
 }
 
 // Fetch posts with pagination
