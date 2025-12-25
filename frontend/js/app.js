@@ -149,7 +149,14 @@ function displayPosts(containerId, limit = null) {
   }
 
   if (containerId === "myPostsContainer" && userId) {
-    displayList = displayList.filter(post => String(post.authorId) === String(userId));
+    displayList = displayList.filter((post) => {
+      const postAuthorId =
+      typeof post.authorId === "object" && post.authorId !== null
+        ? post.authorId._id
+        : post.authorId;
+
+      return String(postAuthorId) === String(userId);
+    });
   }
 
   if (limit) displayList = displayList.slice(0, limit);
