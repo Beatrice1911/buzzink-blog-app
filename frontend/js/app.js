@@ -129,12 +129,12 @@ async function fetchMyPosts(page = 1, limit = 6) {
 
 // Display posts in specified container
 function displayPosts(containerId, limit = null) {
+  const userId = window.currentUser?._id || window.currentUser?.id;
+
   const container = document.getElementById(containerId);
   if (!container) return;
 
   container.innerHTML = "";
-
-  const userId = window.currentUser?._id || window.currentUser?.id;
 
   let displayList = [...posts];
 
