@@ -1,6 +1,5 @@
 const API_URI = `/api/users/me`;
 const REFRESH_URI = `/api/auth/refresh`;
-import { apiFetch } from "./app.js";
 
 let tokenDashboard = localStorage.getItem("token");
 let refreshTokenDashboard = localStorage.getItem("refreshToken");
@@ -10,7 +9,7 @@ async function refreshAccessToken() {
   try {
     console.log("Refreshing with token:", refreshTokenDashboard);
 
-    const res = await apiFetch(REFRESH_URI, {
+    const res = await fetch(REFRESH_URI, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken: refreshTokenDashboard }),
@@ -35,7 +34,7 @@ async function refreshAccessToken() {
 // Fetch current user data
 async function loadProfile() {
   try {
-    const res = await apiFetch(API_URI, {
+    const res = await fetch(API_URI, {
       headers: {
         Authorization: `Bearer ${tokenDashboard}`,
       },
@@ -105,7 +104,7 @@ saveChangesBtn.addEventListener("click", async (e) => {
   }
 
   try {
-    const res = await apiFetch(API_URI, {
+    const res = await fetch(API_URI, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${tokenDashboard}`,
@@ -144,7 +143,7 @@ saveChangesBtn.addEventListener("click", async (e) => {
 const removePhotoBtn = document.getElementById("removePhotoBtn");
 removePhotoBtn.addEventListener("click", async () => {
   try {
-    const res = await apiFetch(API_URI, {
+    const res = await fetch(API_URI, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${tokenDashboard}`,
