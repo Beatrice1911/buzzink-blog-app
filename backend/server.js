@@ -66,7 +66,10 @@ const authLimiter = rateLimit({
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", userRoutes);
-app.use("/uploads", cors(corsOptions), express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(process.cwd(), "uploads"))
+);
 app.use("/api/comments", commentRoutes);
 
 
