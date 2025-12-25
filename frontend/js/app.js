@@ -167,8 +167,14 @@ function displayPosts(containerId, limit = null) {
       ? post.content.substring(0, 150) + "..."
       : post.content;
 
-    const isAuthor = userId && String(post.authorId) === String(userId);
-    
+    const postAuthorId =
+      typeof post.authorId === "object" && post.authorId !== null
+        ? post.authorId._id
+        : post.authorId;
+
+    const isAuthor =
+      userId && String(postAuthorId) === String(userId);
+
     div.innerHTML = `
       ${post.image
         ? `<a href="post.html?id=${post._id}">
@@ -222,10 +228,6 @@ function displayPosts(containerId, limit = null) {
       editBtn?.addEventListener("click", () => editPost(post._id));
       deleteBtn?.addEventListener("click", () => deletePost(post._id));
     }
-
-    console.log("POST authorId:", post.authorId);
-    console.log("LOGGED IN userId:", userId);
-    console.log("MATCH:", String(post.authorId) === String(userId));
 
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
@@ -1100,10 +1102,16 @@ async function loadSinglePost() {
     if (!res.ok) throw new Error("Failed to fetch post");
     const post = await res.json();
 
-    // const loggedInUser = localStorage.getItem("user");
-    // const user = loggedInUser ? JSON.parse(loggedInUser) : null;
     const userId = window.currentUser?._id || window.currentUser?.id;
-    const isAuthor = userId && String(post.authorId) === String(userId);
+
+    const postAuthorId =
+      typeof post.authorId === "object" && post.authorId !== null
+        ? post.authorId._id
+        : post.authorId;
+
+    const isAuthor =
+      userId && String(postAuthorId) === String(userId);
+      
     const container = document.getElementById("singlePostContainer");
 
     container.innerHTML = `
