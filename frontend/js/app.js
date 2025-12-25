@@ -840,7 +840,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Comment button toggle and fetch comments
   document.addEventListener("click", async (e) => {
     if (window.location.pathname.endsWith("post.html")) return;
-    
+
     const commentBtn = e.target.closest(".comment-btn");
     if (commentBtn) {
       e.preventDefault();
@@ -1018,7 +1018,7 @@ function renderComments(comments, commentsList) {
 
     div.innerHTML = `
       <div class="comment-header">
-        <p><strong class="comment-author">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
+        <p><strong class="comment-author" style="cursor: pointer;">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
         ${
           isOwner 
             ? `<div class="comment-menu">
@@ -1203,8 +1203,8 @@ async function loadSinglePost() {
     const commentCountSpan = container.querySelector(".comment-count");
     updateCommentCount(post._id, commentCountSpan);  
 
-    const commentSection = document.querySelector(".comments-section");
-    const commentsList = commentSection.querySelector(".comments-list");
+    const commentsSection = document.querySelector(".comments-section");
+    const commentsList = commentsSection.querySelector(".comments-list");
     
     if (commentsSection && commentsList) {
       await fetchComments(post._id, commentsList, Infinity);
