@@ -839,6 +839,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Comment button toggle and fetch comments
   document.addEventListener("click", async (e) => {
+    if (window.location.pathname.endsWith("post.html")) return;
+    
     const commentBtn = e.target.closest(".comment-btn");
     if (commentBtn) {
       e.preventDefault();
@@ -1152,7 +1154,7 @@ async function loadSinglePost() {
         </div>
         <span class="liked-by likes-info">No likes yet</span>
       </div>
-      <div class="comments-section">
+      <div class="comments-section show">
         <form class="comment-form">
           <input type="text" class="comment-input" placeholder="Write a comment..." required />
           <button type="submit">Comment</button>
@@ -1200,6 +1202,13 @@ async function loadSinglePost() {
 
     const commentCountSpan = container.querySelector(".comment-count");
     updateCommentCount(post._id, commentCountSpan);  
+
+    const commentSection = document.querySelector(".comments-section");
+    const commentsList = commentSection.querySelector(".comments-list");
+    
+    if (commentsSection && commentsList) {
+      await fetchComments(post._id, commentsList, Infinity);
+    }
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
