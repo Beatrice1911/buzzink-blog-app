@@ -1114,6 +1114,10 @@ nav .user-icon:hover {
     padding: 6px 15px;
   }
 
+  .hero {
+    height: 70vh;
+  }
+
   .hero-content{
     margin: 30px  0 10px;
   }
