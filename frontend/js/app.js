@@ -226,7 +226,6 @@ function displayPosts(containerId, limit = null) {
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
-    const userId = window.currentUser?._id || window.currentUser?.id;
 
     const likedByIds = Array.isArray(post.likes)
       ? post.likes.map(l => (typeof l === "object" ? l._id : l))
@@ -1146,15 +1145,11 @@ async function loadSinglePost() {
     const editPostBtn = container.querySelector(".edit-btn");
     const deletePostBtn = container.querySelector(".delete-btn");
 
-    editPostBtn?.addEventListener("click", () => {
-      editPost(`${post._id}`);
-    });
+    if (isAuthor) {
+      editPostBtn?.addEventListener("click", () => editPost(post._id));
+      deletePostBtn?.addEventListener("click", () => deletePost(post._id));
+    }
 
-    deletePostBtn?.addEventListener("click", () => {
-      deletePost(`${post._id}`);
-    });
-
-    
     const likeBtn = container?.querySelector(".like-btn");
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
