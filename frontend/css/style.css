@@ -1093,7 +1093,11 @@ nav .user-icon:hover {
   .mobile-search.show {
     max-height: 60px;
     opacity: 1;
-    margin: 10px 0 20px;
+    margin: 10px auto 20px;
+  }
+
+  .mobile-search.show .hero-content {
+    margin-top: 40px;
   }
 
   .mobile-search input {
