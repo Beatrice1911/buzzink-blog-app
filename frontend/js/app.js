@@ -413,8 +413,8 @@ document.getElementById("categoryFilter")?.addEventListener("change", () => {
 });
 
 // Search posts functionality
-function searchPosts() {
-  const searchValue = document.querySelector(".search")?.value.toLowerCase() || "";
+function searchPosts(e) {
+  const searchValue = e.target.value.toLowerCase() || "";
   const containerId = document.getElementById("allPostsContainer")
     ? "allPostsContainer"
     : "featuredPostsContainer";
@@ -883,63 +883,63 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Toggle comment menu
-document.addEventListener("click", (e) => {
-  const menuBtn = e.target.closest(".menu-btn");
-  const options = e.target.closest(".menu-options");
+  document.addEventListener("click", (e) => {
+    const menuBtn = e.target.closest(".menu-btn");
+    const options = e.target.closest(".menu-options");
 
-  // Close all menus if clicking elsewhere
-  if (!menuBtn && !options) {
-    document.querySelectorAll(".menu-options").forEach(opt => opt.classList.add("hidden"));
-    return;
-  }
-
-  if (menuBtn) {
-    const menu = menuBtn.nextElementSibling;
-    menu.classList.toggle("hidden");
-  }
-});
-
-// Delete comment handler
-document.addEventListener("click", async (e) => {
-  const deleteBtn = e.target.closest(".delete-comment-btn");
-  if (deleteBtn) {
-    e.preventDefault();
-    e.stopPropagation();
-     if (deleteBtn.dataset.deleting === "true") return;
-     deleteBtn.dataset.deleting = "true";  
-    const commentId = deleteBtn.dataset.commentId;
-    const confirmDelete = confirm("Are you sure you want to delete this comment?");
-    if (!confirmDelete) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        // deleteBtn.closest(".comment").remove();
-        const commentEl = deleteBtn.closest(".comment");
-        const postElement = deleteBtn.closest(".post");
-        // const postId = postElement.querySelector(".like-btn").dataset.postId;
-        const commentCountSpan = postElement.querySelector(".comment-count");
-        // await updateCommentCount(postId, commentCountSpan);
-        commentEl.remove();
-        const currentCount = parseInt(commentCountSpan.textContent) || 0;
-        commentCountSpan.textContent = Math.max(0, currentCount - 1);
-        showToast("Comment deleted successfully.", "success");
-      } else {
-        throw new Error(data.message || "Delete failed");
-      }
-    } catch (err) {
-      console.error("Error deleting comment:", err);
-      showToast("Error deleting comment. Please try again.", "error");
+    // Close all menus if clicking elsewhere
+    if (!menuBtn && !options) {
+      document.querySelectorAll(".menu-options").forEach(opt => opt.classList.add("hidden"));
+      return;
     }
-  }
-});
+
+    if (menuBtn) {
+      const menu = menuBtn.nextElementSibling;
+      menu.classList.toggle("hidden");
+    }
+  });
+
+  // Delete comment handler
+  document.addEventListener("click", async (e) => {
+    const deleteBtn = e.target.closest(".delete-comment-btn");
+    if (deleteBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (deleteBtn.dataset.deleting === "true") return;
+      deleteBtn.dataset.deleting = "true";  
+      const commentId = deleteBtn.dataset.commentId;
+      const confirmDelete = confirm("Are you sure you want to delete this comment?");
+      if (!confirmDelete) return;
+
+      try {
+        const token = localStorage.getItem("token");
+        const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // deleteBtn.closest(".comment").remove();
+          const commentEl = deleteBtn.closest(".comment");
+          const postElement = deleteBtn.closest(".post");
+          // const postId = postElement.querySelector(".like-btn").dataset.postId;
+          const commentCountSpan = postElement.querySelector(".comment-count");
+          // await updateCommentCount(postId, commentCountSpan);
+          commentEl.remove();
+          const currentCount = parseInt(commentCountSpan.textContent) || 0;
+          commentCountSpan.textContent = Math.max(0, currentCount - 1);
+          showToast("Comment deleted successfully.", "success");
+        } else {
+          throw new Error(data.message || "Delete failed");
+        }
+      } catch (err) {
+        console.error("Error deleting comment:", err);
+        showToast("Error deleting comment. Please try again.", "error");
+      }
+    }
+  });
 
 });
 
@@ -1016,7 +1016,7 @@ function renderComments(comments, commentsList) {
 
     div.innerHTML = `
       <div class="comment-header">
-        <p><strong onclick="window.location.href='profile.html?user=${comment.authorId?.name}'">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
+        <p><strong class="comment-author">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
         ${
           isOwner 
             ? `<div class="comment-menu">
@@ -1031,6 +1031,11 @@ function renderComments(comments, commentsList) {
       <small>${new Date(comment.createdAt).toLocaleString()}</small>
     `;
     commentsList.appendChild(div);
+
+    const commentAuthor = document.querySelector(".comment-author");
+    commentAuthor?.addEventListener("click", () => {
+      window.location.href = `profile.html?user=${comment.authorId?.name}`;
+    });
   });
 }
 
