@@ -223,6 +223,10 @@ function displayPosts(containerId, limit = null) {
       deleteBtn?.addEventListener("click", () => deletePost(post._id));
     }
 
+    console.log("POST authorId:", post.authorId);
+    console.log("LOGGED IN userId:", userId);
+    console.log("MATCH:", String(post.authorId) === String(userId));
+
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
