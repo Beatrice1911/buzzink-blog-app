@@ -18,21 +18,6 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-app.use(
-  helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // ✅ allow inline scripts
-        styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-        imgSrc: ["'self'", "data:", "https:", "https://res.cloudinary.com"],
-        connectSrc: ["'self'", "https://buzzink.onrender.com", "http://localhost:5000"],
-      },
-    },
-  })
-);
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -84,6 +69,21 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "index.html"));
 });
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+        imgSrc: ["'self'", "data:", "https:", "https://res.cloudinary.com"],
+        connectSrc: ["'self'", "https://buzzink.onrender.com", "http://localhost:5000"],
+      },
+    },
+  })
+);
 
 const PORT = process.env.PORT || 5000;
 connectDB()
