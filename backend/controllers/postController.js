@@ -143,7 +143,6 @@ const updatePost = async (req, res) => {
     console.error("Error updating post:", err);
     res.status(500).json({ message: "Failed to update post" });
   }
-
 };
 
 const deletePost = async (req, res) => {
