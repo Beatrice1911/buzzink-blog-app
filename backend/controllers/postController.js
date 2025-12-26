@@ -90,7 +90,7 @@ const createPost = async (req, res) => {
 
     const authorId = req.user.id;
     const authorName = req.user.name;
-    const imagePath = req.file?.path;
+    const imagePath = req.file ? req.file.secure_url : null;
 
     const newPost = new Post({
       title,
