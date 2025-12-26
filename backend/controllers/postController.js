@@ -2,7 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const Post = require("../models/Post");
-const cloudinary = require("../cloudinary");
 
 const getPosts = async (req, res) => {
   try {
@@ -88,8 +87,10 @@ const createPost = async (req, res) => {
 
     const authorId = req.user.id;
     const authorName = req.user.name;
-    const result = await cloudinary.uploader.upload(req.file.path);
-    const imagePath = result.secure_url;
+    let imagePath = "";
+    if (req.file) {
+      imagePath = req.file.path || req.file.url;
+    }
 
     const newPost = new Post({
       title,
@@ -135,7 +136,7 @@ const updatePost = async (req, res) => {
     post.content = content || post.content;
     post.category = category || post.category;
 
-    if (req.file) post.image = req.file.secure_url;
+    if (req.file) post.image = req.file.path || req.file.url;
 
     await post.save();
     res.json(post);
