@@ -78,10 +78,24 @@ function renderNoAuthorPost(container) {
 }
 
 // Get full image URL
-function getImageUrl(path) {
-  if (!path) return "";
-  if (path.startsWith("http")) return path;
-  return `${API_BASE}${path}`;
+// function getImageUrl(path) {
+//   if (!path) return "";
+//   if (path.startsWith("http")) return path;
+//   return `${API_BASE}${path}`;
+// }
+
+function getImageUrl(image) {
+  if (!image) return "/images/fallback.jpg";
+
+  if (image.startsWith("http")) {
+    return image;
+  }
+
+  if (image.startsWith("/uploads")) {
+    return "/images/fallback.jpg";
+  }
+
+  return "/images/fallback.jpg";
 }
 
 // Fetch posts with pagination
