@@ -10,8 +10,9 @@ const logo = document.querySelector(".logo");
 const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const search = document.querySelectorAll(".search");
+const postImages = document.querySelectorAll(".post-image");
 
-
+// Normalize user object
 function normalizeUser(user) {
   if (!user) return null;
   return {
@@ -20,11 +21,19 @@ function normalizeUser(user) {
   };
 }
 
+// Get current user from localStorage
 window.currentUser = (() => {
   const stored = localStorage.getItem("user");
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
+postImages.forEach(img => {
+  img.addEventListener("error", () => {
+    img.src = "/Images/fallback.jpg"
+  });
+});
+
+// Navigation handlers
 logo?.addEventListener("click", () => {
   window.location.href = "index.html";
 });
@@ -187,7 +196,7 @@ function displayPosts(containerId, limit = null) {
     div.innerHTML = `
       ${post.image
         ? `<a href="post.html?id=${post._id}">
-             <img src="${getImageUrl(post.image)}" alt="${post.title}">
+             <img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image">
            </a>`
         : ""}
         <p class="tag">${post.category}</p>
@@ -442,7 +451,7 @@ function searchPosts(e) {
     div.classList.add("post");
     div.innerHTML = `
       ${post.image
-        ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">`
+        ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image">`
         : ""}
       <div class="post-content">
         <p class="tag">${post.category}</p>
@@ -1131,7 +1140,7 @@ async function loadSinglePost() {
     const container = document.getElementById("singlePostContainer");
 
     container.innerHTML = `
-      ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
+      ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
       <p onclick="window.location.href='profile.html?user=${post.authorName}'" style="cursor: pointer;"><em>By ${post.authorName || "Unknown"}</em></p>
