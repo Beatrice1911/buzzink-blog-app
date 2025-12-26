@@ -85,17 +85,17 @@ function renderNoAuthorPost(container) {
 // }
 
 function getImageUrl(image) {
-  if (!image) return "/images/fallback.jpg";
+  if (!image) return "/Images/fallback.jpg";
 
   if (image.startsWith("http")) {
     return image;
   }
 
   if (image.startsWith("/uploads")) {
-    return "/images/fallback.jpg";
+    return "/Images/fallback.jpg";
   }
 
-  return "/images/fallback.jpg";
+  return "/Images/fallback.jpg";
 }
 
 // Fetch posts with pagination
