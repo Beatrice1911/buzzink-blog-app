@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const Post = require("../models/Post");
 
-const upload = multer({ dest: "uploads/" });
-
 
 const getPosts = async (req, res) => {
   try {
@@ -136,7 +134,7 @@ const updatePost = async (req, res) => {
     post.content = content || post.content;
     post.category = category || post.category;
 
-    if (req.file) post.image = `/uploads/${req.file.filename}`;
+    if (req.file) post.image = req.file.secure_url;
 
     await post.save();
     res.json(post);
