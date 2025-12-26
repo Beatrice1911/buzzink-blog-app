@@ -92,7 +92,7 @@ function getImageUrl(image) {
   }
 
   if (image.startsWith("/uploads")) {
-    return `${API_BASE}${image}`;
+    return "/Images/fallback.jpg";
   }
 
   return "/Images/fallback.jpg";
