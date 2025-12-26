@@ -26,7 +26,7 @@ app.use(
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "'unsafe-inline'"], // ✅ allow inline scripts
         styleSrc: ["'self'", "'unsafe-inline'", "https:"],
-        imgSrc: ["'self'", "data:", "blob:", "*"],
+        imgSrc: ["'self'", "data:", "https:", "https://res.cloudinary.com"],
         connectSrc: ["'self'", "https://buzzink.onrender.com", "http://localhost:5000"],
       },
     },
