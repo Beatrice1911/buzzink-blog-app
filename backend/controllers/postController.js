@@ -88,8 +88,7 @@ const createPost = async (req, res) => {
 
     const authorId = req.user.id;
     const authorName = req.user.name;
-    const result = await cloudinary.uploader.upload(req.file.path);
-    const imagePath = result.secure_url;
+    const imagePath = req.file ? req.file.secure_url : null;
 
     const newPost = new Post({
       title,
@@ -143,6 +142,7 @@ const updatePost = async (req, res) => {
     console.error("Error updating post:", err);
     res.status(500).json({ message: "Failed to update post" });
   }
+
 };
 
 const deletePost = async (req, res) => {
