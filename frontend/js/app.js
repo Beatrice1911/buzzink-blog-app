@@ -27,12 +27,6 @@ window.currentUser = (() => {
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
-postImages.forEach(img => {
-  img.addEventListener("error", () => {
-    img.src = "/Images/fallback.jpg"
-  });
-});
-
 // Navigation handlers
 logo?.addEventListener("click", () => {
   window.location.href = "index.html";
@@ -245,6 +239,14 @@ function displayPosts(containerId, limit = null) {
       const deleteBtn = div.querySelector(".delete-btn");
       editBtn?.addEventListener("click", () => editPost(post._id));
       deleteBtn?.addEventListener("click", () => deletePost(post._id));
+    }
+
+    const img = div.querySelector(".post-image");
+    if (img) {
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = "/images/fallback.jpg";
+      };
     }
 
     const likeBtn = div.querySelector(".like-btn");
@@ -462,6 +464,14 @@ function searchPosts(e) {
       </div>
     `;
     container.appendChild(div);
+    const img = div.querySelector(".post-image");
+    if (img) {
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = "/images/fallback.jpg";
+      };
+    }
+
     div.addEventListener("click", () => {
       window.location.href = `post.html?id=${post._id}`;
     });
@@ -1185,6 +1195,15 @@ async function loadSinglePost() {
     if (isAuthor) {
       editPostBtn?.addEventListener("click", () => editPost(post._id));
       deletePostBtn?.addEventListener("click", () => deletePost(post._id));
+    }
+
+    const img = container.querySelector(".post-image");
+
+    if (img) {
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = "/images/fallback.jpg";
+      };
     }
 
     const likeBtn = container?.querySelector(".like-btn");
