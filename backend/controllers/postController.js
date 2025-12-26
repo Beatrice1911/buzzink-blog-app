@@ -80,6 +80,10 @@ const getPostById = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
+    console.log("CREATE POST HIT"); // confirms route is called
+    console.log("REQ FILE:", req.file); // shows file info
+    console.log("REQ BODY:", req.body); // shows title/content/category
+
     const { title, content, category } = req.body;
     if (!title || !content || !category) {
       return res.status(400).json({ message: "Title, content, and category are required" });
