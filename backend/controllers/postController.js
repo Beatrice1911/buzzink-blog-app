@@ -112,6 +112,8 @@ const createPost = async (req, res) => {
       date: newPost.date,
       author: { id: authorId, name: authorName }
     });
+    console.log("FILE:", req.file);
+
   } catch (err) {
     console.error("Error creating post:", err);
     res.status(500).json({ message: "Failed to create post" });
