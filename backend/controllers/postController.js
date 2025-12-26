@@ -88,7 +88,8 @@ const createPost = async (req, res) => {
 
     const authorId = req.user.id;
     const authorName = req.user.name;
-    const imagePath = req.file ? req.file.secure_url : null;
+    const result = await cloudinary.uploader.upload(req.file.path);
+    const imagePath = result.secure_url;
 
     const newPost = new Post({
       title,
