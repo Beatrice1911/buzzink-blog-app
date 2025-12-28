@@ -51,10 +51,7 @@ const authLimiter = rateLimit({
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/posts", postsRoutes);
 app.use("/api/users", userRoutes);
-app.use(
-  "/uploads",
-  express.static(path.join(process.cwd(), "uploads"))
-);
+// app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/comments", commentRoutes);
 
 
@@ -64,7 +61,6 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message || "Server error" });
 });
 
-  // Serve frontend static files
 app.use(express.static(path.join(__dirname, "../frontend"))); 
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "index.html"));
