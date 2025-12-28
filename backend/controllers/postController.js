@@ -30,11 +30,12 @@ const getPosts = async (req, res) => {
 
     const updatedPosts = posts.map(post => {
       const likedByUser = userId
-        ? post.likes.some(like => like.slug.toString() === userId)
+        ? post.likes.some(like => like._id.toString() === userId)
         : false;
-
+ 
       return {
         ...post.toObject(),
+        slug: post.slug,
         likesCount: post.likes.length,
         likedBy: post.likes.map(like => like.name),
         likedByUser,
