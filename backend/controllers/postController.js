@@ -86,13 +86,16 @@ const createPost = async (req, res) => {
       return res.status(400).json({ message: "Title, content, and category are required" });
     }
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "buzzink_posts"
-    });
+    let imagePath = "";
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "buzzink_posts"
+      });
+      imagePath = result.secure_url;
+    }
 
     const authorId = req.user.id;
     const authorName = req.user.name;
-    let imagePath = result.secure_url;
 
     const newPost = new Post({
       title,
@@ -114,7 +117,6 @@ const createPost = async (req, res) => {
       date: newPost.date,
       author: { id: authorId, name: authorName }
     });
-    console.log("FILE:", req.file);
 
   } catch (err) {
     console.error("Error creating post:", err);

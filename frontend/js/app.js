@@ -302,8 +302,7 @@ async function addPost(title, content, category, imageFile) {
 
   const res = await apiFetch(`${API_URL}`, {
     method: "POST",
-    body: formData,
-    credentials: "include"
+    body: formData
   });
 
   if (!res.ok) throw new Error("Failed to add post");
