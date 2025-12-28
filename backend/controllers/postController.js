@@ -212,18 +212,16 @@ const unlikePost = async (req, res) => {
 };
 
 const getTrendingPosts = async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit) || 5;
-    const trendingPosts = await Post.find()
-      .sort({ trendingScore: -1, createdAt: -1 })
-      .limit(limit)
-      .populate("likes", "name")
-      .select("title content likes views commentCount createdAt authorId authorName");
-    res.status(200).json(trendingPosts);
-  } catch (error) {
-    console.error("Error fetching trending posts:", error);
-    res.status(500).json({ message: "Failed to fetch trending posts" });
-  }
+  const posts = await Post.find()
+
+  const trendingPosts = posts.map(post => ({
+    ...post.toObject(),
+    trendingScore: updateTrendingScore(post)
+  }))
+  .sort((a, b) => b.trendingScore - a.trendingScore)
+  .slice(0, 5);
+
+  res.json(trendingPosts);
 }
 
 const updateTrendingScore = (post) => {
@@ -231,25 +229,31 @@ const updateTrendingScore = (post) => {
   const commentCount = post.commentCount || 0;
   const viewsCount = post.views || 0;
 
-  const hoursSincePost = (Date.now() - post.createdAt.getTime()) / (1000 * 60 * 60);
+  const ageInHours = (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60);
 
-  post.trendingScore = ((likesCount * 2) + commentCount + (viewsCount / 5)) / (hoursSincePost + 1);
-};
+  const engagementScore = (likesCount * 3) + commentCount * 2 + (viewsCount * 0.5);
+
+  const decay = Math.max(1, (ageInHours / 18));
+
+  return engagementScore / decay;
+}; 
 
 const incrementView = async (req, res) => {
   const post = await Post.findById(req.params.id);
 
   if (!post) return res.status(404).json({ message: "Post not found" });
 
-  if (req.user) {
-    const hasViewed = post.viewedBy.includes(req.user._id);
+  let shouldIncrement = true;
 
-    if (!hasViewed) {
-      post.views += 1;
+  if (req.user) {
+    if (post.viewedBy.includes(req.user._id)) {
+      shouldIncrement = false;
+    } else {
       post.viewedBy.push(req.user._id);
-      await post.save();
     }
-  } else {
+  } 
+
+  if (shouldIncrement) {
     post.views += 1;
     await post.save();
   }

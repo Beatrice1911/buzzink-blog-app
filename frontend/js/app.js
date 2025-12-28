@@ -431,6 +431,9 @@ function refreshPage() {
   if (document.getElementById("featuredPostsContainer")) {
     displayPosts("featuredPostsContainer", 3);
   }
+  if (document.getElementById("myPostsContainer")) {
+    displayPosts("myPostsContainer");
+  }
 }
 
 // Category filter change handling
