@@ -14,17 +14,22 @@ const postImages = document.querySelectorAll(".post-image");
 
 // Set meta tags for SEO and social sharing
 (async () => {
-const post = await apiFetch(`/api/posts/${slug}`);
+const params = new URLSearchParams(window.location.search);
+const slug = params.get("slug");
+if (!slug) return;
+
+const res = await apiFetch(`/api/posts/${slug}`);
+const post = await res.json();
 document.getElementById("postTitle").textContent = post.title;
 document.getElementById("postDescription").content = post.content.slice(0, 160);
 
 document.getElementById("ogTitle").content = post.title;
 document.getElementById("ogDescription").content = post.content.slice(0, 160);
-document.getElementById("ogImage").content = post.image || "/images/fallback.jpg";
+document.getElementById("ogImage").content = post.image || "/Images/fallback.jpg";
 document.getElementById("ogUrl").content = window.location.href;
 document.getElementById("twitterTitle").content = post.title;
 document.getElementById("twitterDescription").content = post.content.slice(0, 160);
-document.getElementById("twitterImage").content = post.image || "/images/fallback.jpg";
+document.getElementById("twitterImage").content = post.image || "/Images/fallback.jpg";
 })();
 
 // Normalize user object
