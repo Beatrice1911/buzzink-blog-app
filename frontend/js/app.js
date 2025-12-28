@@ -315,7 +315,7 @@ function displayPosts(containerId, limit = null) {
     }
 
     const commentCountSpan = div.querySelector(".comment-count");
-    updateCommentCount(post.slug, commentCountSpan);
+    updateCommentCount(post._id, commentCountSpan);
   });
 }
 
@@ -1019,7 +1019,7 @@ async function fetchComments(postId, commentsList, limit = 3) {
 
     const comments = await res.json();
 
-    commentsList.innerHTML = ""; // Clear old comments
+    commentsList.innerHTML = "";
 
     if(comments.length === 0) {
       commentsList.innerHTML = "<p class='no-comments'>No comments yet. Be the first to comment!</p>";
@@ -1088,7 +1088,7 @@ function renderComments(comments, commentsList) {
             ? `<div class="comment-menu">
                   <button class="menu-btn">⋮</button>
                   <div class="menu-options hidden">
-                    <button class="delete-comment-btn" data-comment-id="${comment.slug}">Delete</button>
+                    <button class="delete-comment-btn" data-comment-id="${comment._id}">Delete</button>
                   </div>
                 </div>` 
             : ""
@@ -1128,7 +1128,7 @@ async function postComment(postId, text, commentsList) {
           <div class="comment-menu">
             <button class="menu-btn">⋮</button>
             <div class="menu-options hidden">
-              <button class="delete-comment-btn" data-comment-id="${newComment.slug}">Delete</button>
+              <button class="delete-comment-btn" data-comment-id="${newComment._id}">Delete</button>
             </div>
           </div>
         </div>
@@ -1284,7 +1284,7 @@ async function loadSinglePost() {
     if (img) {
       img.onerror = function () {
         this.onerror = null;
-        this.src = "/images/fallback.jpg";
+        this.src = "/Images/fallback.jpg";
       };
     }
 
@@ -1313,13 +1313,13 @@ async function loadSinglePost() {
     }  
 
     const commentCountSpan = container.querySelector(".comment-count");
-    updateCommentCount(post.slug, commentCountSpan);  
+    updateCommentCount(post._id, commentCountSpan);  
 
     const commentsSection = document.querySelector(".comments-section");
     const commentsList = commentsSection.querySelector(".comments-list");
     
     if (commentsSection && commentsList) {
-      await fetchComments(post.slug, commentsList, Infinity);
+      await fetchComments(post._id, commentsList, Infinity);
     }
 
     injectPostJsonLd(post);
