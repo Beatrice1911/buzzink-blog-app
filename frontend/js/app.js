@@ -84,19 +84,19 @@ function renderNoAuthorPost(container) {
 //   return `${API_BASE}${path}`;
 // }
 
-// function getImageUrl(image) {
-//   if (!image) return "/Images/fallback.jpg";
+function getImageUrl(image) {
+  if (!image) return "/Images/fallback.jpg";
 
-//   if (image.startsWith("http")) {
-//     return image;
-//   }
+  if (image.startsWith("http")) {
+    return image;
+  }
 
-//   if (image.startsWith("/uploads")) {
-//     return "/Images/fallback.jpg";
-//   }
+  if (image.startsWith("/uploads")) {
+    return "/Images/fallback.jpg";
+  }
 
-//   return "/Images/fallback.jpg";
-// }
+  return "/Images/fallback.jpg";
+}
 
 // Fetch posts with pagination
 async function fetchPosts(page = 1, limit = 6) {
@@ -193,14 +193,6 @@ function displayPosts(containerId, limit = null) {
       ? post.content.substring(0, 150) + "..."
       : post.content;
 
-    const img = div.querySelector(".post-image");
-    if (img) {
-      img.onerror = function () {
-        this.onerror = null;
-        this.src = "/images/fallback.jpg";
-      };
-    }
-
     const postAuthorId =
       typeof post.authorId === "object" && post.authorId !== null
         ? post.authorId._id
@@ -212,7 +204,7 @@ function displayPosts(containerId, limit = null) {
     div.innerHTML = `
       ${post.image
         ? `<a href="post.html?id=${post._id}">
-             <img src="${post.image}" alt="${post.title}" class="post-image" loading="lazy">
+             <img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">
            </a>`
         : ""}
         <p class="tag">${post.category}</p>
@@ -255,6 +247,14 @@ function displayPosts(containerId, limit = null) {
         ` : ""}
     `;
     container.appendChild(div);
+
+    const img = div.querySelector(".post-image");
+    if (img) {
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = "/images/fallback.jpg";
+      };
+    }
 
     if (isAuthor) {
       const editBtn = div.querySelector(".edit-btn");
@@ -463,17 +463,10 @@ function searchPosts(e) {
 
   filteredPosts.forEach((post) => {
     const div = document.createElement("div");
-    const img = div.querySelector(".post-image");
-    if (img) {
-      img.onerror = function () {
-        this.onerror = null;
-        this.src = "/images/fallback.jpg";
-      };
-    }
     div.classList.add("post");
     div.innerHTML = `
       ${post.image
-        ? `<img src="${post.image}" alt="${post.title}" class="post-image" loading="lazy">`
+        ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">`
         : ""}
       <div class="post-content">
         <p class="tag">${post.category}</p>
@@ -484,6 +477,14 @@ function searchPosts(e) {
       </div>
     `;
     container.appendChild(div);
+
+    const img = div.querySelector(".post-image");
+    if (img) {
+      img.onerror = function () {
+        this.onerror = null;
+        this.src = "/images/fallback.jpg";
+      };
+    }
     div.addEventListener("click", () => {
       window.location.href = `post.html?id=${post._id}`;
     });
@@ -1162,7 +1163,7 @@ async function loadSinglePost() {
     const container = document.getElementById("singlePostContainer");
 
     container.innerHTML = `
-      ${post.image ? `<img src="${post.image}" alt="${post.title}" class="post-image" loading="lazy">` : ""}
+      ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
       <p onclick="window.location.href='profile.html?user=${post.authorName}'" style="cursor: pointer;"><em>By ${post.authorName || "Unknown"}</em></p>
@@ -1210,7 +1211,6 @@ async function loadSinglePost() {
     }
 
     const img = container.querySelector(".post-image");
-
     if (img) {
       img.onerror = function () {
         this.onerror = null;
