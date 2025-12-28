@@ -26,17 +26,17 @@ const router = express.Router();
 
 const upload = multer({ storage: multer.diskStorage({}) });
 
-const { getPosts, getPostById, createPost, updatePost, deletePost, likePost, unlikePost, getTrendingPosts, incrementView } = require("../controllers/postController");
+const { getPosts, getPostBySlug, createPost, updatePost, deletePost, likePost, unlikePost, getTrendingPosts, incrementView } = require("../controllers/postController");
 
 router.get("/", optionalAuth, getPosts);
 router.get("/mine", requireAuth, getPosts);
 router.get("/trending", getTrendingPosts);
-router.get("/:id", optionalAuth, getPostById);
-router.get("/:id/view", optionalAuth, incrementView);
+router.get("/:slug", optionalAuth, getPostBySlug);
+router.get("/:slug/view", optionalAuth, incrementView);
 router.post("/", requireAuth, upload.single("image"), createPost);
-router.post("/:id/like", requireAuth, likePost);
-router.post("/:id/unlike", requireAuth, unlikePost);
-router.put("/:id", requireAuth, upload.single("image"), updatePost);
-router.delete("/:id", requireAuth, deletePost);
+router.post("/:slug/like", requireAuth, likePost);
+router.post("/:slug/unlike", requireAuth, unlikePost);
+router.put("/:slug", requireAuth, upload.single("image"), updatePost);
+router.delete("/:slug", requireAuth, deletePost);
 
 module.exports = router;
