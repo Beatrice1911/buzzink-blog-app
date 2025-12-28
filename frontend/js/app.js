@@ -11,8 +11,10 @@ const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
+document.getElementById("canonicalUrl")?.setAttribute("href", window.location.href);
 
 // Set meta tags for SEO and social sharing
+if (window.location.pathname.endsWith("post.html")) {
 (async () => {
 const params = new URLSearchParams(window.location.search);
 const slug = params.get("slug");
@@ -20,17 +22,22 @@ if (!slug) return;
 
 const res = await apiFetch(`/api/posts/${slug}`);
 const post = await res.json();
-document.getElementById("postTitle").textContent = post.title;
-document.getElementById("postDescription").content = post.content.slice(0, 160);
 
-document.getElementById("ogTitle").content = post.title;
-document.getElementById("ogDescription").content = post.content.slice(0, 160);
-document.getElementById("ogImage").content = post.image || "/Images/fallback.jpg";
-document.getElementById("ogUrl").content = window.location.href;
-document.getElementById("twitterTitle").content = post.title;
-document.getElementById("twitterDescription").content = post.content.slice(0, 160);
-document.getElementById("twitterImage").content = post.image || "/Images/fallback.jpg";
+document.title = `${post.title} | BuzzInk`;
+
+const desc = post.content.slice(0,160);
+
+document.getElementById("postTitle")?.setAttribute("content", post.title);
+document.getElementById("postDescription")?.setAttribute("content", desc);
+document.getElementById("ogTitle")?.setAttribute("content", post.title);
+document.getElementById("ogDescription")?.setAttribute("content", desc);
+document.getElementById("ogImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
+document.getElementById("ogUrl")?.setAttribute("content", window.location.href);
+document.getElementById("twitterTitle")?.setAttribute("content", post.title);
+document.getElementById("twitterDescription")?.setAttribute("content", desc);
+document.getElementById("twitterImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
 })();
+}
 
 // Normalize user object
 function normalizeUser(user) {
@@ -124,7 +131,7 @@ async function fetchPosts(page = 1, limit = 6) {
     const res = await apiFetch(`${API_URL}?page=${page}&limit=${limit}`);
     const data = await res.json();
 
-    posts = data.posts;
+    posts = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage;
     totalPages = data.totalPages;
 
@@ -148,7 +155,7 @@ async function fetchMyPosts(page = 1, limit = 6) {
 
     const data = await res.json();
 
-    posts = data.posts || [];
+    posts = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
 
@@ -223,7 +230,7 @@ function displayPosts(containerId, limit = null) {
 
     div.innerHTML = `
       ${post.image
-        ? `<a href="post.html?id=${post.slug}">
+        ? `<a href="post.html?slug=${post.slug}">
              <img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">
            </a>`
         : ""}
@@ -272,7 +279,7 @@ function displayPosts(containerId, limit = null) {
     if (img) {
       img.onerror = function () {
         this.onerror = null;
-        this.src = "/images/fallback.jpg";
+        this.src = "/Images/fallback.jpg";
       };
     }
 
@@ -505,7 +512,7 @@ function searchPosts(e) {
     if (img) {
       img.onerror = function () {
         this.onerror = null;
-        this.src = "/images/fallback.jpg";
+        this.src = "/Images/fallback.jpg";
       };
     }
     div.addEventListener("click", () => {
@@ -1161,6 +1168,46 @@ async function updateCommentCount(postId, commentCountSpan) {
   }
 }
 
+// Inject JSON-LD structured data for SEO
+function injectPostJsonLd(post) {
+  const oldScript = document.getElementById("post-jsonld");
+  if (oldScript) oldScript.remove();
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": post.title,
+    "description": post.content.slice(0, 160),
+    "image": post.image ? [post.image] : [],
+    "author": {
+      "@type": "Person",
+      "name": post.authorName || "BuzzInk Contributor"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "BuzzInk",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://buzzink.onrender.com/Images/logo.png"
+      }
+    },
+    "datePublished": post.createdAt || post.date,
+    "dateModified": post.updatedAt || post.date,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": window.location.href
+    }
+  };
+
+  const script = document.createElement("script");
+  script.type = "application/ld+json";
+  script.id = "post-jsonld";
+  script.textContent = JSON.stringify(jsonLd);
+
+  document.head.appendChild(script);
+}
+
+
 // Load single post details
 async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
@@ -1274,6 +1321,8 @@ async function loadSinglePost() {
     if (commentsSection && commentsList) {
       await fetchComments(post.slug, commentsList, Infinity);
     }
+
+    injectPostJsonLd(post);
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
