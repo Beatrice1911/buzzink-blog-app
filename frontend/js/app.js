@@ -315,7 +315,7 @@ function displayPosts(containerId, limit = null) {
     }
 
     const commentCountSpan = div.querySelector(".comment-count");
-    updateCommentCount(post._id, commentCountSpan);
+    updateCommentCount(post.slug, commentCountSpan);
   });
 }
 
