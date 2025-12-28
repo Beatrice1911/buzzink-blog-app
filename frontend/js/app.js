@@ -12,6 +12,21 @@ const myPosts = document.getElementById("myPosts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
 
+// Set meta tags for SEO and social sharing
+(async () => {
+const post = await apiFetch(`/api/posts/${slug}`);
+document.getElementById("postTitle").textContent = post.title;
+document.getElementById("postDescription").content = post.content.slice(0, 160);
+
+document.getElementById("ogTitle").content = post.title;
+document.getElementById("ogDescription").content = post.content.slice(0, 160);
+document.getElementById("ogImage").content = post.image || "/images/fallback.jpg";
+document.getElementById("ogUrl").content = window.location.href;
+document.getElementById("twitterTitle").content = post.title;
+document.getElementById("twitterDescription").content = post.content.slice(0, 160);
+document.getElementById("twitterImage").content = post.image || "/images/fallback.jpg";
+})();
+
 // Normalize user object
 function normalizeUser(user) {
   if (!user) return null;
@@ -57,9 +72,9 @@ menuToggle?.addEventListener("click", (e) => {
   mobileMenu.classList.toggle("active");
 });
 
-// Clear editId on write.html if not editing
-if (window.location.pathname.endsWith("write.html") && !localStorage.getItem("editId")) {
-  localStorage.removeItem("editId");
+// Clear editSlug on write.html if not editing
+if (window.location.pathname.endsWith("write.html") && !localStorage.getItem("editSlug")) {
+  localStorage.removeItem("editSlug");
 }
 
 // Post management
@@ -203,21 +218,21 @@ function displayPosts(containerId, limit = null) {
 
     div.innerHTML = `
       ${post.image
-        ? `<a href="post.html?id=${post._id}">
+        ? `<a href="post.html?id=${post.slug}">
              <img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">
            </a>`
         : ""}
         <p class="tag">${post.category}</p>
         <h2>
-          <a href="post.html?id=${post._id}" class="post-link">${post.title}</a>
+          <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
         </h2>
-        <p>${preview} <a href="post.html?id=${post._id}" class="read-more">Read more</a></p>
+        <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
         <a href="profile.html?user=${post.authorName}" class="author"><em>By ${post.authorName || "Unknown"}</em></a>
         <small>${new Date(post.date).toLocaleString()}</small>
         <br>
         <div class="post-interactions-container">
           <div class="post-interactions">
-            <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post._id}">
+            <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post.slug}">
               <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
               <span class="like-count">${post.likesCount || 0}</span>
             </button>
@@ -259,19 +274,19 @@ function displayPosts(containerId, limit = null) {
     if (isAuthor) {
       const editBtn = div.querySelector(".edit-btn");
       const deleteBtn = div.querySelector(".delete-btn");
-      editBtn?.addEventListener("click", () => editPost(post._id));
-      deleteBtn?.addEventListener("click", () => deletePost(post._id));
+      editBtn?.addEventListener("click", () => editPost(post.slug));
+      deleteBtn?.addEventListener("click", () => deletePost(post.slug));
     }
 
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
 
-    const likedByIds = Array.isArray(post.likes)
-      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
+    const likedBySlugs = Array.isArray(post.likes)
+      ? post.likes.map(l => (typeof l === "object" ? l.slug : l))
       : [];
 
-    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
+    if (userId && (likedBySlugs.includes(userId) || post.likedByUser)) {
       likeBtn.classList.add("liked");
       heart.className = "fa-solid fa-heart";
     } else {
@@ -288,7 +303,7 @@ function displayPosts(containerId, limit = null) {
     }
 
     const commentCountSpan = div.querySelector(".comment-count");
-    updateCommentCount(post._id, commentCountSpan);
+    updateCommentCount(post.slug, commentCountSpan);
   });
 }
 
@@ -310,11 +325,11 @@ async function addPost(title, content, category, imageFile) {
 }
 
 // Delete a post
-async function deletePost(id) {
+async function deletePost(slug) {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
   try {
-    const res = await apiFetch(`${API_URL}/${id}`, { method: "DELETE" });
+    const res = await apiFetch(`${API_URL}/${slug}`, { method: "DELETE" });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -334,21 +349,21 @@ async function deletePost(id) {
 }
 
 // Edit a post
-function editPost(id) {
-  localStorage.removeItem("editId");
-  localStorage.setItem("editId", id);
+function editPost(slug) {
+  localStorage.removeItem("editSlug");
+  localStorage.setItem("editSlug", slug);
   window.location.href = "write.html";
 }
 
 // Handle post form for adding/editing posts
 const postForm = document.getElementById("postForm");
 if (postForm) {
-  const editId = localStorage.getItem("editId");
+  const editSlug = localStorage.getItem("editSlug");
 
-  if (editId && editId !== "null") {
+  if (editSlug && editSlug !== "null") {
     (async () => {
       try {
-        const res = await apiFetch(`${API_URL}/${editId}`);
+        const res = await apiFetch(`${API_URL}/${editSlug}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
@@ -380,14 +395,14 @@ if (postForm) {
       }
 
       try {
-        const res = await apiFetch(`${API_URL}/${editId}`, {
+        const res = await apiFetch(`${API_URL}/${editSlug}`, {
           method: "PUT",
           body: formData,
         });
 
         if (res.ok) {
           showToast("Post updated successfully!", "success");
-          localStorage.removeItem("editId");
+          localStorage.removeItem("editSlug");
           window.location.href = "all-posts.html";
         } else {
           console.error("Update failed:", await res.text());
@@ -398,7 +413,7 @@ if (postForm) {
       }
     };
   } else {
-    localStorage.removeItem("editId");
+    localStorage.removeItem("editSlug");
     postForm?.addEventListener("submit", async function (e) {
       e.preventDefault();
       const title = document.getElementById("title").value;
@@ -414,7 +429,7 @@ if (postForm) {
         showToast("Post created successfully!", "success");
         postForm.reset();
         window.location.href = "all-posts.html";
-        localStorage.removeItem("editId");
+        localStorage.removeItem("editSlug");
       } catch (err) {
         console.error("Error adding post:", err);
         showToast("Failed to add post!", "error");
@@ -489,7 +504,7 @@ function searchPosts(e) {
       };
     }
     div.addEventListener("click", () => {
-      window.location.href = `post.html?id=${post._id}`;
+      window.location.href = `post.html?slug=${post.slug}`;
     });
   });
 
@@ -599,7 +614,7 @@ writePostBtns.forEach(btn => {
       loginForm.classList.remove("hidden");
       registerForm.classList.add("hidden");
     } else {
-      localStorage.removeItem("editId");
+      localStorage.removeItem("editSlug");
       window.location.href = "write.html";
     }
   });
@@ -1061,7 +1076,7 @@ function renderComments(comments, commentsList) {
             ? `<div class="comment-menu">
                   <button class="menu-btn">⋮</button>
                   <div class="menu-options hidden">
-                    <button class="delete-comment-btn" data-comment-id="${comment._id}">Delete</button>
+                    <button class="delete-comment-btn" data-comment-id="${comment.slug}">Delete</button>
                   </div>
                 </div>` 
             : ""
@@ -1101,7 +1116,7 @@ async function postComment(postId, text, commentsList) {
           <div class="comment-menu">
             <button class="menu-btn">⋮</button>
             <div class="menu-options hidden">
-              <button class="delete-comment-btn" data-comment-id="${newComment._id}">Delete</button>
+              <button class="delete-comment-btn" data-comment-id="${newComment.slug}">Delete</button>
             </div>
           </div>
         </div>
@@ -1144,12 +1159,12 @@ async function updateCommentCount(postId, commentCountSpan) {
 // Load single post details
 async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
-  const postId = params.get("id");
+  const postSlug = params.get("slug");
 
-  if (!postId) return;
+  if (!postSlug) return;
 
   try {
-    const res = await apiFetch(`${API_URL}/${postId}`);
+    const res = await apiFetch(`${API_URL}/${postSlug}`);
     if (!res.ok) throw new Error("Failed to fetch post");
     const post = await res.json();
 
@@ -1176,7 +1191,7 @@ async function loadSinglePost() {
       </div>
       <div class="post-interactions-container">
         <div class="post-interactions">
-          <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post._id}">
+          <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post.slug}">
             <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
             <span class="like-count">${post.likesCount || 0}</span>
           </button>
@@ -1209,8 +1224,8 @@ async function loadSinglePost() {
     const deletePostBtn = container.querySelector(".delete-btn");
 
     if (isAuthor) {
-      editPostBtn?.addEventListener("click", () => editPost(post._id));
-      deletePostBtn?.addEventListener("click", () => deletePost(post._id));
+      editPostBtn?.addEventListener("click", () => editPost(post.slug));
+      deletePostBtn?.addEventListener("click", () => deletePost(post.slug));
     }
 
     const img = container.querySelector(".post-image");
@@ -1225,11 +1240,11 @@ async function loadSinglePost() {
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
 
-    const likedByIds = Array.isArray(post.likes)
-      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
+    const likedBySlugs = Array.isArray(post.likes)
+      ? post.likes.map(l => (typeof l === "object" ? l.slug : l))
       : [];
 
-    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
+    if (userId && (likedBySlugs.includes(userId) || post.likedByUser)) {
       likeBtn.classList.add("liked");
       heart.className = "fa-solid fa-heart";
     } else {
@@ -1246,13 +1261,13 @@ async function loadSinglePost() {
     }  
 
     const commentCountSpan = container.querySelector(".comment-count");
-    updateCommentCount(post._id, commentCountSpan);  
+    updateCommentCount(post.slug, commentCountSpan);  
 
     const commentsSection = document.querySelector(".comments-section");
     const commentsList = commentsSection.querySelector(".comments-list");
     
     if (commentsSection && commentsList) {
-      await fetchComments(post._id, commentsList, Infinity);
+      await fetchComments(post.slug, commentsList, Infinity);
     }
   } catch (err) {
     console.error(err);
@@ -1277,7 +1292,7 @@ const fetchTrendingPosts = async () => {
     return `
     <li>
       <span class="trending-rank">${rankDisplay}</span>
-      <a href="post.html?id=${post._id}" class="trending-title">${post.title}</a>
+      <a href="post.html?slug=${post.slug}" class="trending-title">${post.title}</a>
       <i class="fa-solid fa-bolt trending-icon" title="Trending now"></i>
     </li>
   `}).join("");

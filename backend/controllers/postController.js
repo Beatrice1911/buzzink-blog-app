@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const Post = require("../models/Post");
 const cloudinary = require("../config/cloudinary");
+const slugify = require("slugify");
 
 const getPosts = async (req, res) => {
   try {
@@ -29,7 +30,7 @@ const getPosts = async (req, res) => {
 
     const updatedPosts = posts.map(post => {
       const likedByUser = userId
-        ? post.likes.some(like => like._id.toString() === userId)
+        ? post.likes.some(like => like.slug.toString() === userId)
         : false;
 
       return {
@@ -52,11 +53,11 @@ const getPosts = async (req, res) => {
 };
 
 
-const getPostById = async (req, res) => {
+const getPostBySlug = async (req, res) => {
   try {
     const userId = req.user?.id || null;
-
-    const post = await Post.findById(req.params.id)
+    const { slug } = req.params;
+    const post = await Post.findOne({ slug })
       .populate("likes", "name profilePhoto")
       .populate("authorId", "_id name profilePhoto");
 
@@ -73,7 +74,7 @@ const getPostById = async (req, res) => {
       likedByUser,
     });
   } catch (err) {
-    console.error("Get post by ID error:", err);
+    console.error("Get post by slug error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -94,11 +95,14 @@ const createPost = async (req, res) => {
       imagePath = result.secure_url;
     }
 
+    const slug = slugify(title, { lower: true, strict: true });
+
     const authorId = req.user.id;
     const authorName = req.user.name;
 
     const newPost = new Post({
       title,
+      slug,
       content,
       authorId,
       authorName,
@@ -126,10 +130,10 @@ const createPost = async (req, res) => {
 
 const updatePost = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { slug } = req.params;
     const { title, content, category } = req.body;
 
-    const post = await Post.findById(id);
+    const post = await Post.findOne({ slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (post.authorId.toString() !== req.user.id) {
@@ -139,8 +143,11 @@ const updatePost = async (req, res) => {
     post.title = title || post.title;
     post.content = content || post.content;
     post.category = category || post.category;
-     
 
+    if (title) {
+      post.slug = slugify(title, { lower: true, strict: true });
+    }
+     
     await post.save();
     res.json(post);
   } catch (err) {
@@ -151,13 +158,14 @@ const updatePost = async (req, res) => {
 
 const deletePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const { slug } = req.params;
+    const post = await Post.findOne({ slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
     if (post.authorId.toString() !== req.user.id) {
       return res.status(403).json({ message: "You are not the author of this post" });
     }
 
-    await Post.findByIdAndDelete(req.params.id);
+    await Post.findByIdAndDelete(req.params.slug);
     res.json({ message: "Post deleted successfully" });
   } catch (err) {
     console.error("Error deleting post:", err);
@@ -167,7 +175,7 @@ const deletePost = async (req, res) => {
 
 const likePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.slug);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (!post.likes.some(u => u.toString() === req.user.id)) {
@@ -176,7 +184,7 @@ const likePost = async (req, res) => {
       await post.save();
     }
 
-    const updatedPost = await Post.findById(req.params.id)
+    const updatedPost = await Post.findById(req.params.slug)
       .populate("likes", "name");
 
     res.json({
@@ -191,14 +199,14 @@ const likePost = async (req, res) => {
 
 const unlikePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const post = await Post.findById(req.params.slug);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     post.likes = post.likes.filter(u => u.toString() !== req.user.id);
     updateTrendingScore(post);
     await post.save();
 
-    const updatedPost = await Post.findById(req.params.id)
+    const updatedPost = await Post.findById(req.params.slug)
       .populate("likes", "name");
 
     res.json({
@@ -264,7 +272,7 @@ const incrementView = async (req, res) => {
 
 module.exports = {
   getPosts,
-  getPostById,
+  getPostBySlug,
   createPost,
   updatePost,
   deletePost,
