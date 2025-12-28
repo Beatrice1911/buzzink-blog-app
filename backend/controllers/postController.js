@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const multer = require("multer");
 const Post = require("../models/Post");
+const cloudinary = require("../config/cloudinary");
 
 const getPosts = async (req, res) => {
   try {
@@ -80,21 +81,18 @@ const getPostById = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
-    console.log("CREATE POST HIT"); // confirms route is called
-    console.log("REQ FILE:", req.file); // shows file info
-    console.log("REQ BODY:", req.body); // shows title/content/category
-
     const { title, content, category } = req.body;
     if (!title || !content || !category) {
       return res.status(400).json({ message: "Title, content, and category are required" });
     }
 
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "buzzink_posts"
+    });
+
     const authorId = req.user.id;
     const authorName = req.user.name;
-    let imagePath = "";
-    if (req.file) {
-      imagePath = req.file.path || req.file.url;
-    }
+    let imagePath = result.secure_url;
 
     const newPost = new Post({
       title,
@@ -139,8 +137,7 @@ const updatePost = async (req, res) => {
     post.title = title || post.title;
     post.content = content || post.content;
     post.category = category || post.category;
-
-    if (req.file) post.image = req.file.path || req.file.url;
+     
 
     await post.save();
     res.json(post);

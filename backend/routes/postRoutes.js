@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const cloudinary = require("../cloudinary");
+const cloudinary = require("../config/cloudinary");
 const path = require("path");
 const { requireAuth, optionalAuth } = require("../middleware/auth");
 
@@ -15,16 +15,16 @@ const router = express.Router();
 //   },
 // });
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "buzzink_post_images",
-    allowedFormats: ["jpg", "png", "jpeg", "gif", "webp", "avif"],
-    transformation: [{ width: 800, height: 600, crop: "limit" }],
-  },
-});
+// const storage = new CloudinaryStorage({
+//   cloudinary: cloudinary,
+//   params: {
+//     folder: "buzzink_post_images",
+//     allowedFormats: ["jpg", "png", "jpeg", "gif", "webp", "avif"],
+//     transformation: [{ width: 800, height: 600, crop: "limit" }],
+//   },
+// });
 
-const upload = multer({ storage });
+const upload = multer({ storage: multer.diskStorage({}) });
 
 const { getPosts, getPostById, createPost, updatePost, deletePost, likePost, unlikePost, getTrendingPosts, incrementView } = require("../controllers/postController");
 
