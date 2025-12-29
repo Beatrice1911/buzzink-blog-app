@@ -917,8 +917,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       commentsSection.classList.toggle("show");
       if (commentsSection.classList.contains("show")) {
-        const postIdentifier = postId;
-        await fetchComments(postIdentifier, commentsList);
+        await fetchComments(postId, commentsList);
       }
     }
   });
