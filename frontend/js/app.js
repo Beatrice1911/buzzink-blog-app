@@ -904,20 +904,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Comment button toggle and fetch comments
   document.addEventListener("click", async (e) => {
-    if (window.location.pathname.endsWith("post.html")) return;
-
     const commentBtn = e.target.closest(".comment-btn");
-    if (commentBtn) {
-      e.preventDefault();
-      const postElement = commentBtn.closest(".post");
-      const commentsSection = postElement.querySelector(".comments-section");
+    e.preventDefault();
+    if (!commentBtn) return;
+
+    if (window.location.pathname.endsWith("post.html")) {
+      const commentsSection = document.querySelector(".comments-section");
       const commentsList = commentsSection.querySelector(".comments-list");
-      const postId = postElement.querySelector(".like-btn").dataset.postId;
+      const postId = commentBtn.dataset.postId;
 
       commentsSection.classList.toggle("show");
       if (commentsSection.classList.contains("show")) {
         await fetchComments(postId, commentsList);
       }
+    } else {
+        const postElement = commentBtn.closest(".post");
+        const commentsSection = postElement.querySelector(".comments-section");
+        const commentsList = commentsSection.querySelector(".comments-list");
+        const postId = postElement.querySelector(".like-btn").dataset.postId;
+
+        commentsSection.classList.toggle("show");
+        if (commentsSection.classList.contains("show")) {
+          await fetchComments(postId, commentsList);
+        }
     }
   });
 
@@ -1248,7 +1257,7 @@ async function loadSinglePost() {
             <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
             <span class="like-count">${post.likesCount || 0}</span>
           </button>
-          <button class="comment-btn">
+          <button class="comment-btn" data-post-id="${post._id}">
             <i class="fa-regular fa-comment"></i>
             <span class="comment-count">${post.commentsCount || 0}</span>
           </button>
