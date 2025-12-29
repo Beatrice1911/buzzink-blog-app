@@ -1,5 +1,6 @@
 const express = require("express");
 const Comment = require("../models/Comment");
+const post = require("../models/Post");
 
 const createComment = async (req, res) => {
     try {
@@ -20,9 +21,21 @@ const createComment = async (req, res) => {
 const getCommentsByPost = async (req, res) => {
     try {
     const { postId } = req.params;
-    const comments = await Comment.find({ postId })
+
+    let comments;
+
+    comments = await Comment.find({ postId })
       .populate("authorId", "name email")
       .sort({ createdAt: -1 });
+
+    if (comments.length === 0) {
+      const post = await Post.findOne({ slug: postId });
+      if (post) {
+        comments = await Comment.find({ postId: post._id.toString() })
+          .populate("authorId", "name email")
+          .sort({ createdAt: -1 });
+      }
+    }
     res.status(200).json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
