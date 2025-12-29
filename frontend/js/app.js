@@ -244,7 +244,7 @@ function displayPosts(containerId, limit = null) {
         <br>
         <div class="post-interactions-container">
           <div class="post-interactions">
-            <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post.slug || post._id}">
+            <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post._id}">
               <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
               <span class="like-count">${post.likesCount || 0}</span>
             </button>
@@ -316,8 +316,7 @@ function displayPosts(containerId, limit = null) {
 
     const commentCountSpan = div.querySelector(".comment-count");
 
-    const postIdentifier = post.slug || post._id;
-    updateCommentCount(postIdentifier, commentCountSpan);
+    updateCommentCount(post._id, commentCountSpan);
   });
 }
 
@@ -1245,7 +1244,7 @@ async function loadSinglePost() {
       </div>
       <div class="post-interactions-container">
         <div class="post-interactions">
-          <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post.slug}">
+          <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post._id}">
             <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
             <span class="like-count">${post.likesCount || 0}</span>
           </button>
