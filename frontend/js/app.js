@@ -1015,7 +1015,7 @@ async function fetchComments(postId, commentsList, limit = 3) {
   try {
     commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
 
-    const res = await apiFetch(`${COMMENTS_URL}/${postId}`);
+    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`);
     if (!res.ok) throw new Error("Failed to fetch comments");
 
     const comments = await res.json();
@@ -1110,7 +1110,7 @@ async function postComment(postId, text, commentsList) {
   try {
     const token = localStorage.getItem("token");
 
-    const res = await apiFetch(`${COMMENTS_URL}/${postId}`, {
+    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1150,7 +1150,7 @@ async function postComment(postId, text, commentsList) {
 // Update comment count for a post
 async function updateCommentCount(postId, commentCountSpan) {
   try {
-    const res = await apiFetch(`${COMMENTS_URL}/${postId}`);
+    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`);
     if (!res.ok) throw new Error("Failed to fetch comment count");
 
     const comments = await res.json();

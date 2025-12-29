@@ -4,8 +4,8 @@ const { createComment, getCommentsByPost, deleteComment } = require("../controll
 
 const router = express.Router();
 
-router.post("/:postId", requireAuth, createComment);
-router.get("/:postId", getCommentsByPost);
+router.post("/post/:postId", requireAuth, createComment);
+router.get("/post/:postId", getCommentsByPost);
 router.delete("/:commentId", requireAuth, deleteComment);
 
 module.exports = router;
