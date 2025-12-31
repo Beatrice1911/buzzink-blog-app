@@ -933,29 +933,41 @@ document.addEventListener("DOMContentLoaded", () => {
   // Comment form submission
   document.addEventListener("submit", async (e) => {
     const commentForm = e.target.closest(".comment-form");
-    if (commentForm) {
-      e.preventDefault();
-      const form = e.target;
-      const commentInput = form.querySelector(".comment-input");
-      const commentText = commentInput.value.trim();
-      if (!commentText) return;
+    if (!commentForm) return;
+    e.preventDefault();
+    
+    const commentInput = commentForm.querySelector(".comment-input");
+    const commentText = commentInput.value.trim();
+    if (!commentText) return;
 
-      const postElement = form.closest(".post");
-      const commentsList = postElement.querySelector(".comments-list");
-      const postId = postElement.querySelector(".like-btn").dataset.postId;
+    let postElement;
+    let commentsList;
+    let postId;
+    let commentCountSpan;
 
-      if (!window.currentUser || !localStorage.getItem("token")) {
-        showToast("Please log in to comment.", "error");
-        commentInput.value = "";
-        return;
-      }
-
-      await postComment(postId, commentText, commentsList);
-      commentInput.value = "";
-
-      const commentCountSpan = postElement.querySelector(".comment-count");
-      await updateCommentCount(postId, commentCountSpan);
+    if (window.location.pathname.endsWith("post.html")) {
+      postElement = document.getElementById("singlePostContainer");
+      commentsList = postElement.querySelector(".comments-list");
+      postId = postElement.querySelector(".comment-btn").dataset.postId;
+      commentCountSpan = postElement.querySelector(".comment-count");
+    } else {
+      postElement = commentForm.closest(".post");
+      commentsList = postElement.querySelector(".comments-list");
+      postId = postElement.querySelector(".like-btn").dataset.postId;
+      commentCountSpan = postElement.querySelector(".comment-count");
     }
+
+    if (!window.currentUser || !localStorage.getItem("token")) {
+      showToast("Please log in to comment.", "error");
+      commentInput.value = "";
+      return;
+    }
+
+    await postComment(postId, commentText, commentsList);
+    commentInput.value = "";
+
+    await updateCommentCount(postId, commentCountSpan);
+    
   });
 
   // Toggle comment menu
@@ -1108,7 +1120,7 @@ function renderComments(comments, commentsList) {
     `;
     commentsList.appendChild(div);
 
-    const commentAuthor = document.querySelector(".comment-author");
+    const commentAuthor = div.querySelector(".comment-author");
     commentAuthor?.addEventListener("click", () => {
       window.location.href = `profile.html?user=${comment.authorId?.name}`;
     });
