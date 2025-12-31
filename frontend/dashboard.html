@@ -33,7 +33,7 @@
 
     <div class="icons write-icons">
       <i class="fas fa-search search-icon"></i>
-      <i class="fas fa-user-circle user-icon"></i>
+      <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar" class="user-icon"/>
       <i class="fas fa-bars menu-toggle"></i>
     </div>
 
@@ -42,7 +42,7 @@
       <a href="all-posts.html">Posts</a>
       <a href="#">Categories</a>
       <a href="#">About</a>
-      <i class="fas fa-user-circle user-icon"></i>
+      <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar" class="user-icon"/>
     </nav>
   </div>
   <div class="mobile-nav" id="mobileMenu">
@@ -149,6 +149,7 @@
 
   <script src="js/app.min.js"></script>
   <script src="js/dashboard.min.js"></script>
+  <script src="js/authUser.min.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
         checkUser();
