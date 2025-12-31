@@ -990,43 +990,54 @@ document.addEventListener("DOMContentLoaded", () => {
   // Delete comment handler
   document.addEventListener("click", async (e) => {
     const deleteBtn = e.target.closest(".delete-comment-btn");
-    if (deleteBtn) {
-      e.preventDefault();
-      e.stopPropagation();
-      if (deleteBtn.dataset.deleting === "true") return;
-      deleteBtn.dataset.deleting = "true";  
-      const commentId = deleteBtn.dataset.commentId;
-      const confirmDelete = confirm("Are you sure you want to delete this comment?");
-      if (!confirmDelete) return;
 
-      try {
-        const token = localStorage.getItem("token");
-        const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        });
+    if (!deleteBtn) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    if (deleteBtn.dataset.deleting === "true") return;
+    deleteBtn.dataset.deleting = "true";  
+    const commentId = deleteBtn.dataset.commentId;
+    const confirmDelete = confirm("Are you sure you want to delete this comment?");
+    if (!confirmDelete) {
+      deleteBtn.dataset.deleting = "false";
+      return;
+    };
 
-        const data = await res.json();
+    try {
+      const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
+        method: "DELETE",
+      });
 
-        if (res.ok) {
-          // deleteBtn.closest(".comment").remove();
-          const commentEl = deleteBtn.closest(".comment");
+      const data = await res.json();
+
+      if (res.ok) {
+        const commentEl = deleteBtn.closest(".comment");
+        if (commentEl) commentEl.remove();
+        
+        let commentCountSpan;
+
+        if (window.location.pathname.endsWith("post.html")) {
+          const postElement = document.getElementById("singlePostContainer");
+          commentCountSpan = postElement?.querySelector(".comment-count");
+        } else {
           const postElement = deleteBtn.closest(".post");
-          // const postId = postElement.querySelector(".like-btn").dataset.postId;
-          const commentCountSpan = postElement.querySelector(".comment-count");
-          // await updateCommentCount(postId, commentCountSpan);
-          commentEl.remove();
+          commentCountSpan = postElement?.querySelector(".comment-count");
+        }
+
+        if (commentCountSpan) {
           const currentCount = parseInt(commentCountSpan.textContent) || 0;
           commentCountSpan.textContent = Math.max(0, currentCount - 1);
-          showToast("Comment deleted successfully.", "success");
-        } else {
-          throw new Error(data.message || "Delete failed");
         }
-      } catch (err) {
-        console.error("Error deleting comment:", err);
-        showToast("Error deleting comment. Please try again.", "error");
+      } else {
+        throw new Error(data.message || "Delete failed");
       }
-    }
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      showToast("Error deleting comment. Please try again.", "error");
+    } finally {
+      deleteBtn.dataset.deleting = "false";
+    }  
   });
 
 });
