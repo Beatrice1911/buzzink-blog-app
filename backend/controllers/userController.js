@@ -39,13 +39,12 @@ const updateUserProfile = async (req, res) => {
                 folder: "buzzink_profiles"
             });
             user.profilePhoto = result.secure_url;
+
+            fs.unlink(req.file.path);
         }
 
         const updatedUser = await user.save();
         res.status(200).json(updatedUser);
-        fs.unlink(req.file.path, (err) => {
-            if (err) console.error("Error deleting temp file:", err);
-        });
     } catch (error) {
         console.error("Update user profile error:", error);
         res.status(500).json({ message: "Server error" });

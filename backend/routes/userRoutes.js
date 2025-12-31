@@ -6,7 +6,7 @@ const { updateUserProfile, getUserProfile, getCurrentUser } = require("../contro
 
 const router = express.Router();
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ storage: multer.diskStorage({}) });
 
 router.get("/me", requireAuth, getCurrentUser);
 router.put("/me", requireAuth, upload.single("profilePhoto"), updateUserProfile);
