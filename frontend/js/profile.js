@@ -24,7 +24,7 @@ async function fetchUserProfile(name) {
         document.getElementById("user-name-label").textContent = user.name;
 
         // Fetch and display user's posts
-        const postsRes = await fetch(`${API_URI}/posts?authorId=${user._id}`);
+        const postsRes = await fetch(`${API_URI}/posts?authorId=${user._id}&limit=1000`);
         if (!postsRes.ok) throw new Error("Failed to fetch user's posts");
         const { posts } = await postsRes.json();
         const postsList = document.getElementById("posts-list");
