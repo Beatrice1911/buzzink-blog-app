@@ -1029,6 +1029,7 @@ document.addEventListener("DOMContentLoaded", () => {
           const currentCount = parseInt(commentCountSpan.textContent) || 0;
           commentCountSpan.textContent = Math.max(0, currentCount - 1);
         }
+        showToast("Comment deleted successfully!", "success");
       } else {
         throw new Error(data.message || "Delete failed");
       }

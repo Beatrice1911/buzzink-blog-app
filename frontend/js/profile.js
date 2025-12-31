@@ -19,9 +19,7 @@ async function fetchUserProfile(name) {
 
         const DEFAULT_PROFILE_PHOTO = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
         const photoUrl = user.profilePhoto
-            ? user.profilePhoto.startsWith("http")
-                ? user.profilePhoto
-                : user.profilePhoto
+            ? user.profilePhoto
             : DEFAULT_PROFILE_PHOTO;
 
         document.getElementById("profile-photo").src = photoUrl;
@@ -35,11 +33,18 @@ async function fetchUserProfile(name) {
         const { posts } = await postsRes.json();
         const postsList = document.getElementById("posts-list");
         postsList.innerHTML = posts.length ? posts.map(p => `
-            <div class="post-card" onclick="window.location.href='post.html?id=${p._id}'">
+            <div class="post-card">
                 <h3>${p.title}</h3>
                 <p>${p.content.substring(0, 120) + "..."}</p>
             </div>
             `).join('') : "<p class='no-posts'>No posts available.</p>";
+
+            const postCard = document.querySelectorAll(".post-card");
+            postCard.forEach(card => {
+                card.addEventListener("click", () => {
+                    window.location.href = `post.html?slug=${p.slug}`;
+                });
+            });
     } catch (error) {
         document.body.innerHTML = `<p>${error.message}</p>`;
     }
