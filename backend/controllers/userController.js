@@ -33,6 +33,10 @@ const updateUserProfile = async (req, res) => {
         if (!user) return res.status(404).json({ message: "User not found" });
         user.name = name || user.name;
         user.bio = bio || user.bio;
+
+        if (removePhoto === "true") {
+            user.profilePhoto = "";
+        }
         
         if (req.file) {
             const result = await cloudinary.uploader.upload(req.file.path, {
