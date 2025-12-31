@@ -56,11 +56,6 @@ nav a:hover {
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-nav .user-icon:hover {
-  scale: 1.1;
 }
 
 .search-bar {
@@ -1077,10 +1072,9 @@ nav .user-icon:hover {
   }
 
   .icons{
-    display:block;
-  }
-
-  .icons i{
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-right: 20px;
   }
 
