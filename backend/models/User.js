@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
@@ -8,8 +9,11 @@ const userSchema = new mongoose.Schema({
   profilePhoto: { type: String, default: null },
   bio: { type: String, default: null },
   role: { type: String, default: 'reader' }, // 'admin', 'editor', 'reader'
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   dateJoined: { type: Date, default: Date.now }
 }, { timestamps: true });
+
 
 // Hash password before save (only if modified)
 userSchema.pre('save', async function(next) {
