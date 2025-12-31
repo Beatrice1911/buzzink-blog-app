@@ -905,8 +905,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Comment button toggle and fetch comments
   document.addEventListener("click", async (e) => {
     const commentBtn = e.target.closest(".comment-btn");
-    e.preventDefault();
     if (!commentBtn) return;
+    e.preventDefault();
 
     if (window.location.pathname.endsWith("post.html")) {
       const commentsSection = document.querySelector(".comments-section");
