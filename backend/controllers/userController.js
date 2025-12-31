@@ -28,9 +28,14 @@ const getCurrentUser = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
     try {
-        const { name, bio } = req.body;
+        const { name, bio, removePhoto } = req.body;
         const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: "User not found" });
+    
+        if (user.profilePhoto && user.profilePhoto.startsWith("/uploads")) {
+        user.profilePhoto = "";
+        }
+
         user.name = name || user.name;
         user.bio = bio || user.bio;
 
