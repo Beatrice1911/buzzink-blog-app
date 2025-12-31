@@ -961,6 +961,10 @@ nav .user-icon:hover {
   background: #00332f;
 }
 
+.single-post-container .comment-list {
+  flex: 1;
+}
+
 .no-comments {
   font-style: italic;
   color: #777;
