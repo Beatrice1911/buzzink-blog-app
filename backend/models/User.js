@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: null },
   role: { type: String, default: 'reader' }, // 'admin', 'editor', 'reader'
   resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date },
+  resetPasswordExpire: { type: Date },
   dateJoined: { type: Date, default: Date.now }
 }, { timestamps: true });
 
