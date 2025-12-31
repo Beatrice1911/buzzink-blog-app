@@ -1,4 +1,4 @@
-import showToast from "./app.js";
+import { showToast } from "./app.js";
 
 const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 
