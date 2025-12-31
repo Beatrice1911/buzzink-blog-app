@@ -3,7 +3,7 @@ const User = require("../models/User");
 const RefreshToken = require("../models/RefreshToken");
 const ms = require("ms");
 const crypto = require('crypto');
-const sendResetEmail = require("../config/sendEmail");
+const sendEmail = require("../config/sendEmail");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
