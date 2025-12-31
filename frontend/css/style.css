@@ -51,14 +51,16 @@ nav a:hover {
 }
 
 nav .user-icon {
-  font-size: 1.5rem;
-  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 nav .user-icon:hover {
-  color: #ccc;
+  scale: 1.1;
 }
 
 .search-bar {
