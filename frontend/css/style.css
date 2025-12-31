@@ -783,7 +783,7 @@ nav a:hover {
   background-color: #f0f4f8;
 }
 
-#forgotPasswordForm h2, #forgotPasswordForm p {
+#forgotPasswordModal h2, #forgotPasswordModal p {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 1rem;
   color: #333;
