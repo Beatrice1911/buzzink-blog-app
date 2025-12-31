@@ -136,7 +136,7 @@ const removePhotoBtn = document.getElementById("removePhotoBtn");
 removePhotoBtn.addEventListener("click", async () => {
   try {
     const formData = new FormData();
-    formData.append("profilePhoto", "");
+    formData.append("profilePhoto", "true");
     const res = await fetch(API_URI, {
       method: "PUT",
       headers: {
