@@ -66,9 +66,9 @@ async function loadProfile() {
    const DEFAULT_PROFILE_PHOTO =
     "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 
-   const profileImage = data.profilePhoto
-   ? data.profilePhoto
-   : DEFAULT_PROFILE_PHOTO;
+   const profileImage = data.profilePhoto && data.profilePhoto.trim() !== ""
+    ? data.profilePhoto
+    : DEFAULT_PROFILE_PHOTO;
 
   if (data.profilePhoto) {
     document.getElementById("removePhotoBtn").style.display = "block";
