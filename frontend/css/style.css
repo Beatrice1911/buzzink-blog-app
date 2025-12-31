@@ -729,14 +729,15 @@ nav a:hover {
   text-align: center;
 }
 
-.auth-modal-content input, .auth-form button {
+.auth-modal-content input, .auth-form button, .auth-container .btn {
   width: 100%; 
-  padding: 10px; margin: 10px 0;
+  padding: 10px; 
+  margin: 10px 0;
   border: 1px solid #ccc; 
   border-radius: 5px;
 }
 
-.auth-form button{
+.auth-form button, .auth-container .btn{
   background-color: #004d40;
   color: #eee;
   font-size: 18px;
@@ -744,7 +745,7 @@ nav a:hover {
   transition: all 0.3s ease;
 }
 
-.auth-form button:hover {
+.auth-form button:hover, .auth-container .btn:hover {
   background-color: #00332f;
 }
 
@@ -772,6 +773,38 @@ nav a:hover {
   cursor: pointer; 
   font-size: 30px; 
   font-weight: bold;
+}
+
+.auth-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f4f8;
+}
+
+.auth-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.auth-container h2 {
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.auth-container input {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .forgot-password {
@@ -1072,42 +1105,6 @@ nav a:hover {
 
 .delete-comment-btn:hover {
   background: #fbeaea;
-}
-
-.auth-section {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: #f0f4f8; /* light background to match your theme */
-}
-
-.auth-container {
-  background-color: #fff;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-.auth-container h2 {
-  font-family: 'Poppins', sans-serif;
-  margin-bottom: 1rem;
-}
-
-.auth-container input {
-  width: 100%;
-  padding: 0.75rem;
-  margin: 0.5rem 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.auth-container .btn {
-  width: 100%;
-  margin-top: 1rem;
 }
 
 /* Responsive Styles */
