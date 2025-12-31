@@ -49,7 +49,7 @@ const updateUserProfile = async (req, res) => {
             });
             user.profilePhoto = result.secure_url;
 
-            fs.unlink(req.file.path);
+            fs.unlinkSync(req.file.path);
         }
 
         const updatedUser = await user.save();
