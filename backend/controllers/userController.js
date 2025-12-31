@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
 
 const getUserProfile = async (req, res) => {
     try {
@@ -33,13 +35,17 @@ const updateUserProfile = async (req, res) => {
         user.bio = bio || user.bio;
         
         if (req.file) {
-            user.profilePhoto = `/uploads/${req.file.filename}`;
-        } else if (req.body.profilePhoto === null) {
-            user.profilePhoto = null;
+            const result = await cloudinary.uploader.upload(req.file.path, {
+                folder: "buzzink_profiles"
+            });
+            user.profilePhoto = result.secure_url;
         }
 
         const updatedUser = await user.save();
         res.status(200).json(updatedUser);
+        fs.unlink(req.file.path, (err) => {
+            if (err) console.error("Error deleting temp file:", err);
+        });
     } catch (error) {
         console.error("Update user profile error:", error);
         res.status(500).json({ message: "Server error" });

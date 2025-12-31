@@ -63,7 +63,6 @@ async function loadProfile() {
     document.getElementById("userBio").textContent = data.bio || "No bio added yet.";
     document.getElementById("joinedDate").textContent = new Date(data.createdAt).toDateString();
 
-    // Profile image logic
    const DEFAULT_PROFILE_PHOTO =
     "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 
@@ -76,9 +75,7 @@ async function loadProfile() {
   }
 
     document.getElementById("profilePhotoPreview").src = profileImage;
-    console.log("Profile image URL: ", profileImage);
 
-    // Fill edit form
     document.getElementById("name").value = data.name;
     document.getElementById("bio").value = data.bio || "";
 
@@ -118,15 +115,10 @@ saveChangesBtn.addEventListener("click", async (e) => {
     if (res.ok) {
       showToastUser("Profile updated successfully!", "success");
 
-      // Update image preview immediately (no full reload needed)
       if (data.profilePhoto) {
-        const newPhoto = data.profilePhoto.startsWith("http")
-          ? data.profilePhoto
-          : data.profilePhoto;
-        document.getElementById("profilePhotoPreview").src = newPhoto;
+        document.getElementById("profilePhotoPreview").src = data.profilePhoto;
       }
 
-      // Update other profile info
       document.getElementById("userName").textContent = data.name;
       document.getElementById("userBio").textContent = data.bio || "No bio added yet.";
     } else {
@@ -143,12 +135,14 @@ saveChangesBtn.addEventListener("click", async (e) => {
 const removePhotoBtn = document.getElementById("removePhotoBtn");
 removePhotoBtn.addEventListener("click", async () => {
   try {
+    const formData = new FormData();
+    formData.append("profilePhoto", "");
     const res = await fetch(API_URI, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${tokenDashboard}`,
       },
-      body: JSON.stringify({ profilePhoto: null }),
+      body: formData,
     });
 
 
