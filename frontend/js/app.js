@@ -1340,8 +1340,8 @@ async function loadSinglePost() {
       </div>
       ${isAuthor ? `
       <div class="post-actions">
-        <button class="edit-btn btn">Edit</button>
-        <button class="delete-btn btn">Delete</button>
+        <button class="edit-btn btn" data-post-slug="${post.slug}">Edit</button>
+        <button class="delete-btn btn" data-post-slug="${post.slug}">Delete</button>
       </div>` : ""}
     `;
 
