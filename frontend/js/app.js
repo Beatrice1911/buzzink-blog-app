@@ -893,20 +893,25 @@ async function handleLike(btn) {
 async function toggleComments(commentBtn) {
   const postId = commentBtn.dataset.postId 
 
-  if (!postId) {
-    console.error("Post ID not found for comments toggle.");
-    return;
-  };
+  if (!postId) return;
 
-  const postElement = commentBtn.closest(".post") || document.getElementById("singlePostContainer");
+  const isSinglePost = window.location.pathname.endsWith("post.html");
+
+  const postElement = isSinglePost
+    ? document.getElementById("singlePostContainer")
+    : commentBtn.closest(".post");
   if (!postElement) return;
 
   const commentsSection = postElement.querySelector(".comments-section");
   const commentsList = commentsSection?.querySelector(".comments-list");
 
-  commentsSection.classList.toggle("show");
+  if (!commentsSection || !commentsList) return;
 
-  if (commentsSection.classList.contains("show")) {
+  if (!isSinglePost) {
+    commentsSection.classList.toggle("show");
+  }
+
+  if (isSinglePost || commentsSection.classList.contains("show")) {
     await fetchComments(postId, commentsList);
   }
 }
