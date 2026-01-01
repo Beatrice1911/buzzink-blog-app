@@ -891,17 +891,18 @@ async function handleLike(btn) {
 
 // Toggle comments section
 async function toggleComments(commentBtn) {
+  const postId = commentBtn.dataset.postId 
+
+  if (!postId) {
+    console.error("Post ID not found for comments toggle.");
+    return;
+  };
+
   const postElement = commentBtn.closest(".post") || document.getElementById("singlePostContainer");
   if (!postElement) return;
 
-  const postId = commentBtn.dataset.postId 
-    || postElement.querySelector(".like-btn")?.dataset.postId;
-
-  if (!postId) return;
-
   const commentsSection = postElement.querySelector(".comments-section");
   const commentsList = commentsSection?.querySelector(".comments-list");
-  if (!commentsSection || !commentsList) return;
 
   commentsSection.classList.toggle("show");
 
