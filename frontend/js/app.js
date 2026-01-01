@@ -11,6 +11,7 @@ const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
+const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 document.getElementById("canonicalUrl")?.setAttribute("href", window.location.href);
 
 // Set meta tags for SEO and social sharing
@@ -53,6 +54,15 @@ window.currentUser = (() => {
   const stored = localStorage.getItem("user");
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
+
+function updateAvatar(user) {
+  const avatar = document.getElementById("navUserAvatar");
+  if (!avatar) return;
+
+  avatar.src = user?.profilePhoto?.trim()
+    ? user.profilePhoto
+    : DEFAULT_AVATAR;
+}
 
 // Navigation handlers
 logo?.addEventListener("click", () => {
@@ -653,6 +663,7 @@ loginForm?.addEventListener("submit", async (e) => {
   window.currentUser = user;
 
   updateUI(user);
+  updateAvatar(user);
   authModal.classList.add("hidden");
   loginForm.reset();
   showToast(`Welcome back, ${user.name}!`, "success");
@@ -686,6 +697,7 @@ registerForm?.addEventListener("submit", async (e) => {
   window.currentUser = user;
 
   updateUI(user);
+  updateAvatar(user);
   authModal.classList.add("hidden");
   registerForm.reset();
   showToast(`Welcome, ${user.name}! Your account has been created.`, "success");
@@ -713,6 +725,7 @@ async function checkUser() {
   const token = localStorage.getItem("token");
   if (!token) {
     updateUI(null);
+    updateAvatar(null);
     return null;
   }
 
@@ -727,6 +740,7 @@ async function checkUser() {
     localStorage.setItem("user", JSON.stringify(user));
     window.currentUser = user;
     updateUI(user);
+    updateAvatar(user);
 
     return user;
 
@@ -736,21 +750,10 @@ async function checkUser() {
   }
 }
 
-function updateAvatar(user) {
-  const avatar = document.getElementById("navUserAvatar");
-  if (!avatar) return;
-
-  avatar.src = user.profilePhoto?.trim()
-    ? user.profilePhoto
-    : "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
-}
-
-
 // Update UI based on user status
 function updateUI(user) {
   if (user?.id) {
     userIcon.forEach(icon => icon.title = `Logged in as ${user.name}`);
-    updateAvatar(user);
   } else {
     userIcon.forEach(icon => icon.title = "Click to Login/Register");
     userMenuDetails?.classList.remove("show");
@@ -786,7 +789,6 @@ async function apiFetch(url, options = {}) {
 
   return res;
 }
-
 
 // Refresh token function
 async function refreshToken() {
