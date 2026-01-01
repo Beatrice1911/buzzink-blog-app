@@ -15,28 +15,28 @@ document.getElementById("canonicalUrl")?.setAttribute("href", window.location.hr
 
 // Set meta tags for SEO and social sharing
 if (window.location.pathname.endsWith("post.html")) {
-(async () => {
-const params = new URLSearchParams(window.location.search);
-const slug = params.get("slug");
-if (!slug) return;
+  (async () => {
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get("slug");
+    if (!slug) return;
 
-const res = await apiFetch(`/api/posts/${slug}`);
-const post = await res.json();
+    const res = await apiFetch(`/api/posts/${slug}`);
+    const post = await res.json();
 
-document.title = `${post.title} | BuzzInk`;
+    document.title = `${post.title} | BuzzInk`;
 
-const desc = post.content.slice(0,160);
+    const desc = post.content.slice(0, 160);
 
-document.getElementById("postTitle")?.setAttribute("content", post.title);
-document.getElementById("postDescription")?.setAttribute("content", desc);
-document.getElementById("ogTitle")?.setAttribute("content", post.title);
-document.getElementById("ogDescription")?.setAttribute("content", desc);
-document.getElementById("ogImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
-document.getElementById("ogUrl")?.setAttribute("content", window.location.href);
-document.getElementById("twitterTitle")?.setAttribute("content", post.title);
-document.getElementById("twitterDescription")?.setAttribute("content", desc);
-document.getElementById("twitterImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
-})();
+    document.getElementById("postTitle")?.setAttribute("content", post.title);
+    document.getElementById("postDescription")?.setAttribute("content", desc);
+    document.getElementById("ogTitle")?.setAttribute("content", post.title);
+    document.getElementById("ogDescription")?.setAttribute("content", desc);
+    document.getElementById("ogImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
+    document.getElementById("ogUrl")?.setAttribute("content", window.location.href);
+    document.getElementById("twitterTitle")?.setAttribute("content", post.title);
+    document.getElementById("twitterDescription")?.setAttribute("content", desc);
+    document.getElementById("twitterImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
+  })();
 }
 
 // Normalize user object
@@ -197,9 +197,9 @@ function displayPosts(containerId, limit = null) {
   if (containerId === "myPostsContainer" && userId) {
     displayList = displayList.filter((post) => {
       const postAuthorId =
-      typeof post.authorId === "object" && post.authorId !== null
-        ? post.authorId._id
-        : post.authorId;
+        typeof post.authorId === "object" && post.authorId !== null
+          ? post.authorId._id
+          : post.authorId;
 
       return String(postAuthorId) === String(userId);
     });
@@ -268,8 +268,8 @@ function displayPosts(containerId, limit = null) {
         </div>
         ${isAuthor ? `
         <div class="post-actions">
-            <button class="edit-btn btn">Edit</button>
-            <button class="delete-btn btn">Delete</button>
+            <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
+            <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
         </div>
         ` : ""}
     `;
@@ -281,13 +281,6 @@ function displayPosts(containerId, limit = null) {
         this.onerror = null;
         this.src = "/Images/fallback.jpg";
       };
-    }
-
-    if (isAuthor) {
-      const editBtn = div.querySelector(".edit-btn");
-      const deleteBtn = div.querySelector(".delete-btn");
-      editBtn?.addEventListener("click", () => editPost(post.slug));
-      deleteBtn?.addEventListener("click", () => deletePost(post.slug));
     }
 
     const likeBtn = div.querySelector(".like-btn");
@@ -652,7 +645,7 @@ loginForm?.addEventListener("submit", async (e) => {
   if (!res.ok) {
     showToast(`Login failed: ${data.message || "Unknown error"}`, "error");
   }
- 
+
   const user = normalizeUser(data.user);
   localStorage.setItem("token", data.token);
   localStorage.setItem("refreshToken", data.refreshToken)
@@ -691,7 +684,7 @@ registerForm?.addEventListener("submit", async (e) => {
   localStorage.setItem("refreshToken", data.refreshToken);
   localStorage.setItem("user", JSON.stringify(user));
   window.currentUser = user;
-  
+
   updateUI(user);
   authModal.classList.add("hidden");
   registerForm.reset();
@@ -808,7 +801,7 @@ async function refreshToken() {
     updateUI(user);
 
     return data.token;
-    
+
   } catch (err) {
     return null;
   }
@@ -841,73 +834,64 @@ function showToast(message, type = "info", duration = 5000) {
   }, duration);
 }
 
-// Like button and comment functionality
-document.addEventListener("DOMContentLoaded", () => {
-  // Like button click handling
-  document.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".like-btn");
-    if (!btn) return;
-    e.preventDefault();
-
-    const postId = btn.dataset.postId;
-    const heart = btn.querySelector("i");
-    const countEl = btn.querySelector(".like-count");
-    const likedByEl = btn.closest(".post-interactions-container")?.querySelector(".liked-by");
+// Like Btn Handler
+async function handleLike(btn) {
+  const postId = btn.dataset.postId;
+  const heart = btn.querySelector("i");
+  const countEl = btn.querySelector(".like-count");
+  const likedByEl = btn.closest(".post-interactions-container")?.querySelector(".liked-by");
 
 
-    const alreadyLiked = btn.classList.contains("liked");
-    const token = localStorage.getItem("token");
-    const refresh = localStorage.getItem("refreshToken");
-    if (!token && !refresh) {
-      showToast("Please log in to like or unlike posts.", "error");
-      return;
+  const alreadyLiked = btn.classList.contains("liked");
+  const token = localStorage.getItem("token");
+  const refresh = localStorage.getItem("refreshToken");
+  if (!token && !refresh) {
+    showToast("Please log in to like or unlike posts.", "error");
+    return;
+  }
+
+  try {
+    let res;
+    if (alreadyLiked) {
+      res = await apiFetch(`/api/posts/${postId}/unlike`, { method: "POST" });
+    } else {
+      res = await apiFetch(`/api/posts/${postId}/like`, { method: "POST" });
     }
 
-    try {
-      let res;
+    const data = await res.json();
+
+    if (res.ok) {
       if (alreadyLiked) {
-        res = await apiFetch(`/api/posts/${postId}/unlike`, { method: "POST" });
+        btn.classList.remove("liked");
+        heart.className = "fa-regular fa-heart";
       } else {
-        res = await apiFetch(`/api/posts/${postId}/like`, { method: "POST" });
+        btn.classList.add("liked");
+        heart.className = "fa-solid fa-heart";
       }
 
-      const data = await res.json();
+      countEl.textContent = data.likes ?? 0;
 
-      if (res.ok) {
-        if (alreadyLiked) {
-          btn.classList.remove("liked");
-          heart.className = "fa-regular fa-heart";
+      if (data.likedBy && data.likedBy.length > 0) {
+        if (data.likedBy.length === 1) {
+          likedByEl.textContent = `Liked by ${data.likedBy[0]}`;
         } else {
-          btn.classList.add("liked");
-          heart.className = "fa-solid fa-heart";
-        }
-
-        countEl.textContent = data.likes ?? 0;
-
-        if (data.likedBy && data.likedBy.length > 0) {
-          if (data.likedBy.length === 1) {
-            likedByEl.textContent = `Liked by ${data.likedBy[0]}`;
-          } else {
-            likedByEl.textContent = `Liked by ${data.likedBy[0]} and ${data.likedBy.length - 1} others`;
-          }
-        } else {
-          likedByEl.textContent = "No likes yet";
+          likedByEl.textContent = `Liked by ${data.likedBy[0]} and ${data.likedBy.length - 1} others`;
         }
       } else {
-        showToast(`Failed to update likes: ${data.message}`, "error");
+        likedByEl.textContent = "No likes yet";
       }
-    } catch (err) {
-      console.error("Like action failed:", err);
-      showToast("Error updating like. Please try again.", "error");
+    } else {
+      showToast(`Failed to update likes: ${data.message}`, "error");
     }
-  });
+  } catch (err) {
+    console.error("Like action failed:", err);
+    showToast("Error updating like. Please try again.", "error");
+  }
+}
 
-  // Comment button toggle and fetch comments
-  document.addEventListener("click", async (e) => {
-    const commentBtn = e.target.closest(".comment-btn");
-    if (!commentBtn) return;
-    e.preventDefault();
-
+// Toggle comments section
+async function toggleComments(commentBtn) {
+  if (commentBtn) {
     if (window.location.pathname.endsWith("post.html")) {
       const commentsSection = document.querySelector(".comments-section");
       const commentsList = commentsSection.querySelector(".comments-list");
@@ -918,128 +902,156 @@ document.addEventListener("DOMContentLoaded", () => {
         await fetchComments(postId, commentsList);
       }
     } else {
-        const postElement = commentBtn.closest(".post");
-        const commentsSection = postElement.querySelector(".comments-section");
-        const commentsList = commentsSection.querySelector(".comments-list");
-        const postId = postElement.querySelector(".like-btn").dataset.postId;
+      const postElement = commentBtn.closest(".post");
+      const commentsSection = postElement.querySelector(".comments-section");
+      const commentsList = commentsSection.querySelector(".comments-list");
+      const postId = postElement.querySelector(".like-btn").dataset.postId;
 
-        commentsSection.classList.toggle("show");
-        if (commentsSection.classList.contains("show")) {
-          await fetchComments(postId, commentsList);
-        }
+      commentsSection.classList.toggle("show");
+      if (commentsSection.classList.contains("show")) {
+        await fetchComments(postId, commentsList);
+      }
     }
-  });
+  }
+}
 
-  // Comment form submission
-  document.addEventListener("submit", async (e) => {
-    const commentForm = e.target.closest(".comment-form");
-    if (!commentForm) return;
-    e.preventDefault();
-    
-    const commentInput = commentForm.querySelector(".comment-input");
-    const commentText = commentInput.value.trim();
-    if (!commentText) return;
+// Delete comment handler
+async function handleDeleteComment(deleteBtn) {
+  if (deleteBtn.dataset.deleting === "true") return;
+  deleteBtn.dataset.deleting = "true";
+  const commentId = deleteBtn.dataset.commentId;
+  const confirmDelete = confirm("Are you sure you want to delete this comment?");
+  if (!confirmDelete) {
+    deleteBtn.dataset.deleting = "false";
+    return;
+  };
 
-    let postElement;
-    let commentsList;
-    let postId;
-    let commentCountSpan;
+  try {
+    const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
+      method: "DELETE",
+    });
 
-    if (window.location.pathname.endsWith("post.html")) {
-      postElement = document.getElementById("singlePostContainer");
-      commentsList = postElement.querySelector(".comments-list");
-      postId = postElement.querySelector(".comment-btn").dataset.postId;
-      commentCountSpan = postElement.querySelector(".comment-count");
+    const data = await res.json();
+
+    if (res.ok) {
+      const commentEl = deleteBtn.closest(".comment");
+      if (commentEl) commentEl.remove();
+
+      let commentCountSpan;
+
+      if (window.location.pathname.endsWith("post.html")) {
+        const postElement = document.getElementById("singlePostContainer");
+        commentCountSpan = postElement?.querySelector(".comment-count");
+      } else {
+        const postElement = deleteBtn.closest(".post");
+        commentCountSpan = postElement?.querySelector(".comment-count");
+      }
+
+      if (commentCountSpan) {
+        const currentCount = parseInt(commentCountSpan.textContent) || 0;
+        commentCountSpan.textContent = Math.max(0, currentCount - 1);
+      }
+      showToast("Comment deleted successfully!", "success");
     } else {
-      postElement = commentForm.closest(".post");
-      commentsList = postElement.querySelector(".comments-list");
-      postId = postElement.querySelector(".like-btn").dataset.postId;
-      commentCountSpan = postElement.querySelector(".comment-count");
+      throw new Error(data.message || "Delete failed");
     }
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    showToast("Error deleting comment. Please try again.", "error");
+  } finally {
+    deleteBtn.dataset.deleting = "false";
+  }
+}
 
-    if (!window.currentUser || !localStorage.getItem("token")) {
-      showToast("Please log in to comment.", "error");
-      commentInput.value = "";
-      return;
-    }
+// Global event handlers
+document.addEventListener("click", async (e) => {
+  // Like button handling
+  const likeBtn = e.target.closest(".like-btn");
+  if (likeBtn) {
+    e.preventDefault();
+    handleLike(likeBtn);
+    return;
+  };
 
-    await postComment(postId, commentText, commentsList);
-    commentInput.value = "";
+  // Comment button handling
+  const commentBtn = e.target.closest(".comment-btn");
+  if (commentBtn) {
+    e.preventDefault();
+    toggleComments(commentBtn);
+    return;
+  };
 
-    await updateCommentCount(postId, commentCountSpan);
-    
-  });
-
-  // Toggle comment menu
-  document.addEventListener("click", (e) => {
-    const menuBtn = e.target.closest(".menu-btn");
-    const options = e.target.closest(".menu-options");
-
-    // Close all menus if clicking elsewhere
-    if (!menuBtn && !options) {
-      document.querySelectorAll(".menu-options").forEach(opt => opt.classList.add("hidden"));
-      return;
-    }
-
-    if (menuBtn) {
-      const menu = menuBtn.nextElementSibling;
-      menu.classList.toggle("hidden");
-    }
-  });
-
-  // Delete comment handler
-  document.addEventListener("click", async (e) => {
-    const deleteBtn = e.target.closest(".delete-comment-btn");
-
-    if (!deleteBtn) return;
-    
+  // Delete comment handling
+  const deleteBtn = e.target.closest(".delete-comment-btn");
+  if (deleteBtn) {
     e.preventDefault();
     e.stopPropagation();
-    if (deleteBtn.dataset.deleting === "true") return;
-    deleteBtn.dataset.deleting = "true";  
-    const commentId = deleteBtn.dataset.commentId;
-    const confirmDelete = confirm("Are you sure you want to delete this comment?");
-    if (!confirmDelete) {
-      deleteBtn.dataset.deleting = "false";
-      return;
-    };
+    handleDeleteComment(deleteBtn);
+  }
 
-    try {
-      const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
-        method: "DELETE",
-      });
+  // Menu button handling
+  const menuBtn = e.target.closest(".menu-btn");
+  const options = e.target.closest(".menu-options");
 
-      const data = await res.json();
+  // Close all menus if clicking elsewhere
+  if (!menuBtn && !options) {
+    document.querySelectorAll(".menu-options").forEach(opt => opt.classList.add("hidden"));
+    return;
+  }
 
-      if (res.ok) {
-        const commentEl = deleteBtn.closest(".comment");
-        if (commentEl) commentEl.remove();
-        
-        let commentCountSpan;
+  if (menuBtn) {
+    const menu = menuBtn.nextElementSibling;
+    menu.classList.toggle("hidden");
+  }
 
-        if (window.location.pathname.endsWith("post.html")) {
-          const postElement = document.getElementById("singlePostContainer");
-          commentCountSpan = postElement?.querySelector(".comment-count");
-        } else {
-          const postElement = deleteBtn.closest(".post");
-          commentCountSpan = postElement?.querySelector(".comment-count");
-        }
+  const editBtn = e.target.closest(".edit-btn");
+  if (editBtn) {
+    editPost(editBtn.dataset.slug);
+    return;
+  }
 
-        if (commentCountSpan) {
-          const currentCount = parseInt(commentCountSpan.textContent) || 0;
-          commentCountSpan.textContent = Math.max(0, currentCount - 1);
-        }
-        showToast("Comment deleted successfully!", "success");
-      } else {
-        throw new Error(data.message || "Delete failed");
-      }
-    } catch (err) {
-      console.error("Error deleting comment:", err);
-      showToast("Error deleting comment. Please try again.", "error");
-    } finally {
-      deleteBtn.dataset.deleting = "false";
-    }  
-  });
+  const deletePostBtn = e.target.closest(".delete-btn");
+  if (deletePostBtn) {
+    deletePost(deletePostBtn.dataset.slug);
+    return;
+  }
+});
+
+// Comment form submission
+document.addEventListener("submit", async (e) => {
+  const commentForm = e.target.closest(".comment-form");
+  if (!commentForm) return;
+  e.preventDefault();
+
+  const commentInput = commentForm.querySelector(".comment-input");
+  const commentText = commentInput.value.trim();
+  if (!commentText) return;
+
+  let postElement;
+  let commentsList;
+  let postId;
+  let commentCountSpan;
+
+  if (window.location.pathname.endsWith("post.html")) {
+    postElement = document.getElementById("singlePostContainer");
+    commentsList = postElement.querySelector(".comments-list");
+    postId = postElement.querySelector(".comment-btn").dataset.postId;
+    commentCountSpan = postElement.querySelector(".comment-count");
+  } else {
+    postElement = commentForm.closest(".post");
+    commentsList = postElement.querySelector(".comments-list");
+    postId = postElement.querySelector(".like-btn").dataset.postId;
+    commentCountSpan = postElement.querySelector(".comment-count");
+  }
+
+  if (!window.currentUser || !localStorage.getItem("token")) {
+    showToast("Please log in to comment.", "error");
+    commentInput.value = "";
+    return;
+  }
+
+  await postComment(postId, commentText, commentsList);
+  commentInput.value = "";
 
 });
 
@@ -1048,16 +1060,14 @@ async function fetchComments(postId, commentsList, limit = 3) {
   try {
     commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
 
-    const res = await fetch(`${COMMENTS_URL}/post/${postId}?_=${Date.now()}`, {
-      cache: "no-cache"
-    });
+    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}?_=${Date.now()}`);
     if (!res.ok) throw new Error("Failed to fetch comments");
 
     const comments = await res.json();
 
     commentsList.innerHTML = "";
 
-    if(comments.length === 0) {
+    if (comments.length === 0) {
       commentsList.innerHTML = "<p class='no-comments'>No comments yet. Be the first to comment!</p>";
       return;
     }
@@ -1119,16 +1129,15 @@ function renderComments(comments, commentsList) {
     div.innerHTML = `
       <div class="comment-header">
         <p><strong class="comment-author" style="cursor: pointer;">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
-        ${
-          isOwner 
-            ? `<div class="comment-menu">
+        ${isOwner
+        ? `<div class="comment-menu">
                   <button class="menu-btn">⋮</button>
                   <div class="menu-options hidden">
                     <button class="delete-comment-btn" data-comment-id="${comment._id}">Delete</button>
                   </div>
-                </div>` 
-            : ""
-        }
+                </div>`
+        : ""
+      }
       </div>  
       <small>${new Date(comment.createdAt).toLocaleString()}</small>
     `;
@@ -1171,8 +1180,10 @@ async function postComment(postId, text, commentsList) {
         <small>${new Date(newComment.createdAt).toLocaleString()}</small>
       `;
       commentsList.prepend(div);
-      showToast("Comment posted successfully!", "success");
+      const commentCountSpan = document.querySelector(`.like-btn[data-post-id="${postId}"]`)?.closest(".post")?.querySelector(".comment-count");
+      await updateCommentCount(postId, commentCountSpan);
 
+      showToast("Comment posted successfully!", "success");
     } else {
       throw new Error("Failed to post comment");
     }
@@ -1265,7 +1276,7 @@ async function loadSinglePost() {
 
     const isAuthor =
       userId && String(postAuthorId) === String(userId);
-      
+
     const container = document.getElementById("singlePostContainer");
 
     container.innerHTML = `
@@ -1308,14 +1319,6 @@ async function loadSinglePost() {
       </div>` : ""}
     `;
 
-    const editPostBtn = container.querySelector(".edit-btn");
-    const deletePostBtn = container.querySelector(".delete-btn");
-
-    if (isAuthor) {
-      editPostBtn?.addEventListener("click", () => editPost(post.slug));
-      deletePostBtn?.addEventListener("click", () => deletePost(post.slug));
-    }
-
     const img = container.querySelector(".post-image");
     if (img) {
       img.onerror = function () {
@@ -1346,14 +1349,14 @@ async function loadSinglePost() {
       likedByEl.textContent = `Liked by ${post.likedBy[0]}`;
     } else {
       likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
-    }  
+    }
 
     const commentCountSpan = container.querySelector(".comment-count");
-    updateCommentCount(post._id, commentCountSpan);  
+    updateCommentCount(post._id, commentCountSpan);
 
     const commentsSection = document.querySelector(".comments-section");
     const commentsList = commentsSection.querySelector(".comments-list");
-    
+
     if (commentsSection && commentsList) {
       await fetchComments(post._id, commentsList, Infinity);
     }
