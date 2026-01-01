@@ -55,13 +55,26 @@ window.currentUser = (() => {
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
-function updateAvatar(user) {
-  const avatar = document.getElementById("navUserAvatar");
-  if (!avatar) return;
+async function updateAvatar(user) {
+  try {
+    const res = await apiFetch("/api/users/me");
 
-  avatar.src = user?.profilePhoto?.trim()
-    ? user.profilePhoto
-    : DEFAULT_AVATAR;
+    if (!res.ok) return;
+
+    const user = await res.json();
+
+    const avatar = document.getElementById("navUserAvatar");
+    if (avatar) {
+      avatar.src = user.profilePhoto?.trim()
+        ? user.profilePhoto
+        : DEFAULT_AVATAR;
+    }
+
+    window.currentUser = user;
+
+  } catch (err) {
+    console.warn("Failed to load auth user:", err);
+  }
 }
 
 // Navigation handlers
@@ -1446,17 +1459,12 @@ function initForgotPassword() {
   }
 }
 
-function hydrateUserUI() {
-  const user = window.currentUser;
-  updateUI(user);
-  updateAvatar(user);
-}
-
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
   window.currentUser = user;
-  hydrateUserUI();
+
+  await updateAvatar(user);
 
   initForgotPassword();
 
