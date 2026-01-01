@@ -197,8 +197,9 @@ exports.forgotPassword = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-  const resetToken = req.params.token;
-  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  const { token, password } = req.body;
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
   try {
     const user = await User.findOne({
       resetPasswordToken: hashedToken,
@@ -207,7 +208,7 @@ exports.resetPassword = async (req, res) => {
 
     if (!user) return res.status(400).json({ message: "Invalid or expired token" });
 
-    user.password = req.body.password;
+    user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
