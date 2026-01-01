@@ -1048,7 +1048,7 @@ async function fetchComments(postId, commentsList, limit = 3) {
   try {
     commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
 
-    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`);
+    const res = await fetch(`${COMMENTS_URL}/post/${postId}`);
     if (!res.ok) throw new Error("Failed to fetch comments");
 
     const comments = await res.json();
