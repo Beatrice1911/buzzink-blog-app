@@ -61,7 +61,7 @@ async function updateAvatar(user) {
 
     if (!res.ok) return;
 
-    const user = await res.json();
+    user = await res.json();
 
     const avatar = document.getElementById("navUserAvatar");
     if (avatar) {
