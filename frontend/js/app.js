@@ -891,29 +891,47 @@ async function handleLike(btn) {
 
 // Toggle comments section
 async function toggleComments(commentBtn) {
-  if (commentBtn) {
-    if (window.location.pathname.endsWith("post.html")) {
-      const commentsSection = document.querySelector(".comments-section");
-      const commentsList = commentsSection.querySelector(".comments-list");
-      const postId = commentBtn.dataset.postId;
+  if (!commentBtn) return;
 
-      commentsSection.classList.toggle("show");
-      if (commentsSection.classList.contains("show")) {
-        await fetchComments(postId, commentsList);
-      }
-    } else {
-      const postElement = commentBtn.closest(".post");
-      const commentsSection = postElement.querySelector(".comments-section");
-      const commentsList = commentsSection.querySelector(".comments-list");
-      const postId = postElement.querySelector(".like-btn").dataset.postId;
+  let postElement;
+  let postId;
 
-      commentsSection.classList.toggle("show");
-      if (commentsSection.classList.contains("show")) {
-        await fetchComments(postId, commentsList);
-      }
-    }
+  if (window.location.pathname.endsWith("post.html")) {
+    postElement = document;
+    postId = commentBtn.dataset.postId;
+  } else {
+    postElement = commentBtn.closest(".post");
+    postId = postElement.querySelector(".like-btn")?.dataset.postId;
+  }
+
+  if (!postElement || !postId) return;
+
+  let commentsSection = postElement.querySelector(".comments-section");
+
+  if (!commentsSection) {
+    commentsSection = document.createElement("div");
+    commentsSection.className = "comments-section show";
+
+    const commentsList = document.createElement("div");
+    commentsList.className = "comments-list";
+
+    commentsSection.appendChild(commentsList);
+    postElement.appendChild(commentsSection);
+
+    await fetchComments(postId, commentsList);
+    return;
+  }
+
+  const commentsList = commentsSection.querySelector(".comments-list");
+  if (!commentsList) return;
+
+  commentsSection.classList.toggle("show");
+
+  if (commentsSection.classList.contains("show")) {
+    await fetchComments(postId, commentsList);
   }
 }
+
 
 // Delete comment handler
 async function handleDeleteComment(deleteBtn) {
