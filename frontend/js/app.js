@@ -287,11 +287,11 @@ function displayPosts(containerId, limit = null) {
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
 
-    const likedBySlugs = Array.isArray(post.likes)
-      ? post.likes.map(l => (typeof l === "object" ? l.slug : l))
+    const likedByIds = Array.isArray(post.likes)
+      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
       : [];
 
-    if (userId && (likedBySlugs.includes(userId) || post.likedByUser)) {
+    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
       likeBtn.classList.add("liked");
       heart.className = "fa-solid fa-heart";
     } else {
@@ -736,11 +736,21 @@ async function checkUser() {
   }
 }
 
+function updateAvatar(user) {
+  const avatar = document.getElementById("navUserAvatar");
+  if (!avatar) return;
+
+  avatar.src = user.profilePhoto?.trim()
+    ? user.profilePhoto
+    : "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
+}
+
 
 // Update UI based on user status
 function updateUI(user) {
   if (user?.id) {
     userIcon.forEach(icon => icon.title = `Logged in as ${user.name}`);
+    updateAvatar(user);
   } else {
     userIcon.forEach(icon => icon.title = "Click to Login/Register");
     userMenuDetails?.classList.remove("show");
@@ -1332,11 +1342,11 @@ async function loadSinglePost() {
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
 
-    const likedBySlugs = Array.isArray(post.likes)
-      ? post.likes.map(l => (typeof l === "object" ? l.slug : l))
+    const likedByIds = Array.isArray(post.likes)
+      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
       : [];
 
-    if (userId && (likedBySlugs.includes(userId) || post.likedByUser)) {
+    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
       likeBtn.classList.add("liked");
       heart.className = "fa-solid fa-heart";
     } else {
@@ -1367,11 +1377,6 @@ async function loadSinglePost() {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
   }
-}
-
-// Load single post if on post.html
-if (window.location.pathname.includes("post.html")) {
-  loadSinglePost();
 }
 
 // Fetch and display trending posts
@@ -1409,6 +1414,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchTrendingPosts();
   } else if (window.location.pathname.endsWith("my-posts.html")) {
     fetchMyPosts();
+  } else if (window.location.pathname.endsWith("post.html")) {
+    loadSinglePost();
+  } else {
+    fetchPosts();
   }
   refreshPage();
 });
