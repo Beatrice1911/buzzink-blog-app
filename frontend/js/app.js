@@ -248,7 +248,7 @@ function displayPosts(containerId, limit = null) {
               <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
               <span class="like-count">${post.likesCount || 0}</span>
             </button>
-            <button class="comment-btn">
+            <button class="comment-btn" data-post-id="${post._id}">
               <i class="fa-regular fa-comment"></i>
               <span class="comment-count">${post.commentsCount || 0}</span>
             </button>
@@ -891,39 +891,17 @@ async function handleLike(btn) {
 
 // Toggle comments section
 async function toggleComments(commentBtn) {
-  if (!commentBtn) return;
+  const postElement = commentBtn.closest(".post") || document.getElementById("singlePostContainer");
+  if (!postElement) return;
 
-  let postElement;
-  let postId;
+  const postId = commentBtn.dataset.postId 
+    || postElement.querySelector(".like-btn")?.dataset.postId;
 
-  if (window.location.pathname.endsWith("post.html")) {
-    postElement = document;
-    postId = commentBtn.dataset.postId;
-  } else {
-    postElement = commentBtn.closest(".post");
-    postId = postElement.querySelector(".like-btn")?.dataset.postId;
-  }
+  if (!postId) return;
 
-  if (!postElement || !postId) return;
-
-  let commentsSection = postElement.querySelector(".comments-section");
-
-  if (!commentsSection) {
-    commentsSection = document.createElement("div");
-    commentsSection.className = "comments-section show";
-
-    const commentsList = document.createElement("div");
-    commentsList.className = "comments-list";
-
-    commentsSection.appendChild(commentsList);
-    postElement.appendChild(commentsSection);
-
-    await fetchComments(postId, commentsList);
-    return;
-  }
-
-  const commentsList = commentsSection.querySelector(".comments-list");
-  if (!commentsList) return;
+  const commentsSection = postElement.querySelector(".comments-section");
+  const commentsList = commentsSection?.querySelector(".comments-list");
+  if (!commentsSection || !commentsList) return;
 
   commentsSection.classList.toggle("show");
 
@@ -931,7 +909,6 @@ async function toggleComments(commentBtn) {
     await fetchComments(postId, commentsList);
   }
 }
-
 
 // Delete comment handler
 async function handleDeleteComment(deleteBtn) {
