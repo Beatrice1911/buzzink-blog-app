@@ -197,7 +197,8 @@ exports.forgotPassword = async (req, res) => {
 };
 
 exports.resetPassword = async (req, res) => {
-  const { token, password } = req.body;
+  const token = req.params.token;
+  const { password } = req.body;
 
   const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
   try {
@@ -212,6 +213,7 @@ exports.resetPassword = async (req, res) => {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
+  
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (err) {
