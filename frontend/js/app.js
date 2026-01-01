@@ -1446,10 +1446,17 @@ function initForgotPassword() {
   }
 }
 
+function hydrateUserUI() {
+  const user = window.currentUser;
+  updateUI(user);
+  updateAvatar(user);
+}
+
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
   window.currentUser = user;
+  hydrateUserUI();
 
   initForgotPassword();
 
