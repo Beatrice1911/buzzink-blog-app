@@ -903,7 +903,7 @@ async function handleLike(btn) {
 
 // Toggle comments section
 async function toggleComments(commentBtn) {
-  const postId = commentBtn.dataset.postId 
+  const postId = commentBtn.dataset.postId
 
   if (!postId) return;
 
@@ -1406,10 +1406,52 @@ profileEdit?.addEventListener("click", () => {
   window.location.href = "dashboard.html";
 });
 
+function initForgotPassword() {
+  const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+  const forgotPasswordModal = document.getElementById("forgotPasswordModal");
+  const closeForgotModal = document.getElementById("closeForgotModal");
+  const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+
+  if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      forgotPasswordModal.classList.remove("hidden");
+    });
+  }
+
+  if (closeForgotModal) {
+    closeForgotModal.addEventListener("click", () => {
+      forgotPasswordModal.classList.add("hidden");
+    });
+  }
+
+  if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("forgotEmail").value.trim();
+      try {
+        const res = await fetch("/api/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        showToast(data.message || "Check your email for the reset link.", "success");
+        forgotPasswordModal.classList.add("hidden");
+      } catch (err) {
+        console.error(err);
+        showToast("Failed to send reset link. Try again.", "error");
+      }
+    });
+  }
+}
+
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
   window.currentUser = user;
+
+  initForgotPassword();
 
   if (window.location.pathname.endsWith("index.html")) {
     fetchPosts();
