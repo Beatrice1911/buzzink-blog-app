@@ -63,11 +63,13 @@ async function updateAvatar(user) {
 
     user = await res.json();
 
-    const avatar = document.getElementById("navUserAvatar");
-    if (avatar) {
-      avatar.src = user.profilePhoto?.trim()
-        ? user.profilePhoto
-        : DEFAULT_AVATAR;
+    const avatars = document.querySelectorAll(".user-icon");
+    if (avatars) {
+      avatars.forEach(avatar => {
+        avatar.src = user.profilePhoto?.trim()
+          ? user.profilePhoto
+          : DEFAULT_AVATAR;
+      });
     }
 
     window.currentUser = user;
