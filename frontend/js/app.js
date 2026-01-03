@@ -387,6 +387,7 @@ async function deletePost(slug) {
 
 // Edit a post
 function editPost(slug) {
+  console.log("EDIT FUNCTION FIRED:", slug);
   localStorage.removeItem("editSlug");
   localStorage.setItem("editSlug", slug);
   window.location.href = "write.html";
@@ -999,7 +1000,25 @@ async function handleDeleteComment(deleteBtn) {
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
-   console.log("CLICKED:", e.target);
+  console.log("CLICKED:", e.target);
+  // Edit post handling
+  const editBtn = e.target.closest(".edit-btn");
+  if (editBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    editPost(editBtn.dataset.slug);
+    return;
+  }
+
+  // Delete post handling
+  const deletePostBtn = e.target.closest(".delete-btn");
+  if (deletePostBtn) {
+    e.preventDefault();
+    e.stopPropagation();
+    deletePost(deletePostBtn.dataset.slug);
+    return;
+  }
+
   // Like button handling
   const likeBtn = e.target.closest(".like-btn");
   if (likeBtn) {
@@ -1037,22 +1056,6 @@ document.addEventListener("click", async (e) => {
   if (menuBtn) {
     const menu = menuBtn.nextElementSibling;
     menu.classList.toggle("hidden");
-  }
-
-  const editBtn = e.target.closest(".edit-btn");
-  if (editBtn) {
-    e.preventDefault();
-    e.stopPropagation();
-    editPost(editBtn.dataset.slug);
-    return;
-  }
-
-  const deletePostBtn = e.target.closest(".delete-btn");
-  if (deletePostBtn) {
-    e.preventDefault();
-    e.stopPropagation();
-    deletePost(deletePostBtn.dataset.slug);
-    return;
   }
 });
 
