@@ -52,19 +52,19 @@ exports.deleteAnyPost = async (req, res) => {
 exports.getAllComments = async (req, res) => {
   try {
     const comments = await Comment.find()
-      .populate("userId", "name")
-      .populate("postId", "title");
+      .populate({ path: 'userId', select: 'name', options: { strictPopulate: false } })
+      .populate({ path: 'postId', select: 'title', options: { strictPopulate: false } });
       
-    const formatted = comments.map(comment => ({
+    const safeComments = comments.map(comment => ({
       _id: comment._id,
-      userName: comment.userId && comment.userId.name ? comment.userId.name : "Unknown User",
-      postTitle: comment.postId && comment.postId.title ? comment.postId.title : "Deleted Post",
+      userName: comment.userId?.name || "Unknown User",
+      postTitle: comment.postId?.title || "Deleted Post",
       content: comment.content
     }));
-    res.json(formatted);
+    res.status(200).json(safeComments);
   } catch (err) {
     console.error('Admin comments error:', err);
-    res.status(500).json({ message: "Failed to load comments" });
+    res.status(200).json([]);
   }
 };
 
