@@ -162,6 +162,27 @@ body {
   background-color: #c0392b;
 }
 
+.pagination {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.pagination button {
+  background-color: #3b3b5c;
+  color: #fff;
+  border: none;
+  margin: 0 5px;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pagination button.active,
+.pagination button:hover {
+  background-color: #575787;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard {
