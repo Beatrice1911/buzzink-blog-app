@@ -1,3 +1,4 @@
+const token = localStorage.getItem('token');
 const role = localStorage.getItem('role');
 async function checkAdmin() {
   const token = localStorage.getItem('token');
@@ -144,8 +145,6 @@ async function loadComments() {
 loadUsers();
 loadPosts();
 loadComments();
-
-const token = localStorage.getItem('token');
 
 // Delete functions
 async function deleteUser(id, row) {
