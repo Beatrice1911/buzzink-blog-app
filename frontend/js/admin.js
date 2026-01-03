@@ -4,7 +4,7 @@ async function checkAdmin() {
   const token = localStorage.getItem('token');
   if (!token) return redirectHome();
 
-  const res = await fetch('/api/auth/verify', {
+  const res = await fetch('/api/users/me', {
     headers: { 'Authorization': `Bearer ${token}` }
   });
   const user = await res.json();
@@ -16,8 +16,6 @@ function redirectHome() {
   alert('Access denied. Admins only.');
   window.location.href = '/index.html';
 }
-
-checkAdmin();
 
 // Select sidebar links and sections
 const sidebarLinks = document.querySelectorAll('.sidebar .nav-links a');
@@ -141,11 +139,6 @@ async function loadComments() {
   });
 }
 
-// Initial load
-loadUsers();
-loadPosts();
-loadComments();
-
 // Delete functions
 async function deleteUser(id, row) {
   if (!confirm('Are you sure you want to delete this user?')) return;
@@ -180,3 +173,9 @@ async function deleteComment(id, row) {
   loadComments();
 }
 
+document.addEventListener("DOMContentLoaded", async () => {
+  await checkAdmin();
+  loadUsers();
+  loadPosts();
+  loadComments();
+});
