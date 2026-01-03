@@ -70,7 +70,12 @@ body {
 .admin-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 40px;
+}
+
+.admin-info span {
+  font-size: 40px;
+  font-weight: 600;
 }
 
 .admin-info .avatar {
@@ -107,6 +112,10 @@ body {
 }
 
 /* Tables */
+.content-tables h2 {
+  margin-bottom: 15px;
+}
+
 .content-tables table {
   width: 100%;
   border-collapse: collapse;
@@ -131,3 +140,16 @@ body {
   background-color: #f9f9f9;
 }
 
+.btn-delete {
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
