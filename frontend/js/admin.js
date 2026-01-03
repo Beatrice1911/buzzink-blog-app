@@ -103,9 +103,9 @@ async function loadOverviewStats() {
 
   const data = await res.json();
 
-  document.getElementById('totalUsers').textContent = data.users;
-  document.getElementById('totalPosts').textContent = data.posts;
-  document.getElementById('totalComments').textContent = data.comments;
+  document.getElementById('total-users').textContent = data.users;
+  document.getElementById('total-posts').textContent = data.posts;
+  document.getElementById('total-comments').textContent = data.comments;
 }
 
 
@@ -149,6 +149,12 @@ async function loadComments() {
   const comments = await res.json();
   const tbody = document.querySelector('#comments-table tbody');
   tbody.innerHTML = '';
+
+  if (!Array.isArray(comments)) {
+    console.error('Comments data is not an array:', comments);
+    return;
+  };
+
   comments.forEach(comment => {
     tbody.appendChild(createRow(comment, ['userName', 'postTitle', 'content'], 'comments'));
   });
