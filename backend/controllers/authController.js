@@ -12,7 +12,7 @@ const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 
 function signToken(user) {
   return jwt.sign(
-    { sub: user._id.toString(), email: user.email, name: user.name },
+    { sub: user._id.toString(), email: user.email, name: user.name, role: user.role },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
   );
@@ -38,13 +38,13 @@ async function signRefreshToken(user) {
 
 exports.register = async (req, res, next) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, role } = req.body;
     if (!email || !password) return res.status(400).json({ message: "Email and password required" });
 
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ message: "User already exists" });
 
-    const user = new User({ email, password, name });
+    const user = new User({ email, password, name, role: role || "user" });
     await user.save();
 
     const token = signToken(user);
@@ -53,7 +53,7 @@ exports.register = async (req, res, next) => {
     res.json({
       token,
       refreshToken,
-      user: { id: user._id, email: user.email, name: user.name }
+      user: { id: user._id, email: user.email, name: user.name, role: user.role }
     });
   } catch (err) {
     next(err);
@@ -77,7 +77,7 @@ exports.login = async (req, res, next) => {
     res.json({
       token,
       refreshToken,
-      user: { id: user._id, email: user.email, name: user.name }
+      user: { id: user._id, email: user.email, name: user.name, role: user.role }
     });
   } catch (err) {
     next(err);
@@ -94,7 +94,7 @@ exports.me = async (req, res, next) => {
     if (!user) return res.json({ user: null });
 
     res.json({
-      user: { id: user._id.toString(), email: user.email, name: user.name }
+      user: { id: user._id.toString(), email: user.email, name: user.name, role: user.role}
     });
   } catch (err) {
     next(err);
@@ -123,7 +123,7 @@ exports.refresh = async (req, res) => {
     res.json({
       token: newAccessToken,
       refreshToken: newRefreshToken,
-      user: { id: user._id, email: user.email, name: user.name }
+      user: { id: user._id, email: user.email, name: user.name, role: user.role }
     });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
@@ -157,7 +157,7 @@ exports.verify = async (req, res) => {
     const user = await User.findById(payload.sub).select("name email");
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json({ id: user._id, email: user.email, name: user.name });
+    res.json({ id: user._id, email: user.email, name: user.name, role: user.role });
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });
   }
@@ -218,5 +218,32 @@ exports.resetPassword = async (req, res) => {
     res.status(200).json({ message: "Password reset successful" });
   } catch (err) {
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.createFirstAdmin = async (req, res, next) => {
+  try {
+    const adminExists = await User.findOne({ role: "admin" });
+    if (adminExists) {
+      return res.status(403).json({ message: "Admin already exists" });
+    }
+
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }
+
+    const user = new User({ name, email, password, role: "admin" });
+    await user.save();
+
+    const token = signToken(user);
+
+    res.status(201).json({
+      message: "First admin created successfully",
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      token
+    });
+  } catch (err) {
+    next(err);
   }
 };

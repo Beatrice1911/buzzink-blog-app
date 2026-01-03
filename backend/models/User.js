@@ -8,7 +8,11 @@ const userSchema = new mongoose.Schema({
   name: { type: String, trim: true, unique: true },
   profilePhoto: { type: String, default: null },
   bio: { type: String, default: null },
-  role: { type: String, default: 'reader' }, // 'admin', 'editor', 'reader'
+  role: { 
+    type: String, 
+    enum: ['admin', 'user'],
+    default: 'user'
+  },
   resetPasswordToken: { type: String },
   resetPasswordExpire: { type: Date },
   dateJoined: { type: Date, default: Date.now }
