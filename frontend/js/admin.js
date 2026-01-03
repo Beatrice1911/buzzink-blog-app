@@ -124,7 +124,7 @@ function renderPagination(containerId, page, pages, callback) {
     const btn = document.createElement('button');
     btn.textContent = i;
     btn.classList.toggle('active', i === page);
-    btn.onclick = () => callback(i);
+    btn.addEventListener('click', () => callback(i));
     container.appendChild(btn);
   }
 }
