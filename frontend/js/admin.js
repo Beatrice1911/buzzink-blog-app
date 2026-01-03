@@ -148,7 +148,7 @@ async function loadUsers(page = 1) {
   const users = await res.json();
   const tbody = document.querySelector('#users-table tbody');
   tbody.innerHTML = '';
-  users.forEach(user => {
+  users.data.forEach(user => {
     tbody.appendChild(createRow(user, ['name', 'email', 'role'], 'users'));
   });
 
@@ -162,7 +162,7 @@ async function loadPosts(page = 1) {
   const posts = await res.json();
   const tbody = document.querySelector('#posts-table tbody');
   tbody.innerHTML = '';
-  posts.forEach(post => {
+  posts.data.forEach(post => {
     tbody.appendChild(createRow(post, ['title', 'authorName', 'category'], 'posts'));
   });
 
@@ -182,7 +182,7 @@ async function loadComments(page = 1) {
     return;
   };
 
-  comments.forEach(comment => {
+  comments.data.forEach(comment => {
     tbody.appendChild(createRow(comment, ['userName', 'postTitle', 'content'], 'comments'));
   });
 
