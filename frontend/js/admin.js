@@ -115,6 +115,19 @@ userSearchInput?.addEventListener('input', () => filterTable(userSearchInput, 'u
 postSearchInput?.addEventListener('input', () => filterTable(postSearchInput, 'posts-table'));
 commentSearchInput?.addEventListener('input', () => filterTable(commentSearchInput, 'comments-table'));
 
+// Render pagination buttons
+function renderPagination(containerId, page, pages, callback) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  for (let i = 1; i <= pages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.classList.toggle('active', i === page);
+    btn.onclick = () => callback(i);
+    container.appendChild(btn);
+  }
+}
 
 // Fetch and render Overview Stats
 async function loadOverviewStats() {
@@ -130,29 +143,36 @@ async function loadOverviewStats() {
 
 // Fetch and render Users
 async function loadUsers() {
-  const res = await apiFetch('/api/admin/users');
+  const search = userSearchInput?.value || '';
+  const res = await apiFetch(`/api/admin/users?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
   const users = await res.json();
   const tbody = document.querySelector('#users-table tbody');
   tbody.innerHTML = '';
   users.forEach(user => {
     tbody.appendChild(createRow(user, ['name', 'email', 'role'], 'users'));
   });
+
+  renderPagination('users-pagination', users.page, users.pages, loadUsers);
 }
 
 // Fetch and render Posts
 async function loadPosts() {
-  const res = await apiFetch('/api/admin/posts');
+  const search = postSearchInput?.value || '';
+  const res = await apiFetch(`/api/admin/posts?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
   const posts = await res.json();
   const tbody = document.querySelector('#posts-table tbody');
   tbody.innerHTML = '';
   posts.forEach(post => {
     tbody.appendChild(createRow(post, ['title', 'authorName', 'category'], 'posts'));
   });
+
+  renderPagination('posts-pagination', posts.page, posts.pages, loadPosts);
 }
 
 // Fetch and render Comments
 async function loadComments() {
-  const res = await apiFetch('/api/admin/comments');
+  const search = commentSearchInput?.value || '';
+  const res = await apiFetch(`/api/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
   const comments = await res.json();
   const tbody = document.querySelector('#comments-table tbody');
   tbody.innerHTML = '';
@@ -165,6 +185,8 @@ async function loadComments() {
   comments.forEach(comment => {
     tbody.appendChild(createRow(comment, ['userName', 'postTitle', 'content'], 'comments'));
   });
+
+  renderPagination('comments-pagination', comments.page, comments.pages, loadComments);
 }
 
 // Delete functions
