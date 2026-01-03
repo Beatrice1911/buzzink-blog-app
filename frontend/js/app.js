@@ -360,7 +360,13 @@ async function deletePost(slug) {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
   try {
-    const res = await apiFetch(`${API_URL}/${slug}`, { method: "DELETE" });
+    const token = localStorage.getItem("token");
+    const res = await fetch(`${API_URL}/${slug}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -1035,12 +1041,16 @@ document.addEventListener("click", async (e) => {
 
   const editBtn = e.target.closest(".edit-btn");
   if (editBtn) {
+    e.preventDefault();
+    e.stopPropagation();
     editPost(editBtn.dataset.slug);
     return;
   }
 
   const deletePostBtn = e.target.closest(".delete-btn");
   if (deletePostBtn) {
+    e.preventDefault();
+    e.stopPropagation();
     deletePost(deletePostBtn.dataset.slug);
     return;
   }
