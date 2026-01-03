@@ -142,7 +142,7 @@ async function loadOverviewStats() {
 
 
 // Fetch and render Users
-async function loadUsers() {
+async function loadUsers(page = 1) {
   const search = userSearchInput?.value || '';
   const res = await apiFetch(`/api/admin/users?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
   const users = await res.json();
@@ -156,7 +156,7 @@ async function loadUsers() {
 }
 
 // Fetch and render Posts
-async function loadPosts() {
+async function loadPosts(page = 1) {
   const search = postSearchInput?.value || '';
   const res = await apiFetch(`/api/admin/posts?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
   const posts = await res.json();
@@ -170,7 +170,7 @@ async function loadPosts() {
 }
 
 // Fetch and render Comments
-async function loadComments() {
+async function loadComments(page = 1) {
   const search = commentSearchInput?.value || '';
   const res = await apiFetch(`/api/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
   const comments = await res.json();
