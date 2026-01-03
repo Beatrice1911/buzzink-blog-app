@@ -4,9 +4,26 @@ const Comment = require("../models/Comment");
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().select("-password");
-        res.json(users);
+      let { page = 1, limit = 10, search = '' } = req.query;
+      page = parseInt(page);
+      limit = parseInt(limit);
+
+      const query = search
+        ? { name: { $regex: search, $options: 'i' } }
+        : {};
+      const totalUsers = await User.countDocuments(query);
+      const users = await User.find(query)
+      .select("-password")
+      .skip((page - 1) * limit)
+      .limit(limit);
+      res.json({
+        data: users,
+        total: totalUsers,
+        page,
+        pages: Math.ceil(totalUsers / limit)
+      });
     } catch (error) {
+      console.error("Error fetching users:", error);
         res.status(500).json({ message: "Server error." });
     }
 };
@@ -29,9 +46,23 @@ exports.deleteUser = async (req, res) => {
 
 exports.getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("authorId", "name email role");
-    res.json(posts);
+    let { page = 1, limit = 10, search = '' } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const query = search
+      ? { title: { $regex: search, $options: 'i' } }
+      : {};
+    const totalPosts = await Post.countDocuments(query);
+    const posts = await Post.find(query).populate("authorId", "name email role");
+    res.json({
+      data: posts,
+      total: totalPosts,
+      page,
+      pages: Math.ceil(totalPosts / limit)
+    });
   } catch (err) {
+    console.error("Error fetching posts:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -51,7 +82,16 @@ exports.deleteAnyPost = async (req, res) => {
 
 exports.getAllComments = async (req, res) => {
   try {
-    const comments = await Comment.find()
+    let { page = 1, limit = 10, search = '' } = req.query;
+    page = parseInt(page);
+    limit = parseInt(limit);
+
+    const query = search
+      ? { content: { $regex: search, $options: 'i' } }
+      : {};
+    
+    const totalComments = await Comment.countDocuments(query);
+    const comments = await Comment.find(query)
       .populate({ path: 'authorId', select: 'name', options: { strictPopulate: false } })
       .populate({ path: 'postId', select: 'title', options: { strictPopulate: false } });
       
@@ -61,9 +101,14 @@ exports.getAllComments = async (req, res) => {
       postTitle: comment.postId?.title || "Deleted Post",
       content: comment.content || comment.comment || comment.text || "[No Content]"
     }));
-    res.status(200).json(safeComments);
+    res.status(200).json({
+      data: safeComments,
+      total: totalComments,
+      page,
+      pages: Math.ceil(totalComments / limit)
+    });
   } catch (err) {
-    console.error('Admin comments error:', err);
+    console.error('Error fetching comments:', err);
     res.status(200).json([]);
   }
 };
