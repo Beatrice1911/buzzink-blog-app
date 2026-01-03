@@ -14,6 +14,11 @@ const postImages = document.querySelectorAll(".post-image");
 const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 document.getElementById("canonicalUrl")?.setAttribute("href", window.location.href);
 
+// Check if current user is admin
+function isAdmin() {
+  return window.currentUser?.role === "admin";
+}
+
 // Set meta tags for SEO and social sharing
 if (window.location.pathname.endsWith("post.html")) {
   (async () => {
@@ -676,6 +681,10 @@ loginForm?.addEventListener("submit", async (e) => {
   localStorage.setItem("refreshToken", data.refreshToken)
   localStorage.setItem("user", JSON.stringify(user));
   window.currentUser = user;
+  localStorage.setItem("role", user.role);
+  if (user.role === "admin") {
+    window.location.href = "admin.html";
+  }
 
   updateUI(user);
   updateAvatar(user);
@@ -710,7 +719,7 @@ registerForm?.addEventListener("submit", async (e) => {
   localStorage.setItem("refreshToken", data.refreshToken);
   localStorage.setItem("user", JSON.stringify(user));
   window.currentUser = user;
-
+  localStorage.setItem("role", user.role);
   updateUI(user);
   updateAvatar(user);
   authModal.classList.add("hidden");
@@ -1488,6 +1497,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchPosts();
   }
   refreshPage();
+
+  if (!isAdmin()) {
+    showToast("Access denied", "error");
+    window.location.href = "index.html";
+  }
 });
 
 export { showToast };
