@@ -116,6 +116,14 @@ body {
   margin-bottom: 15px;
 }
 
+.content-tables input[type="text"] {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
 .content-tables table {
   width: 100%;
   border-collapse: collapse;

@@ -93,6 +93,30 @@ function createRow(data, columns, type) {
   return tr;
 }
 
+// Search inputs
+const userSearchInput = document.getElementById('user-search');
+const postSearchInput = document.getElementById('post-search');
+const commentSearchInput = document.getElementById('comment-search');
+
+// Function to filter rows
+function filterTable(input, tableId) {
+  const filter = input.value.toLowerCase();
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  rows.forEach(row => {
+    row.style.display = [...row.cells]
+      .some(cell => cell.textContent.toLowerCase().includes(filter))
+      ? ''
+      : 'none';
+  });
+}
+
+// Attach event listeners
+userSearchInput?.addEventListener('input', () => filterTable(userSearchInput, 'users-table'));
+postSearchInput?.addEventListener('input', () => filterTable(postSearchInput, 'posts-table'));
+commentSearchInput?.addEventListener('input', () => filterTable(commentSearchInput, 'comments-table'));
+
+
+// Fetch and render Overview Stats
 async function loadOverviewStats() {
   const res = await apiFetch('/api/admin/stats');
 
