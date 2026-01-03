@@ -360,13 +360,7 @@ async function deletePost(slug) {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
   try {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${API_URL}/${slug}`, {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
+    const res = await apiFetch(`${API_URL}/${slug}`, { method: "DELETE" });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -387,7 +381,6 @@ async function deletePost(slug) {
 
 // Edit a post
 function editPost(slug) {
-  console.log("EDIT FUNCTION FIRED:", slug);
   localStorage.removeItem("editSlug");
   localStorage.setItem("editSlug", slug);
   window.location.href = "write.html";
@@ -1000,7 +993,6 @@ async function handleDeleteComment(deleteBtn) {
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
-  console.log("CLICKED:", e.target);
   // Edit post handling
   const editBtn = e.target.closest(".edit-btn");
   if (editBtn) {
