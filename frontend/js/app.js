@@ -72,7 +72,7 @@ async function updateAvatar(user) {
       });
     }
 
-    window.currentUser = user;
+    window.currentUser = user;   
 
   } catch (err) {
     console.warn("Failed to load auth user:", err);
@@ -1342,8 +1342,8 @@ async function loadSinglePost() {
       </div>
       ${isAuthor ? `
       <div class="post-actions">
-        <button class="edit-btn btn" data-post-slug="${post.slug}">Edit</button>
-        <button class="delete-btn btn" data-post-slug="${post.slug}">Delete</button>
+        <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
+        <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
       </div>` : ""}
     `;
 
@@ -1421,6 +1421,7 @@ profileEdit?.addEventListener("click", () => {
   window.location.href = "dashboard.html";
 });
 
+// Forgot password modal and form handling
 function initForgotPassword() {
   const forgotPasswordLink = document.getElementById("forgotPasswordLink");
   const forgotPasswordModal = document.getElementById("forgotPasswordModal");
