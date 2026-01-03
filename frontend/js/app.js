@@ -993,6 +993,7 @@ async function handleDeleteComment(deleteBtn) {
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
+   console.log("CLICKED:", e.target);
   // Like button handling
   const likeBtn = e.target.closest(".like-btn");
   if (likeBtn) {
