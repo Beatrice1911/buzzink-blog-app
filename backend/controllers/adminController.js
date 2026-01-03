@@ -54,14 +54,17 @@ exports.getAllComments = async (req, res) => {
     const comments = await Comment.find()
       .populate("userId", "name")
       .populate("postId", "title");
-    res.json(comments.map(comment => ({
-      __id: comment._id,
-      userName: comment.userId?.name || "Deleted User",
-      postTitle: comment.postId?.title || "Deleted Post",
+      
+    const formatted = comments.map(comment => ({
+      _id: comment._id,
+      userName: comment.userId && comment.userId.name ? comment.userId.name : "Unknown User",
+      postTitle: comment.postId && comment.postId.title ? comment.postId.title : "Deleted Post",
       content: comment.content
-    })));
+    }));
+    res.json(formatted);
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error('Admin comments error:', err);
+    res.status(500).json({ message: "Failed to load comments" });
   }
 };
 
