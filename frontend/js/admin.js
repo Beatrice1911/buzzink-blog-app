@@ -1,12 +1,11 @@
+import { apiFetch } from './app.js';
 const token = localStorage.getItem('token');
 const role = localStorage.getItem('role');
 async function checkAdmin() {
   const token = localStorage.getItem('token');
   if (!token) return redirectHome();
 
-  const res = await fetch('/api/users/me', {
-    headers: { 'Authorization': `Bearer ${token}` }
-  });
+  const res = await apiFetch('/api/users/me');
   const user = await res.json();
 
   if (!user || user.role !== 'admin') return redirectHome();
@@ -63,7 +62,7 @@ function createRow(data, columns, type) {
 
   columns.forEach(col => {
     const td = document.createElement('td');
-    td.textContent = data[col] || '';
+    td.textContent = data[col] !== undefined && data[col] !== null ? data[col] : '';
     tr.appendChild(td);
   });
 
@@ -95,11 +94,7 @@ function createRow(data, columns, type) {
 }
 
 async function loadOverviewStats() {
-  const res = await fetch('/api/admin/stats', {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
-  });
+  const res = await apiFetch('/api/admin/stats');
 
   const data = await res.json();
 
@@ -111,11 +106,7 @@ async function loadOverviewStats() {
 
 // Fetch and render Users
 async function loadUsers() {
-  const res = await fetch('/api/admin/users', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  const res = await apiFetch('/api/admin/users');
   const users = await res.json();
   const tbody = document.querySelector('#users-table tbody');
   tbody.innerHTML = '';
@@ -126,11 +117,7 @@ async function loadUsers() {
 
 // Fetch and render Posts
 async function loadPosts() {
-  const res = await fetch('/api/admin/posts', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  const res = await apiFetch('/api/admin/posts');
   const posts = await res.json();
   const tbody = document.querySelector('#posts-table tbody');
   tbody.innerHTML = '';
@@ -141,11 +128,7 @@ async function loadPosts() {
 
 // Fetch and render Comments
 async function loadComments() {
-  const res = await fetch('/api/admin/comments', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  const res = await apiFetch('/api/admin/comments');
   const comments = await res.json();
   const tbody = document.querySelector('#comments-table tbody');
   tbody.innerHTML = '';
@@ -163,33 +146,24 @@ async function loadComments() {
 // Delete functions
 async function deleteUser(id, row) {
   if (!confirm('Are you sure you want to delete this user?')) return;
-  await fetch(`/api/admin/users/${id}`, { 
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+  await apiFetch(`/api/admin/users/${id}`, { 
+    method: 'DELETE'
   });
   loadUsers();
 }
 
 async function deletePost(id, row) {
   if (!confirm('Are you sure you want to delete this post?')) return;
-  await fetch(`/api/admin/posts/${id}`, { 
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+  await apiFetch(`/api/admin/posts/${id}`, { 
+    method: 'DELETE'
   });
   loadPosts();
 }
 
 async function deleteComment(id, row) {
   if (!confirm('Are you sure you want to delete this comment?')) return;
-  await fetch(`/api/admin/comments/${id}`, { 
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+  await apiFetch(`/api/admin/comments/${id}`, { 
+    method: 'DELETE'
   });
   loadComments();
 }
