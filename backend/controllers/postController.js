@@ -166,7 +166,7 @@ const deletePost = async (req, res) => {
       return res.status(403).json({ message: "You are not the author of this post" });
     }
 
-    await Post.findByIdAndDelete(req.params.slug);
+    await Post.findOneAndDelete({ slug: req.params.slug });
     res.json({ message: "Post deleted successfully" });
   } catch (err) {
     console.error("Error deleting post:", err);
