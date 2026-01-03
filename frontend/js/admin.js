@@ -24,7 +24,7 @@ const sections = {
   Users: document.getElementById('users-section'),
   Posts: document.getElementById('posts-section'),
   Comments: document.getElementById('comments-section'),
-  Settings: null
+  Settings: document.getElementById('settings-section')
 };
 
 // Function to hide all sections
@@ -93,6 +93,21 @@ function createRow(data, columns, type) {
   tr.appendChild(actionTd);
   return tr;
 }
+
+async function loadOverviewStats() {
+  const res = await fetch('/api/admin/stats', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`
+    }
+  });
+
+  const data = await res.json();
+
+  document.getElementById('totalUsers').textContent = data.users;
+  document.getElementById('totalPosts').textContent = data.posts;
+  document.getElementById('totalComments').textContent = data.comments;
+}
+
 
 // Fetch and render Users
 async function loadUsers() {
@@ -175,6 +190,7 @@ async function deleteComment(id, row) {
 
 document.addEventListener("DOMContentLoaded", async () => {
   await checkAdmin();
+  loadOverviewStats();
   loadUsers();
   loadPosts();
   loadComments();

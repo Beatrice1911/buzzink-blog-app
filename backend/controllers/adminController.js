@@ -52,9 +52,14 @@ exports.deleteAnyPost = async (req, res) => {
 exports.getAllComments = async (req, res) => {
   try {
     const comments = await Comment.find()
-      .populate("authorId", "name email role")
+      .populate("userId", "name")
       .populate("postId", "title");
-    res.json(comments);
+    res.json(comments.map(comment => ({
+      __id: comment._id,
+      userName: comment.userId?.name || "Deleted User",
+      postTitle: comment.postId?.title || "Deleted Post",
+      content: comment.content
+    })));
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
@@ -71,3 +76,10 @@ exports.deleteComment = async (req, res) => {
   }
 };
 
+exports.getAdminStats = async (req, res) => {
+  const users = await User.countDocuments();
+  const posts = await Post.countDocuments();
+  const comments = await Comment.countDocuments();
+
+  res.json({ users, posts, comments });
+};
