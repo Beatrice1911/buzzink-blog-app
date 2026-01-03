@@ -221,29 +221,29 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
-exports.createFirstAdmin = async (req, res, next) => {
-  try {
-    const adminExists = await User.findOne({ role: "admin" });
-    if (adminExists) {
-      return res.status(403).json({ message: "Admin already exists" });
-    }
+// exports.createFirstAdmin = async (req, res, next) => {
+//   try {
+//     const adminExists = await User.findOne({ role: "admin" });
+//     if (adminExists) {
+//       return res.status(403).json({ message: "Admin already exists" });
+//     }
 
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Name, email, and password are required" });
-    }
+//     const { name, email, password } = req.body;
+//     if (!name || !email || !password) {
+//       return res.status(400).json({ message: "Name, email, and password are required" });
+//     }
 
-    const user = new User({ name, email, password, role: "admin" });
-    await user.save();
+//     const user = new User({ name, email, password, role: "admin" });
+//     await user.save();
 
-    const token = signToken(user);
+//     const token = signToken(user);
 
-    res.status(201).json({
-      message: "First admin created successfully",
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      token
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+//     res.status(201).json({
+//       message: "First admin created successfully",
+//       user: { id: user._id, name: user.name, email: user.email, role: user.role },
+//       token
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// };

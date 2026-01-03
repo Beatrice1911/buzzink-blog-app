@@ -12,6 +12,6 @@ router.post('/refresh', refresh);
 router.get('/verify', verify);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
-router.post('/create-first-admin', createFirstAdmin);
+// router.post('/create-first-admin', createFirstAdmin);
 
 module.exports = router;
