@@ -59,7 +59,7 @@ exports.getAllComments = async (req, res) => {
       _id: comment._id,
       userName: comment.userId?.name || "Unknown User",
       postTitle: comment.postId?.title || "Deleted Post",
-      content: comment.content
+      content: comment.content || "[No Content]"
     }));
     res.status(200).json(safeComments);
   } catch (err) {

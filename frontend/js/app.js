@@ -1494,4 +1494,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   refreshPage();
 });
 
-export { showToast };
+export { showToast, apiFetch };
