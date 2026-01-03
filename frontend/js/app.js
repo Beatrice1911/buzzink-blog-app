@@ -14,11 +14,6 @@ const postImages = document.querySelectorAll(".post-image");
 const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 document.getElementById("canonicalUrl")?.setAttribute("href", window.location.href);
 
-// Check if current user is admin
-function isAdmin() {
-  return window.currentUser?.role === "admin";
-}
-
 // Set meta tags for SEO and social sharing
 if (window.location.pathname.endsWith("post.html")) {
   (async () => {
@@ -1497,11 +1492,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchPosts();
   }
   refreshPage();
-
-  if (!isAdmin()) {
-    showToast("Access denied", "error");
-    window.location.href = "index.html";
-  }
 });
 
 export { showToast };
