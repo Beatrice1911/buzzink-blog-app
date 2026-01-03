@@ -52,12 +52,12 @@ exports.deleteAnyPost = async (req, res) => {
 exports.getAllComments = async (req, res) => {
   try {
     const comments = await Comment.find()
-      .populate('userId', 'name email')  // populate user reference
-      .populate('postId', 'title');
+      .populate({ path: 'authorId', select: 'name', options: { strictPopulate: false } })
+      .populate({ path: 'postId', select: 'title', options: { strictPopulate: false } });
       
     const safeComments = comments.map(comment => ({
       _id: comment._id,
-      userName: comment.userId?.name || "Unknown User",
+      userName: comment.authorId?.name || "Unknown User",
       postTitle: comment.postId?.title || "Deleted Post",
       content: comment.content || comment.comment || comment.text || "[No Content]"
     }));
