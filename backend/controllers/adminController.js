@@ -57,7 +57,7 @@ exports.getAllComments = async (req, res) => {
       
     const safeComments = comments.map(comment => ({
       _id: comment._id,
-      userName: comment.userId?.name || "Unknown User",
+      userName: comment.authorId?.name || "Unknown User",
       postTitle: comment.postId?.title || "Deleted Post",
       content: comment.content || comment.comment || comment.text || "[No Content]"
     }));
