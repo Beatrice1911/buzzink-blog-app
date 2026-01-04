@@ -205,7 +205,7 @@ async function deleteUser(id, row) {
   await apiFetch(`/api/admin/users/${id}`, { 
     method: 'DELETE'
   });
-  loadUsers();
+  loadUsers(usersPage);
 }
 
 async function deletePost(id, row) {
@@ -213,7 +213,7 @@ async function deletePost(id, row) {
   await apiFetch(`/api/admin/posts/${id}`, { 
     method: 'DELETE'
   });
-  loadPosts();
+  loadPosts(postsPage);
 }
 
 async function deleteComment(id, row) {
@@ -221,13 +221,13 @@ async function deleteComment(id, row) {
   await apiFetch(`/api/admin/comments/${id}`, { 
     method: 'DELETE'
   });
-  loadComments();
+  loadComments(commentsPage);
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
   await checkAdmin();
   loadOverviewStats();
-  loadUsers();
-  loadPosts();
-  loadComments();
+  loadUsers(usersPage);
+  loadPosts(postsPage);
+  loadComments(commentsPage);
 });
