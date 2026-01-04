@@ -1088,7 +1088,7 @@ document.addEventListener("submit", async (e) => {
     return;
   }
 
-  await postComment(postId, commentText, commentsList);
+  await postComment(postId, commentText, commentsList, commentCountSpan);
   commentInput.value = "";
 
 });
@@ -1188,7 +1188,7 @@ function renderComments(comments, commentsList) {
   });
 }
 
-async function postComment(postId, text, commentsList) {
+async function postComment(postId, text, commentsList, commentCountSpan) {
   try {
     const token = localStorage.getItem("token");
 
@@ -1218,8 +1218,9 @@ async function postComment(postId, text, commentsList) {
         <small>${new Date(newComment.createdAt).toLocaleString()}</small>
       `;
       commentsList.prepend(div);
-      const commentCountSpan = document.querySelector(`.like-btn[data-post-id="${postId}"]`)?.closest(".post")?.querySelector(".comment-count");
-      await updateCommentCount(postId, commentCountSpan);
+      if (commentCountSpan) {
+        await updateCommentCount(postId, commentCountSpan);
+      }
 
       showToast("Comment posted successfully!", "success");
     } else {
