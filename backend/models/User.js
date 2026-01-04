@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   bio: { type: String, default: null },
   role: { 
     type: String, 
-    enum: ['admin', 'user'],
+    enum: ['admin', 'reader'],
     default: 'user'
   },
   resetPasswordToken: { type: String },
