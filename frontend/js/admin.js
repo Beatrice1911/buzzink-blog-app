@@ -16,6 +16,13 @@ function redirectHome() {
   window.location.href = '/index.html';
 }
 
+let usersPage = 1;
+let postsPage = 1;
+let commentsPage = 1;
+
+const LIMIT = 10;
+
+
 // Select sidebar links and sections
 const sidebarLinks = document.querySelectorAll('.sidebar .nav-links a');
 const sections = {
@@ -142,9 +149,10 @@ async function loadOverviewStats() {
 
 
 // Fetch and render Users
-async function loadUsers(page = 1) {
+async function loadUsers(page = usersPage) {
+  usersPage = page;
   const search = userSearchInput?.value || '';
-  const res = await apiFetch(`/api/admin/users?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const res = await apiFetch(`/api/admin/users?page=${page}&limit=${LIMIT}&search=${encodeURIComponent(search)}`);
   const users = await res.json();
   const tbody = document.querySelector('#users-table tbody');
   tbody.innerHTML = '';
@@ -156,9 +164,10 @@ async function loadUsers(page = 1) {
 }
 
 // Fetch and render Posts
-async function loadPosts(page = 1) {
+async function loadPosts(page = postsPage) {
+  postsPage = page;
   const search = postSearchInput?.value || '';
-  const res = await apiFetch(`/api/admin/posts?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const res = await apiFetch(`/api/admin/posts?page=${page}&limit=${LIMIT}&search=${encodeURIComponent(search)}`);
   const posts = await res.json();
   const tbody = document.querySelector('#posts-table tbody');
   tbody.innerHTML = '';
@@ -170,9 +179,10 @@ async function loadPosts(page = 1) {
 }
 
 // Fetch and render Comments
-async function loadComments(page = 1) {
+async function loadComments(page = commentsPage) {
+  commentsPage = page;
   const search = commentSearchInput?.value || '';
-  const res = await apiFetch(`/api/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const res = await apiFetch(`/api/admin/comments?page=${page}&limit=${LIMIT}&search=${encodeURIComponent(search)}`);
   const comments = await res.json();
   const tbody = document.querySelector('#comments-table tbody');
   tbody.innerHTML = '';
