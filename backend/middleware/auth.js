@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
     return res.status(401).json({ message: "No token provided" });
@@ -15,7 +15,11 @@ function requireAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = { id: decoded.sub, email: decoded.email, name: decoded.name, role: decoded.role };
+    const user = await User.findById(decoded.sub).select("-password");
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+    req.user = user;
     next();
   } catch (err) {
       if (err.name === "TokenExpiredError") {
