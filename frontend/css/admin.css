@@ -57,6 +57,7 @@ body {
   flex: 1;
   padding: 20px 30px;
   overflow-y: auto;
+  position: relative;
 }
 
 /* Topbar */
@@ -129,7 +130,6 @@ body {
   border-collapse: collapse;
   background-color: #fff;
   border-radius: 8px;
-  overflow: hidden;
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
@@ -165,6 +165,8 @@ body {
 .pagination {
   margin-top: 15px;
   text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
 .pagination button {
@@ -176,6 +178,7 @@ body {
   border-radius: 5px;
   cursor: pointer;
   transition: background 0.2s;
+  pointer-events: auto;
 }
 
 .pagination button.active,
