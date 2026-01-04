@@ -806,7 +806,8 @@ async function apiFetch(url, options = {}) {
     }
   }
 
-  return res;
+   if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
 }
 
 // Refresh token function
