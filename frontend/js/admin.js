@@ -144,8 +144,8 @@ async function loadOverviewStats() {
 // Fetch and render Users
 async function loadUsers(page = 1) {
   const search = userSearchInput?.value || '';
-  const users = await apiFetch(`/api/admin/users?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
-  
+  const res = await apiFetch(`/api/admin/users?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const users = await res.json();
   const tbody = document.querySelector('#users-table tbody');
   tbody.innerHTML = '';
   users.data.forEach(user => {
@@ -158,8 +158,8 @@ async function loadUsers(page = 1) {
 // Fetch and render Posts
 async function loadPosts(page = 1) {
   const search = postSearchInput?.value || '';
-  const posts = await apiFetch(`/api/admin/posts?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
-  
+  const res = await apiFetch(`/api/admin/posts?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const posts = await res.json();
   const tbody = document.querySelector('#posts-table tbody');
   tbody.innerHTML = '';
   posts.data.forEach(post => {
@@ -172,7 +172,8 @@ async function loadPosts(page = 1) {
 // Fetch and render Comments
 async function loadComments(page = 1) {
   const search = commentSearchInput?.value || '';
-  const comments = await apiFetch(`/api/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const res = await apiFetch(`/api/admin/comments?page=${page}&limit=10&search=${encodeURIComponent(search)}`);
+  const comments = await res.json();
   const tbody = document.querySelector('#comments-table tbody');
   tbody.innerHTML = '';
 
