@@ -54,7 +54,11 @@ exports.getAllPosts = async (req, res) => {
       ? { title: { $regex: search, $options: 'i' } }
       : {};
     const totalPosts = await Post.countDocuments(query);
-    const posts = await Post.find(query).populate("authorId", "name email role");
+    const posts = await Post.find(query)
+    .populate("authorId", "name email role")
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .sort({ createdAt: -1 });
     res.json({
       data: posts,
       total: totalPosts,
@@ -93,7 +97,10 @@ exports.getAllComments = async (req, res) => {
     const totalComments = await Comment.countDocuments(query);
     const comments = await Comment.find(query)
       .populate({ path: 'authorId', select: 'name', options: { strictPopulate: false } })
-      .populate({ path: 'postId', select: 'title', options: { strictPopulate: false } });
+      .populate({ path: 'postId', select: 'title', options: { strictPopulate: false } })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
       
     const safeComments = comments.map(comment => ({
       _id: comment._id,
