@@ -52,14 +52,16 @@ const updateUserProfile = async (req, res) => {
             if (req.file?.path && fs.existsSync(req.file.path)) {
                 fs.unlinkSync(req.file.path);
             }
-
         }
 
         const updatedUser = await user.save();
         res.status(200).json(updatedUser);
     } catch (error) {
         console.error("Update user profile error:", error);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).json({ 
+            message: error.message,
+            stack:error.stack
+         });
     }
 };
 

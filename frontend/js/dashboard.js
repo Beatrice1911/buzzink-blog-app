@@ -136,7 +136,7 @@ const removePhotoBtn = document.getElementById("removePhotoBtn");
 removePhotoBtn.addEventListener("click", async () => {
   try {
     const formData = new FormData();
-    formData.append("profilePhoto", "true");
+    formData.append("removePhoto", "true");
     const res = await fetch(API_URI, {
       method: "PUT",
       headers: {
@@ -148,7 +148,7 @@ removePhotoBtn.addEventListener("click", async () => {
 
     if (res.ok) {
       showToastUser("Profile photo removed successfully!", "success");
-      loadProfile(); // Reload profile data
+      loadProfile();
     } else {
       const data = await res.json();
       throw new Error(data.message || "Failed to remove profile photo");
