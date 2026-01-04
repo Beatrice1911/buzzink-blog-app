@@ -44,7 +44,7 @@ exports.register = async (req, res, next) => {
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ message: "User already exists" });
 
-    const user = new User({ email, password, name, role: role || "user" });
+    const user = new User({ email, password, name, role: role || "reader" });
     await user.save();
 
     const token = signToken(user);
