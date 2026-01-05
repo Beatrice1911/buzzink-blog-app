@@ -264,7 +264,7 @@ function displayPosts(containerId, limit = null) {
           <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
-        <a href="profile.html?user=${post.authorId}" class="author"><em>By ${post.authorName || "Unknown"}</em></a>
+        <a href="profile.html?id=${post.authorId}" class="author"><em>By ${post.authorName || "Unknown"}</em></a>
         <small>${new Date(post.date).toLocaleString()}</small>
         <br>
         <div class="post-interactions-container">
