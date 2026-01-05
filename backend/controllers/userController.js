@@ -4,7 +4,8 @@ const fs = require("fs");
 
 const getUserProfile = async (req, res) => {
     try {
-        const user = await User.findById(req.params.id).select("-password");
+        const { id } = req.params;
+        const user = await User.findById(id).select("-password");
         if (!user) return res.status(404).json({ message: "User not found" });
         res.status(200).json(user);
     } catch (error) {
