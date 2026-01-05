@@ -120,7 +120,9 @@ const createPost = async (req, res) => {
       category: newPost.category,
       image: newPost.image,
       date: newPost.date,
-      author: { id: authorId, name: authorName }
+      authorId: authorId,
+      authorName: authorName,
+      slug: newPost.slug,
     });
 
   } catch (err) {
