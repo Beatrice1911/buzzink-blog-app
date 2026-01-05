@@ -1,4 +1,5 @@
 import { apiFetch } from './app.js';
+import { showToast } from './app.js';
 const token = localStorage.getItem('token');
 const role = localStorage.getItem('role');
 async function checkAdmin() {
@@ -205,6 +206,7 @@ async function deleteUser(id, row) {
   await apiFetch(`/api/admin/users/${id}`, { 
     method: 'DELETE'
   });
+  showToast('User deleted successfully.', 'success');
   loadUsers(usersPage);
 }
 
@@ -213,6 +215,7 @@ async function deletePost(id, row) {
   await apiFetch(`/api/admin/posts/${id}`, { 
     method: 'DELETE'
   });
+  showToast('Post deleted successfully.', 'success');
   loadPosts(postsPage);
 }
 
@@ -221,6 +224,7 @@ async function deleteComment(id, row) {
   await apiFetch(`/api/admin/comments/${id}`, { 
     method: 'DELETE'
   });
+  showToast('Comment deleted successfully.', 'success');
   loadComments(commentsPage);
 }
 
