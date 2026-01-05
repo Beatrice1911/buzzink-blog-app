@@ -150,6 +150,10 @@ function getImageUrl(image) {
   return "/Images/fallback.jpg";
 }
 
+function formatText (text) {
+  return text.replace(/\n/g, '<br>');
+}
+
 // Fetch posts with pagination
 async function fetchPosts(page = 1, limit = 6) {
   try {
@@ -1166,7 +1170,7 @@ function renderComments(comments, commentsList) {
 
     div.innerHTML = `
       <div class="comment-header">
-        <p><strong class="comment-author" style="cursor: pointer;">${comment.authorId?.name || "Anonymous"}:</strong> ${comment.text}</p>
+        <p><strong class="comment-author" style="cursor: pointer;">${comment.authorId?.name || "Anonymous"}:</strong> ${formatText(comment.text)}</p>
         ${isOwner
         ? `<div class="comment-menu">
                   <button class="menu-btn">⋮</button>
@@ -1207,7 +1211,7 @@ async function postComment(postId, text, commentsList, commentCountSpan) {
       div.classList.add("comment");
       div.innerHTML = `
         <div class="comment-header">
-          <p><strong>You:</strong> ${newComment.text}</p>
+          <p><strong>You:</strong> ${formatText(newComment.text)}</p>
           <div class="comment-menu">
             <button class="menu-btn">⋮</button>
             <div class="menu-options hidden">
@@ -1325,7 +1329,7 @@ async function loadSinglePost() {
       <p onclick="window.location.href='profile.html?id=${post.authorId._id}'" style="cursor: pointer;"><em>By ${post.authorId.name || "Unknown"}</em></p>
       <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
-        <p>${post.content}</p>
+        <p>${formatText(post.content)}</p>
       </div>
       <div class="post-interactions-container">
         <div class="post-interactions">
