@@ -161,14 +161,14 @@ async function fetchPosts(page = 1, limit = 6) {
     const data = await res.json();
 
     posts = Array.isArray(data.posts) ? data.posts : [];
-    currentPage = data.currentPage;
-    totalPages = data.totalPages;
+    currentPage = data.currentPage ?? 1;
+    totalPages = data.totalPages ?? 1;
 
     refreshPage();
     renderPagination();
   } catch (err) {
     console.error("Error fetching posts:", err);
-    showToast("Failed to load posts!", "error");
+    showToast("Something went wrong while displaying posts!", "error");
   }
 }
 
@@ -241,7 +241,8 @@ function displayPosts(containerId, limit = null) {
     return;
   }
 
-  displayList.forEach((post) => {
+  displayList.forEach((post, i) => {
+    console.log("Post", i, post);
     const div = document.createElement("div");
     div.classList.add("post");
 
