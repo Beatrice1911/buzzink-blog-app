@@ -1337,7 +1337,7 @@ async function loadSinglePost() {
       ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
-      <p onclick="window.location.href='profile.html?id=${postAuthorId}'" style="cursor: pointer;"><em>By ${authorName}</em></p>
+      <p onclick="window.location.href='profile.html?id=${postAuthorId}'" style="cursor: pointer;" class="author"><em>By ${authorName}</em></p>
       <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
         <p>${formatText(post.content)}</p>

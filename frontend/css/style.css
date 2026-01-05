@@ -684,11 +684,12 @@ nav a:hover {
 /* Single Post Container */
 .single-post-container {
   background: var(--bg);
-  padding: 20px;
-  margin: 20px 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 2rem;
+  margin: 3rem auto;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.08);
   overflow: hidden;
+  max-width: 900px;
 }
 
 .single-post-container img {
@@ -706,17 +707,18 @@ nav a:hover {
 }
 
 
-.single-post-container h2 {
+.single-post-container h1 {
   margin-top: 0;
   font-size: 1.5rem;
   color: var(--text);
   font-family: "Playfair Display", sans-serif;
+  line-height: 1.25;
 }
 
 .single-post-container .tag {
   display: inline-block;
-  background: var(--accent);
-  color: var(--bg);
+  background: rgba(0, 77, 64, 0.08);
+  color: var(--accent);
   font-size: 0.8rem;
   font-weight: bold;
   padding: 5px 10px;
@@ -724,10 +726,23 @@ nav a:hover {
   margin: 10px 0;
 }
 
-.single-post-container p {
-  text-align: justify;
-  line-height: 1.6;
+.single-post-container .author {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.single-post-container .author:hover {
+  text-decoration: underline;
+}
+
+.single-post-container .content p{
+  font-family: "Lora", serif;
+  font-size: 1.12rem;
+  line-height: 1.85;
   color: var(--text);
+  margin: 1.4rem 0;
+  white-space: pre-wrap;
+  text-align: justify;
 }
 
 /* Pagination Styles */
@@ -997,6 +1012,7 @@ nav a:hover {
   border-radius: 5px;
   margin-bottom: 5px;
   font-size: 0.9rem;
+  color: var(--text);
 }
 
 .comment-form {
@@ -1289,15 +1305,6 @@ nav a:hover {
 
   .like-count, .comment-count {
     font-size: 0.95rem;
-  }
-
-  .comment-input {
-    font-size: 1rem;
-    padding: 12px 10px;
-  }
-
-  .comment-form button {
-    padding: 10px 14px;
   }
 
   .footer-container {
