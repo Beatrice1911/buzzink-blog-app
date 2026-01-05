@@ -111,7 +111,7 @@ nav a:hover {
 .mobile-nav {
   display: none;
   flex-direction: column;
-  background: rgb(248, 235, 246, 0.8);
+  background: #f6f7fb;
   position: absolute;
   top: 50px;
   right: 0;
@@ -126,9 +126,9 @@ nav a:hover {
 .user-menu-details{
   display: none;
   flex-direction: column;
-  background: rgb(248, 235, 246, 0.8);
+  background: #f6f7fb;
   position: absolute;
-  top: 70px;
+  top: 50px;
   right: 0;
   width: 20%;
   padding: 1rem;
@@ -146,8 +146,9 @@ nav a:hover {
   color: var(--text);
   font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 10px;
+  padding: 0.5rem 0;
   cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
@@ -497,7 +498,7 @@ nav a:hover {
   width: 25%;
   padding: 6px 14px;
   border: none;
-  color: var(--bg) !important;
+  color: var(--accent) !important;
   border-radius: 30px;
   text-align: center;
   margin: 10px 0 10px 10px;
@@ -1169,6 +1170,10 @@ nav a:hover {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .header {
     align-items: center;
     gap: 5px;
@@ -1187,9 +1192,16 @@ nav a:hover {
     margin-right: 20px;
   }
 
+  .icons i {
+    font-size: 1.4rem;
+    padding: 8px;
+  }
+
   .menu-toggle {
     display: block;
+    font-size: 1.7rem;
   }
+
   .mobile-nav.active {
     display: flex;
   }
@@ -1219,25 +1231,32 @@ nav a:hover {
 
   .hero {
     height: 70vh;
+    background-attachment: scroll;
   }
 
   .hero-content{
     margin: 30px  0 10px;
+    padding: 0 1rem;
   }
 
   .hero-content h1 {
-    font-size: 30px;
+    font-size: 2rem;
     margin-bottom: 0;
+    line-height: 1.2;
   }
 
   .hero-content p {
-    font-size: 16px;
-    margin-bottom: 20px;
-    width: 90%;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
   }
 
   .posts-container{
     margin: 10px auto;
+  }
+
+  .post img {
+    height: 180px;
   }
 
   .container{
@@ -1255,5 +1274,40 @@ nav a:hover {
   .all-posts-heading{
     flex-direction: column;
     gap: 10px;
+  }
+
+  .write-post-btn {
+    padding: 12px 28px;
+    font-size: 1rem;
+  }
+
+  .like-btn, .comment-btn, .share-btn {
+    font-size: 1.6rem;
+    padding: 6px;
+  }
+
+  .like-count, .comment-count {
+    font-size: 0.95rem;
+  }
+
+  .comment-input {
+    font-size: 1rem;
+    padding: 12px 10px;
+  }
+
+  .comment-form button {
+    padding: 10px 14px;
+  }
+
+  .footer-container {
+    text-align: center;
+  }
+
+  .footer-links ul li {
+    margin-bottom: 8px;
+  }
+
+  .social-media-icons {
+    justify-content: center;
   }
 }
