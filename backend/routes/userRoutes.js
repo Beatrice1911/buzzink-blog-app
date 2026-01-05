@@ -10,6 +10,6 @@ const upload = multer({ storage: multer.diskStorage({}) });
 
 router.get("/me", requireAuth, getCurrentUser);
 router.put("/me", requireAuth, upload.single("profilePhoto"), updateUserProfile);
-router.get("/:name", getUserProfile);
+router.get("/id/:id", getUserProfile);
 
 module.exports = router;

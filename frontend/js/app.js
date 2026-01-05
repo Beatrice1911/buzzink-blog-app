@@ -264,7 +264,7 @@ function displayPosts(containerId, limit = null) {
           <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
-        <a href="profile.html?user=${post.authorName}" class="author"><em>By ${post.authorName || "Unknown"}</em></a>
+        <a href="profile.html?user=${post.author.id}" class="author"><em>By ${post.author.name || "Unknown"}</em></a>
         <small>${new Date(post.date).toLocaleString()}</small>
         <br>
         <div class="post-interactions-container">
@@ -1322,7 +1322,7 @@ async function loadSinglePost() {
       ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
-      <p onclick="window.location.href='profile.html?user=${post.authorName}'" style="cursor: pointer;"><em>By ${post.authorName || "Unknown"}</em></p>
+      <p onclick="window.location.href='profile.html?user=${post.author.id}'" style="cursor: pointer;"><em>By ${post.author.name || "Unknown"}</em></p>
       <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
         <p>${post.content}</p>

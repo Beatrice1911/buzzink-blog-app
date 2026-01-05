@@ -10,7 +10,8 @@ if(!username) {
 
 async function fetchUserProfile(name) {
     try {
-        const res = await fetch(`${API_URI}/users/${name}`);
+        const userId = new URLSearchParams(window.location.search).get("id");
+        const res = await fetch(`${API_URI}/users/id/${userId}`);
         if (!res.ok) throw new Error("User not found");
         const user = await res.json();
         document.getElementById("profile-name").textContent = user.name;
