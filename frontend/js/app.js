@@ -241,8 +241,7 @@ function displayPosts(containerId, limit = null) {
     return;
   }
 
-  displayList.forEach((post, i) => {
-    console.log("Post", i, post);
+  displayList.forEach((post) => {
     const div = document.createElement("div");
     div.classList.add("post");
 
