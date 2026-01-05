@@ -1,16 +1,15 @@
 const API_URI = `/api`;
 const urlParams = new URLSearchParams(window.location.search);
-const username = urlParams.get("user");
+const userId = urlParams.get("id");
 
-if(!username) {
+if(!userId) {
     document.body.innerHTML = "<h2>User not specified</h2>";
 } else {
-    fetchUserProfile(username);
+    fetchUserProfile(userId);
 }
 
-async function fetchUserProfile() {
+async function fetchUserProfile(userId) {
     try {
-        const userId = new URLSearchParams(window.location.search).get("id");
         const res = await fetch(`${API_URI}/users/${userId}`);
         if (!res.ok) throw new Error("User not found");
         const user = await res.json();
