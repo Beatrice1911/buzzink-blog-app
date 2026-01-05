@@ -184,7 +184,6 @@ nav a:hover {
 .mobile-search {
   width: 80%;
   max-height: 0;
-  opacity: 0;
   overflow: hidden;
   transition: all 0.3s ease;
   z-index: 1000;
@@ -1174,15 +1173,16 @@ nav a:hover {
 
   .mobile-search.show {
     max-height: 60px;
-    opacity: 1;
+    margin: 0 auto;
   }
 
   .mobile-search input {
     width: 100%;
     padding: 8px;
     border-radius: 5px;
-    border: 1px solid;
+    border: 1px solid #ccc;
     outline: none;
+    background-color: var(--bg);
   }
 
   .user-menu-details{
