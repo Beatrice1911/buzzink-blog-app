@@ -1,23 +1,41 @@
+:root {
+  --primary: #6d28d9;
+  --accent: #004d40;
+  --bg: #fafafa;
+  --text: #1f2937;
+  --muted: #6b7280;
+}
+
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-body {
-  background: #f8ebf6;
-  font-family: 'Poppins' sans-serif;
+@font-face {
+  font-family: 'Inter';
+  src: url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
 }
 
+body {
+  background: #f8ebf6;
+  font-family: 'Inter' sans-serif;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
 
 /* Header Styles */
 .header {
-  background: none;
+  background: rgba(0, 0, 0, 0.15);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 10px 0 0;
   position: relative;
+  backdrop-filter: blur(10px);
 }
 
 .logo-img {
@@ -38,7 +56,7 @@ nav {
 }
 
 nav a {
-  color: white;
+  color: var(--bg);
   text-decoration: none;
   font-weight: bold;
   font-size: 1.3rem;
@@ -62,7 +80,7 @@ nav a:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: white;
+  background: var(--bg);
   padding: 0.6rem 0.7rem;
   border-radius: 20px;
 }
@@ -80,19 +98,19 @@ nav a:hover {
 .icons i {
   cursor: pointer;
   font-size: 1.2rem;
-  color: white;
+  color: var(--bg);
 }
 
 .menu-toggle {
   font-size: 1.5rem;
   cursor: pointer;
-  color: white;
+  color: var(--bg);
 }
 
 .mobile-nav {
   display: none;
   flex-direction: column;
-  background: #004d40;
+  background: var(--accent);
   position: absolute;
   top: 40px;
   right: 0;
@@ -105,7 +123,7 @@ nav a:hover {
 .user-menu-details{
   display: none;
   flex-direction: column;
-  background: #004d40;
+  background: var(--accent);
   position: absolute;
   top: 55px;
   right: 0;
@@ -121,7 +139,7 @@ nav a:hover {
 }
 
 .user-menu-details p{
-  color: white;
+  color: var(--bg);
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 10px;
@@ -137,7 +155,7 @@ nav a:hover {
   width: 35%;
   padding: 6px 10px;
   background: #333;
-  color: #fff;
+  color: var(--bg);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -154,13 +172,13 @@ nav a:hover {
   font-size: 1.2rem;
   font-weight: bold;
   padding: 0.5rem 0;
-  color: white;
+  color: var(--bg);
   text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .all-posts-header nav a, .all-posts-header nav i, .all-posts-header .icons, .write-header nav a, .write-header nav i, .write-header .icons, .all-posts-icons i, .write-icons i {
-  color: #004d40;
+  color: var(--accent);
 }
 
 .mobile-search {
@@ -176,7 +194,7 @@ nav a:hover {
 /* Hero Section */
 .hero {
   background: url("/Images/work-3938875_1280.jpg");
-  height: 70vh;
+  height: 60vh;
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -190,7 +208,7 @@ nav a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.45);
 }
 
 .hero-content {
@@ -198,7 +216,7 @@ nav a:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: #f4f6f9;
+  color: var(--bg);
   text-align: center;
 }
 
@@ -209,7 +227,8 @@ nav a:hover {
 }
 
 .hero-content p {
-  font-size: 20px;
+  max-width: 600px;
+  font-size: 18px;
   margin-bottom: 30px;
   font-family: "Lora", sans-serif;
   line-height: 1.5;
@@ -223,14 +242,14 @@ nav a:hover {
   border-radius: 20px;
   font-size: 20px;
   font-weight: bold;
-  background-color: #a04cf0;
-  color: #f4f6f9;
+  background-color: var(--primary);
+  color: var(--bg);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .write-post-btn:hover {
-  background-color: #004d40;
+  background-color: var(--accent);
 }
 
 .btn {
@@ -248,15 +267,17 @@ nav a:hover {
 .featured-posts h2, .my-posts-section h2 {
   text-align: center;
   font-size: 36px;
-  color: #333;
+  color: var(--text);
   margin: 20px 0;
   font-family: "Playfair Display", sans-serif;
 }
 
 /* Trending Posts Section */
 .trending-posts {
-  background: #fff;
+  max-width: 1100px;
+  background: var(--bg);
   padding: 1.5rem;
+  border: 1px solid #eee;
   border-radius: 15px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   margin: 20px;
@@ -265,7 +286,7 @@ nav a:hover {
 
 .trending-posts h2 {
   font-size: 1.5rem;
-  color: #222;
+  color: var(--text);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -298,20 +319,20 @@ nav a:hover {
 }
 
 #trending-list li:hover {
-  background-color: #f9f9f9;
+  background-color: var(--bg);
   transform: scale(1.01);
 }
 
 .trending-rank {
   font-weight: 700;
-  color: #888;
+  color: var(--muted);
   margin-right: 10px;
   width: 25px;
   text-align: center;
 }
 
 .trending-title {
-  color: #222;
+  color: var(--text);
   font-weight: 600;
   text-decoration: none;
   flex-grow: 1;
@@ -349,21 +370,21 @@ nav a:hover {
   padding: 5px 10px;
   border: none;
   border-radius: 6px;
-  color: #333;
+  color: var(--text);
   font-size: 18px;
-  outline: #004d40;
+  outline: var(--accent);
 }
 
 .all-posts-h2 {
   text-align: center;
   font-size: 36px;
-  color: #333;
+  color: var(--text);
   font-family: "Playfair Display", sans-serif;
 }
 
 .all-posts-btn {
-  background-color: #a04cf0;
-  color: #f4f6f9;
+  background-color: var(--primary);
+  color: var(--bg);
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -375,43 +396,43 @@ nav a:hover {
 }
 
 .all-posts-btn:hover {
-  background-color: #004d40;
+  background-color: var(--accent);
 }
 
 /* Posts Container */
 .posts-container {
+  max-width: 1100px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   font-family: "Lora", sans-serif;
-  margin: 10px 20px;
+  margin: auto;
   padding: 30px 20px;
 }
 
 .no-results {
   text-align: center;
   font-style: italic;
-  color: gray;
+  color: var(--muted);
   margin-top: 20px;
   font-size: 30px;
   font-weight: bold;
 }
 
 .post {
-  border: none;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  padding-bottom: 10px;
+  padding-bottom: 15px;
   height: auto;
-  border-radius: 12px;
-  background: #fafafa;
+  border-radius: 16px;
+  background: var(--bg);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .post:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
   transform: translateY(-5px);
 }
 
@@ -423,17 +444,19 @@ nav a:hover {
 
 .post h2 {
   font-size: 1.5rem;
-  color: #222;
+  color: var(--text);
   margin-left: 10px;
+  margin-top: 12px;
+  line-height: 1.4;
 }
 
 .post-link {
-  color: #222;
+  color: var(--text);
   text-decoration: none;
 }
 
 .read-more {
-  color: #004d40;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -442,17 +465,19 @@ nav a:hover {
 }
 
 .post p, .post .author {
-  color: #555;
+  color: var(--muted);
   padding: 5px 10px;
   text-decoration: none;
+  font-size: 0.95rem;
+  line-height: 1.7;
 }
 
 .tag {
-  background-color: #004d40;
+  background-color: var(--accent);
   width: 25%;
   padding: 10px;
   border: none;
-  color: #f4f6f9 !important;
+  color: var(--bg) !important;
   border-radius: 30px;
   text-align: center;
   margin: 10px 0 10px 10px;
@@ -460,7 +485,7 @@ nav a:hover {
 }
 
 .post small {
-  color: #777;
+  color: var(--muted);
   font-size: 0.9rem;
   margin-left: 10px;
 }
@@ -474,21 +499,22 @@ nav a:hover {
 
 .edit-btn,
 .delete-btn {
-  background-color: #a04cf0;
+  background-color: var(--primary);
   border: none;
-  color: #f4f6f9;
+  color: var(--bg);
   margin-right: 10px;
+  transition: all 0.3s ease;
 }
 
 .edit-btn:hover,
 .delete-btn:hover {
-  background-color: #9a3df1;
+  background-color: var(--accent);
   transform: scale(1.1);
 }
 
 /* Footer Styles */
 .footer {
-  background-color: #1b1b1b;
+  background-color: #111827;
   color: #ccc;
   padding: 40px 20px 20px;
   margin-top: 40px;
@@ -500,12 +526,12 @@ nav a:hover {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 30px;
   max-width: 1100px;
-  margin: 0 auto;
+  margin: auto;
 }
 
 .footer h3,
 .footer h4 {
-  color: #fff;
+  color: var(--bg);
   margin-bottom: 15px;
 }
 
@@ -571,7 +597,7 @@ nav a:hover {
 }
 
 .social-media-icons a:hover {
-  color: #fff;
+  color: var(--bg);
 }
 
 .footer-bottom {
@@ -585,7 +611,7 @@ nav a:hover {
 /* Write Posts Container */
 .container {
   width: 60%;
-  background: white;
+  background: var(--bg);
   padding: 20px;
   border-radius: 10px;
   margin: 20px auto;
@@ -596,7 +622,7 @@ nav a:hover {
   text-align: center;
   margin-bottom: 20px;
   font-size: 30px;
-  color: #333;
+  color: var(--text);
   font-family: "Playfair Display", sans-serif;
 }
 
@@ -616,8 +642,8 @@ nav a:hover {
 }
 
 .add-post-btn {
-  background: #007bff;
-  color: white;
+  background: var(--primary);
+  color: var(--bg);
   border: none;
   padding: 10px 15px;
   cursor: pointer;
@@ -629,12 +655,12 @@ nav a:hover {
 }
 
 .add-post-btn:hover {
-  background: #0056b3;
+  background: var(--accent);
 }
 
 /* Single Post Container */
 .single-post-container {
-  background: #fff;
+  background: var(--bg);
   padding: 20px;
   margin: 20px 30px;
   border-radius: 8px;
@@ -660,14 +686,14 @@ nav a:hover {
 .single-post-container h2 {
   margin-top: 0;
   font-size: 1.5rem;
-  color: #222;
+  color: var(--text);
   font-family: "Playfair Display", sans-serif;
 }
 
 .single-post-container .tag {
   display: inline-block;
-  background: #004d40;
-  color: #fff;
+  background: var(--accent);
+  color: var(--bg);
   font-size: 0.8rem;
   font-weight: bold;
   padding: 5px 10px;
@@ -678,7 +704,7 @@ nav a:hover {
 .single-post-container p {
   text-align: justify;
   line-height: 1.6;
-  color: #444;
+  color: var(--text);
 }
 
 /* Pagination Styles */
@@ -691,11 +717,11 @@ nav a:hover {
   margin: 0 5px;
   padding: 8px 12px;
   border: none;
-  background: #eee;
+  background: var(--bg);
   cursor: pointer;
   font-weight: bold;
   border-radius: 6px;
-  color: #333;
+  color: var(--text);
   transition: background 0.3s, color 0.3s;
 }
 
@@ -704,8 +730,8 @@ nav a:hover {
 }
 
 #pagination button.pg-active {
-  background: #004d40;
-  color: white;
+  background: var(--accent);
+  color: var(--bg);
   font-weight: bold;
 }
 
@@ -722,7 +748,7 @@ nav a:hover {
 }
 
 .auth-modal-content {
-  background: #fff; 
+  background: var(--bg); 
   padding: 20px; 
   border-radius: 8px;
   width: 300px; 
@@ -738,8 +764,8 @@ nav a:hover {
 }
 
 .auth-form button, #forgotPasswordForm button{
-  background-color: #004d40;
-  color: #eee;
+  background-color: var(--accent);
+  color: var(--bg);
   font-size: 18px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -778,7 +804,7 @@ nav a:hover {
 #forgotPasswordModal h2, #forgotPasswordModal p {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 1rem;
-  color: #333;
+  color: var(--text);
 }
 
 .forgot-password {
@@ -811,7 +837,7 @@ nav a:hover {
   padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  color: white;
+  color: var(--bg);
   font-weight: bold;
   min-width: 250px;
   max-width: 350px;
@@ -853,7 +879,7 @@ nav a:hover {
   font-size: 1.4rem;
   position: relative;
   outline: none;
-  color: #222;
+  color: var(--text);
   display: flex;
   align-items: baseline;
   justify-content: center; 
@@ -866,7 +892,7 @@ nav a:hover {
 }
 
 .like-btn i.fa-regular {
-  color: #222;
+  color: var(--text);
 }
 
 /* When liked */
@@ -920,14 +946,14 @@ nav a:hover {
 
 .likes-info {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--muted);
   margin-left: 10px;
 }
 
 .like-count, .comment-count {
   font-weight: bold;
   font-size: 1rem;
-  color: #444;
+  color: var(--text);
   margin-left: 3px;
 }
 
@@ -943,7 +969,7 @@ nav a:hover {
 }
 
 .comment {
-  background: #f5f5f5;
+  background: var(--bg);
   padding: 5px 10px;
   border-radius: 5px;
   margin-bottom: 5px;
@@ -961,15 +987,15 @@ nav a:hover {
   flex: 1;
   padding: 10px 5px;
   border-radius: 5px;
-  background-color: #f8ebf6;
+  background-color: var(--bg);
   border: none;
   outline: none;
 }
 
 .comment-form button {
   padding: 5px 10px;
-  background: #004d40;
-  color: white;
+  background: var(--accent);
+  color: var(--bg);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -982,12 +1008,12 @@ nav a:hover {
 
 .no-comments {
   font-style: italic;
-  color: #777;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
 .loading-comments {
-  color: #555;
+  color: var(--text);
   font-size: 0.9rem;
   font-style: italic;
 }
@@ -1001,7 +1027,7 @@ nav a:hover {
 .view-more-btn {
   background: none;
   border: none;
-  color: #004d40;
+  color: var(--accent);
   cursor: pointer;
   font-weight: bold;
   font-size: 0.9rem;
@@ -1029,7 +1055,7 @@ nav a:hover {
 }
 
 .comments-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #bbb;
+  background-color: var(--muted);
   border-radius: 4px;
 }
 
@@ -1048,14 +1074,14 @@ nav a:hover {
   border: none;
   font-size: 18px;
   cursor: pointer;
-  color: #222;
+  color: var(--text);
 }
 
 .menu-options {
   position: absolute;
   right: 0;
   top: 100%;
-  background: white;
+  background: var(--bg);
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -1070,11 +1096,11 @@ nav a:hover {
 
 .delete-comment-btn {
   border: none;
-  color: #fff;
+  color: var(--bg);
   padding: 5px 10px;
   text-align: left;
   cursor: pointer;
-  background-color: #004d40;
+  background-color: var(--accent);
   border-radius: 5px;
   transition: all 0.3s ease;
 }
@@ -1088,11 +1114,11 @@ nav a:hover {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f4f8;
+  background-color: var(--bg);
 }
 
 .auth-container {
-  background-color: #fff;
+  background-color: var(--bg);
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
