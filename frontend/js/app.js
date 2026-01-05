@@ -255,6 +255,12 @@ function displayPosts(containerId, limit = null) {
         ? post.authorId._id
         : post.authorId;
 
+    const authorName =
+      typeof post.authorId === "object" && post.authorId !== null
+        ? post.authorId.name
+        : post.authorName || "Unknown";
+
+
     const isAuthor =
       userId && String(postAuthorId) === String(userId);
 
@@ -269,7 +275,7 @@ function displayPosts(containerId, limit = null) {
           <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
-        <a href="profile.html?id=${post.authorId._id}" class="author"><em>By ${post.authorId.name || "Unknown"}</em></a>
+        <a href="profile.html?id=${postAuthorId}" class="author"><em>By ${authorName}</em></a>
         <small>${new Date(post.date).toLocaleString()}</small>
         <br>
         <div class="post-interactions-container">
@@ -1318,6 +1324,11 @@ async function loadSinglePost() {
         ? post.authorId._id
         : post.authorId;
 
+    const authorName =
+      typeof post.authorId === "object" && post.authorId !== null
+        ? post.authorId.name
+        : post.authorName || "Unknown";
+
     const isAuthor =
       userId && String(postAuthorId) === String(userId);
 
@@ -1327,7 +1338,7 @@ async function loadSinglePost() {
       ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">` : ""}
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
-      <p onclick="window.location.href='profile.html?id=${post.authorId._id}'" style="cursor: pointer;"><em>By ${post.authorId.name || "Unknown"}</em></p>
+      <p onclick="window.location.href='profile.html?id=${postAuthorId}'" style="cursor: pointer;"><em>By ${authorName}</em></p>
       <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
         <p>${formatText(post.content)}</p>
