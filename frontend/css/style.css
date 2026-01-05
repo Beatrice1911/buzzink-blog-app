@@ -128,7 +128,7 @@ nav a:hover {
   flex-direction: column;
   background: #f6f7fb;
   position: absolute;
-  top: 50px;
+  top: 70px;
   right: 0;
   width: 20%;
   padding: 1rem;
@@ -1219,7 +1219,7 @@ nav a:hover {
   }
 
   .user-menu-details{
-    top: 40px;
+    top: 50px;
     right: 0;
     width: 50%;
   }
@@ -1247,6 +1247,7 @@ nav a:hover {
 
   .hero-content p {
     font-size: 1rem;
+    width: 90%;
     margin-bottom: 1.5rem;
     line-height: 1.6;
   }
@@ -1277,7 +1278,7 @@ nav a:hover {
   }
 
   .write-post-btn {
-    padding: 12px 28px;
+    padding: 12px 25px;
     font-size: 1rem;
   }
 
