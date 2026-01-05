@@ -19,7 +19,7 @@
 }
 
 body {
-  background: #f8ebf6;
+  background: #f6f7fb;
   font-family: 'Inter' sans-serif;
 }
 
@@ -58,14 +58,15 @@ nav {
 nav a {
   color: var(--bg);
   text-decoration: none;
-  font-weight: bold;
-  font-size: 1.3rem;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
   transition: all 0.3s ease;
 }
 
 nav a:hover {
-  color: #ccc;
-  scale: 1.1;
+  color: #e6e6e6;
+  transform: translateY(-1px);
 }
 
 .user-icon {
@@ -226,15 +227,17 @@ nav a:hover {
 }
 
 .hero-content h1 {
-  font-size: 60px;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: -1px;
   margin-bottom: 20px;
   font-family: "Playfair Display", sans-serif;
 }
 
 .hero-content p {
-  max-width: 600px;
-  font-size: 18px;
+  max-width: 650px;
+  font-size: 1.1rem;
   margin-bottom: 30px;
+  opacity: 0.95;
   font-family: "Lora", sans-serif;
   line-height: 1.5;
   width: 60%;
@@ -247,14 +250,16 @@ nav a:hover {
   border-radius: 20px;
   font-size: 20px;
   font-weight: bold;
-  background-color: var(--primary);
   color: var(--bg);
   cursor: pointer;
+  background: linear-gradient(135deg, #a04cf0, #6c5ce7);
+  box-shadow: 0 10px 25px rgba(160, 76, 240, 0.25);
   transition: all 0.3s ease;
 }
 
 .write-post-btn:hover {
-  background-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(160, 76, 240, 0.35);
 }
 
 .btn {
@@ -280,10 +285,10 @@ nav a:hover {
 /* Trending Posts Section */
 .trending-posts {
   max-width: 1100px;
-  background: var(--bg);
+  background: linear-gradient(180deg, #ffffff, #fafafa);
   padding: 1.5rem;
   border: 1px solid #eee;
-  border-radius: 15px;
+  border-radius: 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   margin: auto;
   transition: 0.3s ease;
@@ -389,7 +394,6 @@ nav a:hover {
 }
 
 .all-posts-btn {
-  background-color: var(--primary);
   color: var(--bg);
   border: none;
   padding: 10px 20px;
@@ -399,10 +403,15 @@ nav a:hover {
   margin: 20px auto 10px;
   font-weight: bold;
   font-size: 20px;
+  background: linear-gradient(135deg, #a04cf0, #6c5ce7);
+  box-shadow: 0 10px 25px rgba(160, 76, 240, 0.25);
+  transition: all 0.3s ease;
 }
 
 .all-posts-btn:hover {
   background-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(160, 76, 240, 0.35);
 }
 
 /* Posts Container */
@@ -444,8 +453,13 @@ nav a:hover {
 
 .post img {
   width: 100%;
-  height: 200px;
+  height: 220px;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.post img:hover {
+  transform: scale(1.05);
 }
 
 .post h2 {
@@ -479,15 +493,16 @@ nav a:hover {
 }
 
 .tag {
-  background-color: var(--accent);
+  background: rgba(0, 77, 64, 0.08);
   width: 25%;
-  padding: 10px;
+  padding: 6px 14px;
   border: none;
   color: var(--bg) !important;
   border-radius: 30px;
   text-align: center;
   margin: 10px 0 10px 10px;
   font-weight: bold;
+  font-size: 0.8rem;
 }
 
 .post small {
@@ -505,7 +520,8 @@ nav a:hover {
 
 .edit-btn,
 .delete-btn {
-  background-color: var(--primary);
+  background: linear-gradient(135deg, #a04cf0, #6c5ce7);
+  box-shadow: 0 10px 25px rgba(160, 76, 240, 0.25);
   border: none;
   color: var(--bg);
   margin-right: 10px;
@@ -514,13 +530,13 @@ nav a:hover {
 
 .edit-btn:hover,
 .delete-btn:hover {
-  background-color: var(--accent);
-  transform: scale(1.1);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(160, 76, 240, 0.35);
 }
 
 /* Footer Styles */
 .footer {
-  background-color: #111827;
+  background-color: #121212;
   color: #ccc;
   padding: 40px 20px 20px;
   margin-top: 40px;
