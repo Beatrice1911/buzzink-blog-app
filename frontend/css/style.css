@@ -1252,7 +1252,11 @@ nav a:hover {
 
   .hero-content{
     margin: 30px  0 10px;
-    padding: 0 1rem;
+    padding: 1rem;
+  }
+
+  .write-post-btn{
+    margin-bottom: 15px;
   }
 
   .hero-content h1 {
