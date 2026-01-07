@@ -1356,6 +1356,9 @@ async function loadSinglePost() {
             <i class="fa-solid fa-share"></i>
             <span class="share-count"></span>
           </button>
+          <span class="bookmark ${post.savedByUser ? "saved" : ""}" data-saved="${post.savedByUser ? "true" : "false"}" data-slug="${post.slug}">
+            <i class="${post.savedByUser ? "fa-solid" : "fa-regular"} fa-bookmark"></i>
+          </span>
         </div>
         <span class="liked-by likes-info">No likes yet</span>
       </div>
@@ -1420,6 +1423,40 @@ async function loadSinglePost() {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
   }
+
+  const bookmarkIcon = container.querySelector(".bookmark");
+
+  function setBookmarkState(isSaved) {
+    bookmarkIcon.dataset.saved = isSaved ? "true" : "false";
+    bookmarkIcon.classList.toggle("saved", isSaved);
+    const icon = bookmarkIcon.querySelector("i");
+    icon.classList.toggle("fa-solid", isSaved);
+    icon.classList.toggle("fa-regular", !isSaved);
+  };
+
+  bookmarkIcon.addEventListener("click", async () => {
+    const slug = bookmarkIcon.dataset.slug;
+    const isSaved = bookmarkIcon.dataset.saved === "true";
+
+    bookmarkIcon.classList.add("clicked");
+    setTimeout(() => bookmarkIcon.classList.remove("clicked"), 200);
+
+    const url = isSaved ? `/api/posts/${slug}/unsave` : `/api/posts/${slug}/save`;
+
+    try {
+      const res = await apiFetch(url, {
+        method: "POST"
+      });
+      const data = await res.json();
+      setBookmarkState(!isSaved);
+      showToast(!isSaved ? "PostSaved" : "Removed from saved posts", "success")
+
+    } catch (err) {
+      console.error("Failed to toggle bookmark", err);
+      showToast("Something went wrong", "error");
+    }
+  });
+
   fetchRelatedPosts(postSlug);
 }
 

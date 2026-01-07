@@ -4,6 +4,7 @@ const multer = require("multer");
 const Post = require("../models/Post");
 const cloudinary = require("../config/cloudinary");
 const slugify = require("slugify");
+const User = require("../models/User")
 
 const getPosts = async (req, res) => {
   try {
@@ -68,11 +69,20 @@ const getPostBySlug = async (req, res) => {
       ? post.likes.some(like => like._id.toString() === userId)
       : false;
 
+    let savedByUser = false;
+    if (userId) {
+      const user = await User.findById(userId).select("savedPosts");
+      savedByUser = user.savedPosts.some(
+        savedPostId => savedPostId.toString() === post._id.toString()
+      );
+    }
+
     res.json({
       ...post.toObject(),
       likesCount: post.likes.length,
       likedBy: post.likes.map(like => like.name),
       likedByUser,
+      savedByUser,
     });
   } catch (err) {
     console.error("Get post by slug error:", err);
@@ -293,6 +303,42 @@ const getPostsByCategory = async (req, res) => {
   }
 }
 
+const savePost = async (req, res) => {
+  try {
+    const user = req.user;
+    const post = await Post.findOne({ slug: req.params.slug });
+
+    if (!post) return res.status(404).json({message: "Post not found"} );
+
+    if (!user.savedPosts.includes(post._id)) {
+      user.savedPosts.push(post._id)
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Post saved successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to save post" })
+  }
+}
+
+const unsavePost = async (req, res) => {
+  try {
+    const user = req.user;
+    const post = await Post.findOne({ slug: req.params.slug });
+
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    user.savedPosts = user.savedPosts.filter(
+      id => id.toString() !== post._id.toString()
+    );
+    await user.save();
+
+    res.status(200).json({ message: "Post removed from saved posts" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to unsave post"});
+  }
+}
+
 
 module.exports = {
   getPosts,
@@ -305,4 +351,6 @@ module.exports = {
   getTrendingPosts,
   incrementView,
   getPostsByCategory,
+  savePost,
+  unsavePost
 };
