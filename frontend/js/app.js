@@ -1569,16 +1569,61 @@ async function loadSavedPosts() {
     }
 
     savedPostsContainer.innerHTML = posts.map(post => `
-      <article class="post-card" onclick="window.location.href='post.html?slug=${post.slug}'">
-        ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
-        <h3>${post.title}</h3>
-        <p class="tag">${post.category}</p>
-        <small>By ${post.authorId?.name || "Unknown"}</small>
+      <article class="post-card">
+        ${post.image ? `
+          <img 
+            src="${getImageUrl(post.image)}" 
+            alt="${post.title}" 
+            class="post-image"
+            loading="lazy"
+            onclick="window.location.href='post.html?slug=${post.slug}'"
+          >
+        ` : ""}
+        <div class="post-body" onclick="window.location.href='post.html?slug=${post.slug}'">
+          <h2>${post.title}</h2>
+          <p class="tag">${post.category}</p>
+          <p class="excerpt">
+            ${post.content.slice(0, 150)}...
+          </p>
+          <div class="post-meta">
+            <small>By ${post.authorId?.name || "Unknown"}</small>
+            <small>${new Date(post.date).toLocaleDateString()}</small>
+          </div>
+        </div>
+        <button 
+          class="bookmark saved"
+          data-slug="${post.slug}"
+          title="Remove from saved"
+        >
+          <i class="fa-solid fa-bookmark"></i>
+        </button>
       </article>
     `).join("");
 
+    document.querySelectorAll(".bookmark").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation(); // prevent card click
+
+        const slug = btn.dataset.slug;
+
+        try {
+          await apiFetch(`${API_URL}/${slug}/unsave`, {
+            method: "POST",
+          });
+
+          btn.closest(".post-card").remove();
+          showToast("Removed from saved posts", "success");
+
+        } catch (err) {
+          console.error(err);
+          showToast("Failed to remove", "error");
+        }
+      });
+    });
+
+
   } catch (err) {
-    console.error(err);
+    console.error(err);       
     savedPostsContainer.innerHTML = "<p>Error loading saved posts.</p>";
   }
 }
