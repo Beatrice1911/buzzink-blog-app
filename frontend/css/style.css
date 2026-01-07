@@ -1191,7 +1191,7 @@ nav a:hover {
 }
 
 .related-posts h3 {
-  margin: 0 1rem 3rem;
+  margin: 0 1rem 1rem;
   color: var(--text);
 }
 
@@ -1202,6 +1202,7 @@ nav a:hover {
 .related-post-card a {
   text-decoration: none;
   font-weight: 600;
+  margin-bottom: 2rem;
 }
 
 .related-post-card small {
