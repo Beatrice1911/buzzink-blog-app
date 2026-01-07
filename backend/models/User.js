@@ -15,7 +15,11 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: { type: String },
   resetPasswordExpire: { type: Date },
-  dateJoined: { type: Date, default: Date.now }
+  dateJoined: { type: Date, default: Date.now },
+  savedPosts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Post"
+  }]
 }, { timestamps: true });
 
 
