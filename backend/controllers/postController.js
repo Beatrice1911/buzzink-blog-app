@@ -304,5 +304,5 @@ module.exports = {
   unlikePost,
   getTrendingPosts,
   incrementView,
-  getPostByCategory,
+  getPostsByCategory,
 };
