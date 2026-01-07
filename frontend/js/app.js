@@ -1418,44 +1418,44 @@ async function loadSinglePost() {
       await fetchComments(post._id, commentsList, Infinity);
     }
 
+    const bookmarkIcon = container.querySelector(".bookmark");
+
+    function setBookmarkState(isSaved) {
+      bookmarkIcon.dataset.saved = isSaved ? "true" : "false";
+      bookmarkIcon.classList.toggle("saved", isSaved);
+      const icon = bookmarkIcon.querySelector("i");
+      icon.classList.toggle("fa-solid", isSaved);
+      icon.classList.toggle("fa-regular", !isSaved);
+    };
+
+    bookmarkIcon.addEventListener("click", async () => {
+      const slug = bookmarkIcon.dataset.slug;
+      const isSaved = bookmarkIcon.dataset.saved === "true";
+
+      bookmarkIcon.classList.add("clicked");
+      setTimeout(() => bookmarkIcon.classList.remove("clicked"), 200);
+
+      const url = isSaved ? `/api/posts/${slug}/unsave` : `/api/posts/${slug}/save`;
+
+      try {
+        const res = await apiFetch(url, {
+          method: "POST"
+        });
+        const data = await res.json();
+        setBookmarkState(!isSaved);
+        showToast(!isSaved ? "PostSaved" : "Removed from saved posts", "success")
+
+      } catch (err) {
+        console.error("Failed to toggle bookmark", err);
+        showToast("Something went wrong", "error");
+      }
+    });
+
     injectPostJsonLd(post);
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
   }
-
-  const bookmarkIcon = container.querySelector(".bookmark");
-
-  function setBookmarkState(isSaved) {
-    bookmarkIcon.dataset.saved = isSaved ? "true" : "false";
-    bookmarkIcon.classList.toggle("saved", isSaved);
-    const icon = bookmarkIcon.querySelector("i");
-    icon.classList.toggle("fa-solid", isSaved);
-    icon.classList.toggle("fa-regular", !isSaved);
-  };
-
-  bookmarkIcon.addEventListener("click", async () => {
-    const slug = bookmarkIcon.dataset.slug;
-    const isSaved = bookmarkIcon.dataset.saved === "true";
-
-    bookmarkIcon.classList.add("clicked");
-    setTimeout(() => bookmarkIcon.classList.remove("clicked"), 200);
-
-    const url = isSaved ? `/api/posts/${slug}/unsave` : `/api/posts/${slug}/save`;
-
-    try {
-      const res = await apiFetch(url, {
-        method: "POST"
-      });
-      const data = await res.json();
-      setBookmarkState(!isSaved);
-      showToast(!isSaved ? "PostSaved" : "Removed from saved posts", "success")
-
-    } catch (err) {
-      console.error("Failed to toggle bookmark", err);
-      showToast("Something went wrong", "error");
-    }
-  });
 
   fetchRelatedPosts(postSlug);
 }
