@@ -9,6 +9,7 @@ const mobileSearch = document.getElementById("mobileSearch");
 const logo = document.querySelector(".logo");
 const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
+const savedPosts = document.getElementById("savedPosts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
 const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
@@ -1443,7 +1444,7 @@ async function loadSinglePost() {
         });
         const data = await res.json();
         setBookmarkState(!isSaved);
-        showToast(!isSaved ? "PostSaved" : "Removed from saved posts", "success")
+        showToast(!isSaved ? "Post saved" : "Removed from saved posts", "success")
 
       } catch (err) {
         console.error("Failed to toggle bookmark", err);
@@ -1551,6 +1552,41 @@ function initForgotPassword() {
   }
 }
 
+// Load saved posts
+const savedPostsContainer = document.getElementById("savedPostsContainer");
+
+async function loadSavedPosts() {
+  try {
+    const res = await apiFetch(`${API_URL}/saved/me`)
+
+    if (!res.ok) throw new Error("Failed to fetch");
+
+    const posts = await res.json();
+
+    if (posts.length === 0) {
+      container.innerHTML = "<p>You have no saved posts yet.</p>";
+      return;
+    }
+
+    container.innerHTML = posts.map(post => `
+      <article class="post-card" onclick="window.location.href='post.html?slug=${post.slug}'">
+        ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
+        <h3>${post.title}</h3>
+        <p class="tag">${post.category}</p>
+        <small>By ${post.authorId?.name || "Unknown"}</small>
+      </article>
+    `).join("");
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>Error loading saved posts.</p>";
+  }
+}
+
+savedPosts?.addEventListener("click", () => {
+  window.location.href = "saved.html";
+});
+
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
@@ -1567,6 +1603,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchMyPosts();
   } else if (window.location.pathname.endsWith("post.html")) {
     loadSinglePost();
+  } else if (window.location.pathname.endswith("saved.html")) {
+    loadSavedPosts();
   } else {
     fetchPosts();
   }
