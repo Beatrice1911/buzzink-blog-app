@@ -30,7 +30,7 @@
   margin-bottom: 1rem;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
-
+ 
 .remove-photo-btn {
   background-color: #fee2e2;
   color: #b91c1c;
@@ -43,10 +43,12 @@
   transition: all 0.3s ease;
   display: none;
   text-align: center;
+  transition: all .3s ease;
 }
 
 .remove-photo-btn:hover {
-  background-color: #c0392b;
+  background-color: #b91c1c;
+  color: #fee2e2;
 }
 
 .remove-photo-btn[style*="display: none"] {
