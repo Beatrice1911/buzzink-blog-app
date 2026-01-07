@@ -272,6 +272,27 @@ const incrementView = async (req, res) => {
   res.json({ views: post.views });
 }
 
+const getPostsByCategory = async (req, res) => {
+  try {
+    const post = await Post.findOne({ slug: req.params.slug });
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const relatedPosts = await Post.find({
+      category: post.category,
+      slug: { $ne: post.slug }
+    })
+      .limit(4)
+      .select("title slug category createdAt image");
+
+    res.status(200).json(relatedPosts);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch related posts" });
+  }
+}
+
 
 module.exports = {
   getPosts,
@@ -283,4 +304,5 @@ module.exports = {
   unlikePost,
   getTrendingPosts,
   incrementView,
+  getPostByCategory,
 };

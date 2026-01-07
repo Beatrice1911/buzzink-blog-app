@@ -1420,6 +1420,7 @@ async function loadSinglePost() {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
   }
+  fetchRelatedPosts(postSlug);
 }
 
 // Fetch and display trending posts
@@ -1440,6 +1441,31 @@ const fetchTrendingPosts = async () => {
   `}).join("");
 };
 
+function renderRelatedPosts(posts) {
+  const container = document.getElementById("related-posts-container");
+  if (!posts.length) {
+    container.innerHTML = "<p>No related posts found.</p>";
+    return;
+  }
+
+  container.innerHTML = posts.map(post => `
+      <article class="related-post-card">
+        <h4><a href="post.html?slug=${post.slug}">${post.title}</a></h4>
+        <small>${post.category}</small>
+      </article>
+    `).join("");
+}
+
+const fetchRelatedPosts = async (slug) => {
+  try {
+    const res = await apiFetch(`${API_URL}/slug/${slug}/related`);
+    const relatedPosts = await res.json();
+    
+    renderRelatedPosts(relatedPosts);
+  } catch (err) {
+    console.error("Failed to fetch related posts.", err);
+  }
+}
 
 // Profile edit button handling
 const profileEdit = document.getElementById("profile-edit");
