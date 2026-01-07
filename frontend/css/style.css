@@ -1193,14 +1193,15 @@ nav a:hover {
 .related-posts h3 {
   margin: 0 1rem 1rem;
   color: var(--text);
+  font-size: 1.5rem;
 }
 
 .related-post-card {
-  margin: 0 1rem;
+  margin: 0 1rem 1rem;
 }
 
 .related-post-card h4 {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .related-post-card a {
