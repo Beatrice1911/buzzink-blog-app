@@ -1603,7 +1603,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchMyPosts();
   } else if (window.location.pathname.endsWith("post.html")) {
     loadSinglePost();
-  } else if (window.location.pathname.endswith("saved.html")) {
+  } else if (window.location.pathname.endsWith("saved.html")) {
     loadSavedPosts();
   } else {
     fetchPosts();
