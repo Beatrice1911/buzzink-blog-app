@@ -4,6 +4,10 @@
   --bg: #fafafa;
   --text: #1f2937;
   --muted: #6b7280;
+  --bg2: #eef2ff;
+  --secondary: #4f46e5;
+  --main-bg: #f6f7fb;
+  --sec-text: #e6e6e6;
 }
 
 
@@ -19,7 +23,7 @@
 }
 
 body {
-  background: #f6f7fb;
+  background: var(--main-bg);
   font-family: 'Inter' sans-serif;
 }
 
@@ -65,7 +69,7 @@ nav a {
 }
 
 nav a:hover {
-  color: #e6e6e6;
+  color: var(--sec-text);
   transform: translateY(-1px);
 }
 
@@ -111,7 +115,7 @@ nav a:hover {
 .mobile-nav {
   display: none;
   flex-direction: column;
-  background: #f6f7fb;
+  background: var(--main-bg);
   position: absolute;
   top: 50px;
   right: 0;
@@ -126,7 +130,7 @@ nav a:hover {
 .user-menu-details{
   display: none;
   flex-direction: column;
-  background: #f6f7fb;
+  background: var(--main-bg);
   position: absolute;
   top: 70px;
   right: 0;
@@ -1264,8 +1268,8 @@ nav a:hover {
 
 .tag {
   display: inline-block;
-  background: #eef2ff;
-  color: #4f46e5;
+  background: var(--bg2);
+  color: var(--secondary);
   font-size: 0.75rem;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
