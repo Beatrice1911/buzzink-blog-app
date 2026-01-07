@@ -1199,10 +1199,14 @@ nav a:hover {
   margin: 0 1rem;
 }
 
+.related-post-card h4 {
+  margin-bottom: 2rem;
+}
+
 .related-post-card a {
   text-decoration: none;
   font-weight: 600;
-  margin-bottom: 2rem;
+  color: var(--text);
 }
 
 .related-post-card small {
