@@ -31,9 +31,9 @@ const { getPosts, getPostBySlug, createPost, updatePost, deletePost, likePost, u
 router.get("/", optionalAuth, getPosts);
 router.get("/mine", requireAuth, getPosts);
 router.get("/trending", getTrendingPosts);
+router.get("/:slug/related", optionalAuth, getPostsByCategory);
 router.get("/:slug", optionalAuth, getPostBySlug);
 router.get("/:slug/view", optionalAuth, incrementView);
-router.get("/:slug/related", optionalAuth, getPostsByCategory);
 router.post("/", requireAuth, upload.single("image"), createPost);
 router.post("/:slug/like", requireAuth, likePost);
 router.post("/:slug/unlike", requireAuth, unlikePost);
