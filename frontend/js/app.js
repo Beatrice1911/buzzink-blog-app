@@ -1564,11 +1564,11 @@ async function loadSavedPosts() {
     const posts = await res.json();
 
     if (posts.length === 0) {
-      container.innerHTML = "<p>You have no saved posts yet.</p>";
+      savedPostsContainer.innerHTML = "<p>You have no saved posts yet.</p>";
       return;
     }
 
-    container.innerHTML = posts.map(post => `
+    savedPostsContainer.innerHTML = posts.map(post => `
       <article class="post-card" onclick="window.location.href='post.html?slug=${post.slug}'">
         ${post.image ? `<img src="${getImageUrl(post.image)}" alt="${post.title}">` : ""}
         <h3>${post.title}</h3>
@@ -1579,7 +1579,7 @@ async function loadSavedPosts() {
 
   } catch (err) {
     console.error(err);
-    container.innerHTML = "<p>Error loading saved posts.</p>";
+    savedPostsContainer.innerHTML = "<p>Error loading saved posts.</p>";
   }
 }
 

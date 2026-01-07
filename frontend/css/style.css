@@ -275,7 +275,7 @@ nav a:hover {
 }
 
 /* Featured and My Posts Section */
-.featured-posts h2, .my-posts-section h2 {
+.featured-posts h2, .my-posts-section h2, .saved-posts h2 {
   text-align: center;
   font-size: 36px;
   color: var(--text);
