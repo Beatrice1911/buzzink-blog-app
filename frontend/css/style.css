@@ -145,6 +145,10 @@ nav a:hover {
   border-radius: 20px;
 }
 
+.search-icon {
+  color: var(--text-inverse);
+}
+
 .search-bar input {
   border: none;
   outline: none;
@@ -219,13 +223,17 @@ nav a:hover {
   width: 35%;
   padding: 6px 10px;
   background: var(--bg-alt);
-  color: var(--surface-card);
+  color: var(--text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
   font-size: 1.1rem;
   transition: all 0.3s ease;
+}
+
+[data-theme="dark"] #logoutBtn {
+  background: var(--surface-muted);
 }
 
 #logoutBtn:hover {
@@ -1409,7 +1417,7 @@ nav a:hover {
   background: var(--surface-card);
   padding: 1.2rem;
   border-radius: 12px;
-  margin: 0 1rem 1.5rem;
+  margin: 1rem 1rem 1.5rem;
   box-shadow: var(--shadow-sm);
   animation: fadeUp 0.4s ease both;
 
@@ -1440,6 +1448,7 @@ nav a:hover {
   align-items: center;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--divider);
+  color: var(--text);
 }
 
 .setting-item:last-child {
