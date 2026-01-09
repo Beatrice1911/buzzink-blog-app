@@ -131,6 +131,22 @@ nav a:hover {
   transform: translateY(-1px);
 }
 
+nav a.active {
+  color: var(--sec-text);
+  position: relative;
+}
+
+nav a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 100%;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--brand-gradient);
+}
+
 .user-icon {
   width: 32px;
   height: 32px;
@@ -226,7 +242,7 @@ nav a:hover {
   width: 35%;
   padding: 6px 10px;
   background: var(--bg-alt);
-  color: var(--text);
+  color: var(--text-inverse);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -237,6 +253,7 @@ nav a:hover {
 
 [data-theme="dark"] #logoutBtn {
   background: var(--surface-muted);
+  color: var(--text);
 }
 
 #logoutBtn:hover {
@@ -1351,6 +1368,10 @@ nav a:hover {
   margin-top: 18px;
 }
 
+#savedPostsContainer > p {
+  color: var(--text);
+}
+
 .post-card {
   position: relative;
   background: var(--surface-card);
@@ -1534,6 +1555,55 @@ nav a:hover {
   transform: translateX(24px);
 }
 
+.about-page {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  color: var(--text);
+}
+
+.about-hero {
+  background: var(--surface-card);
+  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 3rem;
+}
+
+.about-hero h1 {
+  margin: 0 0 0.8rem;
+  font-size: 2rem;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-hero p {
+  color: var(--muted);
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+.about-section {
+  background: var(--surface-card);
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+}
+
+.about-section h2 {
+  margin-top: 0;
+  color: var(--primary);
+  font-size: 1.3rem;
+}
+
+.about-section p {
+  color: var(--text);
+  line-height: 1.7;
+}
+
 
 /* Responsive Styles */
 @media (max-width: 768px) {
@@ -1669,5 +1739,13 @@ nav a:hover {
 
   .social-media-icons {
     justify-content: center;
+  }
+
+  .about-hero {
+    padding: 2rem 1.5rem;
+  }
+
+  .about-section {
+    padding: 1.5rem;
   }
 }

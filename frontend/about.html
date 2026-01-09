@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap">
-    <title>My Posts - BuzzInk</title>
+    <title>All Posts - BuzzInk</title>
+    <title id="postTitle"></title>
     <meta name="description" content="" id="postDescription">
     <meta property="og:title" content="" id="ogTitle">
     <meta property="og:description" content="" id="ogDescription">
@@ -22,17 +24,17 @@
 </head>
 
 <body>
-    <div class="header write-header">
+    <div class="header all-posts-header">
         <div class="logo-img">
             <img src="Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png" alt="Logo" class="logo">
         </div>
 
         <div class="search-bar">
-            <input type="text" class="search" placeholder="Search posts...">
+            <input type="text" class="search" placeholder="Search posts..." >
             <i class="fas fa-search"></i>
         </div>
 
-        <div class="icons write-icons">
+        <div class="icons all-posts-icons">
             <i class="fas fa-search search-icon"></i>
             <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar" class="user-icon" onerror="this.onerror=null;this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png';"/>
             <i class="fas fa-bars menu-toggle"></i>
@@ -42,7 +44,7 @@
             <a href="index.html">Home</a>
             <a href="all-posts.html">Posts</a>
             <!-- <a href="#">Categories</a> -->
-            <a href="about.html">About</a>
+            <a href="about.html" class="active">About</a>
             <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar" class="user-icon" onerror="this.onerror=null;this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png';"/>
         </nav>
     </div>
@@ -64,13 +66,38 @@
         <button id="logoutBtn" class="hidden">Logout</button>
     </div>
 
-    <section class="my-posts-section">
-        <h2>My Posts</h2>
-        <div id="myPostsContainer" class="posts-container"></div>
+  <main class="about-page">
+    <header class="about-hero">
+        <h1>About Our Site</h1>
+        <p>Learn more about what we do and why this site exists.</p>
+    </header>
+
+    <section class="about-section">
+      <h2>Our Mission</h2>
+      <p>
+        Our goal is to provide a platform where readers and writers can explore and share high-quality content on a variety of topics. 
+        We focus on delivering insightful and entertaining posts, guides, and resources that inform, entertain and inspire.
+      </p>
     </section>
 
-    <div id="pagination"></div>
+    <section class="about-section">
+      <h2>What We Offer</h2>
+      <ul>
+        <li>Curated articles and posts across multiple categories.</li>
+        <li>Resources and tips to help readers learn and grow.</li>
+        <li>Community engagement through comments and discussions.</li>
+      </ul>
+    </section>
 
+    <section class="about-section">
+      <h2>Why Choose Our Site?</h2>
+      <p>
+        We prioritize quality, accuracy, and accessibility. Whether you are here to read, share, learn, or explore, 
+        our content is designed to be helpful and enjoyable.
+      </p>
+    </section>
+  </main>
+    
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-about">
@@ -101,6 +128,7 @@
             <p>&copy; 2025 BuzzInk. Made with ❤️</p>
         </div>
     </footer>
+
     <div id="authModal" class="auth-modal hidden">
         <div class="auth-modal-content">
             <span id="closeModal" class="close">&times;</span>
@@ -125,6 +153,7 @@
             </form>
         </div>
     </div>
+
     <div id="forgotPasswordModal" class="auth-modal hidden">
         <div class="auth-modal-content">
             <span id="closeForgotModal" class="close">&times;</span>

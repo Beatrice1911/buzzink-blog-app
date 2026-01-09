@@ -104,6 +104,7 @@
 .profile-edit label {
   margin-top: 1rem;
   font-weight: 500;
+  color: var(--text-color);
 }
 
 .profile-edit input, 
@@ -137,11 +138,21 @@
 @media (max-width: 768px) {
   .dashboard-container {
     grid-template-columns: 1fr;
-    margin: 10px;
+    margin: 10px auto;
     gap: 1rem;
   }
 
   .profile-preview, .profile-edit {
     padding: 1.5rem;
+    box-shadow: 0 6px 16px var(--shadow-card);
+    border-radius: 14px;
+  }
+
+  .profile-preview {
+    background: linear-gradient(
+      180deg,
+      var(--card-bg),
+      var(--bg-color)
+    );
   }
 }
