@@ -31,6 +31,7 @@
   --bg-muted: #555;
 
   --text: #1f2937;
+  --text-hover: #555; 
   --text-light: #ccc;
   --sec-text: #e6e6e6;
   --text-inverse: #fafafa;
@@ -59,6 +60,7 @@
   --surface-card: #0f172a;
   --surface-footer: #020617;
   --text: #e5e7eb;
+  --text-hover: #9ca3af;
   --muted: #9ca3af;
   --bg-alt: #1e293b;
   --bg-muted: #334155;
@@ -146,10 +148,6 @@ nav a:hover {
   border-radius: 20px;
 }
 
-.search-icon {
-  color: var(--text-inverse);
-}
-
 .search-bar input {
   border: none;
   outline: none;
@@ -164,6 +162,10 @@ nav a:hover {
   cursor: pointer;
   font-size: 1.2rem;
   color: var(--accent);
+}
+
+.fa-search {
+  color: var(--text-inverse);
 }
 
 .menu-toggle {
@@ -217,7 +219,7 @@ nav a:hover {
 }
 
 .user-menu-details p:hover{
-  color: var(--accent);
+  color: var(--text-hover);
 }
 
 #logoutBtn {
