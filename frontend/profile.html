@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,12 +21,34 @@
   <meta name="twitter:image" content="" id="twitterImage">
 
   <style>
+    :root {
+      --bg-color: #fff;
+      --header-bg: linear-gradient(135deg, #023e8a, #0077b6);
+      --text-color: #333;
+      --post-text: #555;
+      --text-inverse: #fff;
+      --shadow-light: rgba(0, 0, 0, 0.1);
+      --shadow-card: rgba(0, 0, 0, 0.08);
+      --shadow-card-hover: rgba(0, 0, 0, 0.12);
+    }
+
+    :root[data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --header-bg: linear-gradient(135deg, #00509d, #0096c7);
+      --text-color: #f0f0f0;
+      --post-text: #ccc;
+      --text-inverse: #fff;
+      --shadow-light: rgba(255, 255, 255, 0.1);
+      --shadow-card: rgba(255, 255, 255, 0.05);
+      --shadow-card-hover: rgba(255, 255, 255, 0.1);
+    }
+
     .profile-container {
       max-width: 800px;
       margin: 2rem 1rem;
       padding: 2rem;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      background-color: var(--bg-color);
+      box-shadow: 0 0 10px var(--shadow-light);
       border-radius: 10px;
     }
 
@@ -34,9 +57,9 @@
       align-items: center;
       gap: 1.5rem;
       padding: 2rem;
-      background: linear-gradient(135deg, #023e8a, #0077b6);
+      background: var(--header-bg);
       border-radius: 16px;
-      color: #fff;
+      color: var(--text-inverse);
     }
 
     .profile-header img {
@@ -44,27 +67,27 @@
       height: 130px;
       border-radius: 50%;
       object-fit: cover;
-      border: 4px solid #fff;
+      border: 4px solid var(--text-inverse);
     }
 
     .profile-info h2 {
       margin: 0;
       font-size: 1.5rem;
-      color: #fff;
+      color: var(--text-inverse);
     }
 
     .profile-info p {
       margin: 5px 0;
-      color: rgba(255,255,255,0.85);
+      color: rgba(var(--text-inverse-rgb, 255, 255, 255), 0.85);
     }
 
-    .user-posts{
+    .user-posts {
       margin-top: 2rem;
     }
 
     .user-posts > h3 {
       margin-bottom: 1rem;
-      color: #333;
+      color: var(--text-color);
     }
 
     .post-card {
@@ -73,24 +96,25 @@
       padding: 1.2rem;
       margin-bottom: 1.2rem;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 20px var(--shadow-card);
     }
 
     .post-card:hover {
       transform: translateY(-6px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 12px 28px var(--shadow-card-hover);
     }
 
     .post-card h3 {
       margin: 0 0 0.5rem;
-      color: #333;
+      color: var(--text-color);
     }
 
-    .post-card p, .no-posts {
-      color: #555;
+    .post-card p,
+    .no-posts {
+      color: var(--post-text);
       margin: 0.5rem 0;
     }
-
+    
     @media (max-width: 768px) {
       .profile-header {
         flex-direction: column;
@@ -113,7 +137,9 @@
 
     <div class="icons write-icons">
       <i class="fas fa-search search-icon"></i>
-      <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar" class="user-icon" onerror="this.onerror=null;this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png';"/>
+      <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar"
+        class="user-icon"
+        onerror="this.onerror=null;this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png';" />
       <i class="fas fa-bars menu-toggle"></i>
     </div>
 
@@ -122,7 +148,9 @@
       <a href="all-posts.html">Posts</a>
       <a href="#">Categories</a>
       <a href="#">About</a>
-      <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar" class="user-icon" onerror="this.onerror=null;this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png';"/>
+      <img id="navUserAvatar" src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png" alt="User Avatar"
+        class="user-icon"
+        onerror="this.onerror=null;this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png';" />
     </nav>
   </div>
   <div class="mobile-nav" id="mobileMenu">
@@ -144,12 +172,13 @@
 
   <div class="profile-container">
     <div class="profile-header">
-        <img src="" alt="Profile Photo" id="profile-photo" onerror="this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png'">
-        <div class="profile-info">
-            <h2 id="profile-name"></h2>
-            <p id="profile-bio"></p>
-            <p id="profile-date"></p>
-        </div>
+      <img src="" alt="Profile Photo" id="profile-photo"
+        onerror="this.src='https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png'">
+      <div class="profile-info">
+        <h2 id="profile-name"></h2>
+        <p id="profile-bio"></p>
+        <p id="profile-date"></p>
+      </div>
     </div>
 
     <div class="user-posts">
@@ -158,38 +187,38 @@
     </div>
   </div>
 
-  
+
 
   <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-about">
-                <h3>BuzzInk</h3>
-                <p>From fashion to food, travel to life - blog it all here.</p>
-            </div>
+    <div class="footer-container">
+      <div class="footer-about">
+        <h3>BuzzInk</h3>
+        <p>From fashion to food, travel to life - blog it all here.</p>
+      </div>
 
-            <div class="footer-links">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="all-posts.html">All Posts</a></li>
-                    <li><a href="write.html" class="write-post">Write Post</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
-            </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="all-posts.html">All Posts</a></li>
+          <li><a href="write.html" class="write-post">Write Post</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
 
-            <div class="footer-subscribe">
-                <h4>Subscribe</h4>
-                <form>
-                    <input type="email" placeholder="Your email" required>
-                    <button type="submit">Subscribe</button>
-                </form>
-            </div>
-        </div>
+      <div class="footer-subscribe">
+        <h4>Subscribe</h4>
+        <form>
+          <input type="email" placeholder="Your email" required>
+          <button type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
 
-        <div class="footer-bottom">
-            <p>&copy; 2025 BuzzInk. Made with ❤️</p>
-        </div>
-    </footer>
+    <div class="footer-bottom">
+      <p>&copy; 2025 BuzzInk. Made with ❤️</p>
+    </div>
+  </footer>
 
   <div id="authModal" class="auth-modal hidden">
     <div class="auth-modal-content">
@@ -218,13 +247,13 @@
 
   <div id="forgotPasswordModal" class="auth-modal hidden">
     <div class="auth-modal-content">
-        <span id="closeForgotModal" class="close">&times;</span>
-        <h2>Reset Password</h2>
-        <p>Enter your email and we’ll send you a reset link.</p>
-        <form id="forgotPasswordForm">
-            <input type="email" id="forgotEmail" placeholder="Your email" required>
-            <button type="submit">Send Reset Link</button>
-        </form>
+      <span id="closeForgotModal" class="close">&times;</span>
+      <h2>Reset Password</h2>
+      <p>Enter your email and we’ll send you a reset link.</p>
+      <form id="forgotPasswordForm">
+        <input type="email" id="forgotEmail" placeholder="Your email" required>
+        <button type="submit">Send Reset Link</button>
+      </form>
     </div>
   </div>
   <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
