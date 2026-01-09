@@ -242,7 +242,7 @@ nav a.active::after {
   width: 35%;
   padding: 6px 10px;
   background: var(--bg-alt);
-  color: var(--text-inverse);
+  color: var(--text-inverse) !important;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -253,7 +253,7 @@ nav a.active::after {
 
 [data-theme="dark"] #logoutBtn {
   background: var(--surface-muted);
-  color: var(--text);
+  color: var(--text) !important;
 }
 
 #logoutBtn:hover {
