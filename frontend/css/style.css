@@ -1,15 +1,70 @@
 :root {
   --primary: #6d28d9;
-  --accent: #004d40;
-  --bg: #fafafa;
-  --text: #1f2937;
-  --muted: #6b7280;
-  --bg2: #eef2ff;
   --secondary: #4f46e5;
-  --main-bg: #f6f7fb;
+
+  --accent: #004d40;
+  --accent-light: #00adb5;
+  --accent-dark: #008a92;
+
+  --gradient-light: #a04cf0;
+  --gradient-dark: #6c5ce7;
+  --brand-gradient: linear-gradient(135deg, var(--gradient-light), var(--gradient-dark));
+
+  --success: #00b894;
+  --error: #d63031;
+  --info: #0984e3;
+  --like: #e0245e;
+
+  --like-gradient-light: #ff1a1a;
+  --like-gradient-dark: #b30000;
+
+  --trending-light: #ff9800;
+  --trending-dark: #ff5722;
+
+  --surface-card: #fafafa;
+  --surface-page: #f6f7fb;
+  --surface-muted: #c9c7c7;
+  --surface-soft: #eef2ff;
+  --surface-footer: #121212;
+  --bg-modal: #00332f;
+  --bg-alt: #333;
+  --bg-muted: #555;
+
+  --text: #1f2937;
+  --text-light: #ccc;
   --sec-text: #e6e6e6;
+  --text-inverse: #fafafa;
+  --muted: #6b7280;
+  --link: #007BFF;
+
+  --border-light: #eee;
+  --border-muted: #f0f0f0;
+  --divider: rgba(0,0,0,0.1);
+
+  --tag-bg: rgba(0, 77, 64, 0.08);
+  --glass-bg: rgba(255,255,255,0.15);
+
+  --glass-gradient: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0) 80%
+  );
+
+  --shadow-sm: 0 10px 25px rgba(160, 76, 240, 0.25);
+  --shadow-lg: 0 15px 30px rgba(160, 76, 240, 0.35);  
 }
 
+[data-theme="dark"] { 
+  --surface-page: #020617;
+  --surface-card: #0f172a;
+  --surface-footer: #020617;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --bg-alt: #1e293b;
+  --bg-muted: #334155;
+  --divider: rgba(255, 255, 255, 0.12);
+  --glass-bg: rgba(0,0,0,0.45);
+}
 
 * {
   box-sizing: border-box;
@@ -23,8 +78,8 @@
 }
 
 body {  
-  background: var(--main-bg);
-  font-family: 'Inter' sans-serif;
+  background: var(--surface-page);
+  font-family: 'Inter', sans-serif;
 }
 
 h1, h2, h3 {
@@ -33,7 +88,7 @@ h1, h2, h3 {
 
 /* Header Styles */
 .header {
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--glass-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -60,7 +115,7 @@ nav {
 }
 
 nav a {
-  color: var(--bg);
+  color: var(--text-inverse);
   text-decoration: none;
   font-weight: 600;
   font-size: 1.05rem;
@@ -85,7 +140,7 @@ nav a:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--bg);
+  background: var(--surface-card);
   padding: 0.6rem 0.7rem;
   border-radius: 20px;
 }
@@ -109,13 +164,13 @@ nav a:hover {
 .menu-toggle {
   font-size: 1.5rem;
   cursor: pointer;
-  color: var(--bg);
+  color: var(--surface-card);
 }
 
 .mobile-nav {
   display: none;
   flex-direction: column;
-  background: var(--main-bg);
+  background: var(--surface-page);
   position: absolute;
   top: 50px;
   right: 0;
@@ -130,7 +185,7 @@ nav a:hover {
 .user-menu-details{
   display: none;
   flex-direction: column;
-  background: var(--main-bg);
+  background: var(--surface-page);
   position: absolute;
   top: 70px;
   right: 0;
@@ -152,7 +207,7 @@ nav a:hover {
   font-weight: bold;
   padding: 0.5rem 0;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid var(--divider);
   transition: all 0.3s ease;
 }
 
@@ -163,8 +218,8 @@ nav a:hover {
 #logoutBtn {
   width: 35%;
   padding: 6px 10px;
-  background: #333;
-  color: var(--bg);
+  background: var(--bg-alt);
+  color: var(--surface-card);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -174,7 +229,7 @@ nav a:hover {
 }
 
 #logoutBtn:hover {
-  background: #555;
+  background: var(--bg-muted);
 }
 
 .mobile-nav a {
@@ -183,7 +238,7 @@ nav a:hover {
   padding: 0.5rem 0;
   color: var(--text);
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid var(--divider);
 }
 
 .all-posts-header nav a, .all-posts-header nav i, .all-posts-header .icons, .write-header nav a, .write-header nav i, .write-header .icons, .all-posts-icons i, .write-icons i {
@@ -196,7 +251,7 @@ nav a:hover {
   overflow: hidden;
   transition: all 0.3s ease;
   z-index: 999;
-  background-color: var(--bg);
+  background-color: var(--surface-card);
   margin: 0 auto;
   border-radius: 5px;
   border: 1px solid #ccc;
@@ -227,7 +282,7 @@ nav a:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: var(--bg);
+  color: var(--surface-card);
   text-align: center;
 }
 
@@ -255,16 +310,16 @@ nav a:hover {
   border-radius: 20px;
   font-size: 20px;
   font-weight: bold;
-  color: var(--bg);
+  color: var(--surface-card);
   cursor: pointer;
-  background: linear-gradient(135deg, #a04cf0, #6c5ce7);
-  box-shadow: 0 10px 25px rgba(160, 76, 240, 0.25);
+  background: var(--brand-gradient);
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
 }
 
 .write-post-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(160, 76, 240, 0.35);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn {
@@ -290,9 +345,9 @@ nav a:hover {
 /* Trending Posts Section */
 .trending-posts {
   max-width: 1100px;
-  background: linear-gradient(180deg, #ffffff, #fafafa);
+  background: linear-gradient(180deg, var(--surface-card), var(--surface-card));
   padding: 1.5rem;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-light);
   border-radius: 18px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   margin: 2rem auto;
@@ -305,13 +360,13 @@ nav a:hover {
   display: flex;
   align-items: center;
   gap: 8px;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--border-light);
   padding-bottom: 8px;
   margin-bottom: 15px;
 }
 
 .trending-posts h2 i {
-  color: #ff5722;
+  color: var(--trending-dark);
 }
 
 #trending-list {
@@ -325,7 +380,7 @@ nav a:hover {
   align-items: center;
   justify-content: space-between;
   padding: 8px 0 8px 8px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-muted);
   transition: 0.2s;
 }
 
@@ -334,7 +389,7 @@ nav a:hover {
 }
 
 #trending-list li:hover {
-  background-color: var(--bg);
+  background-color: var(--surface-card);
   transform: scale(1.01);
 }
 
@@ -354,11 +409,11 @@ nav a:hover {
 }
 
 .trending-title:hover {
-  color: #ff5722;
+  color: var(--trending-dark);
 }
 
 .trending-icon {
-  color: #ff9800;
+  color: var(--trending-light);
   padding-right: 8px;
 }
 
@@ -367,8 +422,8 @@ nav a:hover {
 }
 
 @keyframes flicker {
-  from { color: #ff5722; }
-  to { color: #ff9800; }
+  from { color: var(--trending-dark); }
+  to { color: var(--trending-light); }
 }
 
 /* All Posts Section */
@@ -388,7 +443,7 @@ nav a:hover {
   color: var(--text);
   font-size: 18px;
   outline: var(--accent);
-  background-color: var(--bg);
+  background-color: var(--surface-card);
 }
 
 .all-posts-h2 {
@@ -399,7 +454,7 @@ nav a:hover {
 }
 
 .all-posts-btn {
-  color: var(--bg);
+  color: var(--surface-card);
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -408,15 +463,15 @@ nav a:hover {
   margin: 20px auto 10px;
   font-weight: bold;
   font-size: 20px;
-  background: linear-gradient(135deg, #a04cf0, #6c5ce7);
-  box-shadow: 0 10px 25px rgba(160, 76, 240, 0.25);
+  background: var(--brand-gradient);
+  box-shadow: var(--shadow-sm);
   transition: all 0.3s ease;
 }
 
 .all-posts-btn:hover {
   background-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(160, 76, 240, 0.35);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Posts Container */
@@ -446,7 +501,7 @@ nav a:hover {
   padding-bottom: 15px;
   height: auto;
   border-radius: 16px;
-  background: var(--bg);
+  background: var(--surface-card);
   overflow: hidden;
   transition: all 0.3s ease;
 }
@@ -498,7 +553,7 @@ nav a:hover {
 }
 
 .tag {
-  background: rgba(0, 77, 64, 0.08);
+  background: var(--tag-bg);
   width: 25%;
   padding: 6px 14px;
   border: none;
@@ -525,10 +580,10 @@ nav a:hover {
 
 .edit-btn,
 .delete-btn {
-  background: linear-gradient(135deg, #a04cf0, #6c5ce7);
-  box-shadow: 0 10px 25px rgba(160, 76, 240, 0.25);
+  background: var(--brand-gradient);
+  box-shadow: var(--shadow-sm);
   border: none;
-  color: var(--bg);
+  color: var(--surface-card);
   margin-right: 10px;
   transition: all 0.3s ease;
 }
@@ -536,13 +591,13 @@ nav a:hover {
 .edit-btn:hover,
 .delete-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(160, 76, 240, 0.35);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Footer Styles */
 .footer {
-  background-color: #121212;
-  color: #ccc;
+  background-color: var(--surface-footer);
+  color: var(--text-light);
   padding: 40px 20px 20px;
   margin-top: 40px;
   font-family: "Poppins", sans-serif;
@@ -558,7 +613,7 @@ nav a:hover {
 
 .footer h3,
 .footer h4 {
-  color: var(--bg);
+  color: var(--text-inverse);
   margin-bottom: 15px;
 }
 
@@ -576,13 +631,13 @@ nav a:hover {
 }
 
 .footer-links ul li a {
-  color: #00adb5;
+  color: var(--accent-light);
   text-decoration: none;
   transition: color 0.3s;
 }
 
 .footer-links ul li a:hover {
-  color: #fff;
+  color: var(--surface-card);
 }
 
 .footer-subscribe form {
@@ -599,8 +654,8 @@ nav a:hover {
 
 .footer-subscribe button {
   padding: 8px 15px;
-  background: #00adb5;
-  color: #fff;
+  background: var(--accent-light);
+  color: var(--bg-light);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -609,7 +664,7 @@ nav a:hover {
 }
 
 .footer-subscribe button:hover {
-  background: #008a92;
+  background: var(--accent-dark);
 }
 
 .social-media-icons {
@@ -617,19 +672,19 @@ nav a:hover {
 }
 
 .social-media-icons a {
-  color: #ccc;
+  color: var(--text-light);
   margin-right: 15px;
   font-size: 20px;
   transition: color 0.3s;
 }
 
 .social-media-icons a:hover {
-  color: var(--bg);
+  color: var(--surface-card);
 }
 
 .footer-bottom {
   text-align: center;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--divider);
   margin-top: 30px;
   padding-top: 15px;
   font-size: 14px;
@@ -638,7 +693,7 @@ nav a:hover {
 /* Write Posts Container */
 .container {
   width: 60%;
-  background: var(--bg);
+  background: var(--surface-card);
   padding: 20px;
   border-radius: 10px;
   margin: 20px auto;
@@ -659,7 +714,7 @@ nav a:hover {
   width: 100%;
   margin: 10px 0;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--divider);
   border-radius: 6px;
 }
 
@@ -670,7 +725,7 @@ nav a:hover {
 
 .add-post-btn {
   background: var(--primary);
-  color: var(--bg);
+  color: var(--surface-card);
   border: none;
   padding: 10px 15px;
   cursor: pointer;
@@ -687,7 +742,7 @@ nav a:hover {
 
 /* Single Post Container */
 .single-post-container {
-  background: var(--bg);
+  background: var(--surface-card);
   padding: 2rem;
   margin: 3rem auto;
   border-radius: 18px;
@@ -721,7 +776,7 @@ nav a:hover {
 
 .single-post-container .tag {
   display: inline-block;
-  background: rgba(0, 77, 64, 0.08);
+  background: var(--tag-bg);
   color: var(--accent);
   font-size: 0.8rem;
   font-weight: bold;
@@ -758,7 +813,7 @@ nav a:hover {
   margin: 0 5px;
   padding: 8px 12px;
   border: none;
-  background: var(--bg);
+  background: var(--surface-card);
   cursor: pointer;
   font-weight: bold;
   border-radius: 6px;
@@ -767,12 +822,12 @@ nav a:hover {
 }
 
 #pagination button:hover {
-  background: #c9c7c7;
+  background: var(--surface-muted);
 }
 
 #pagination button.pg-active {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--surface-card);
   font-weight: bold;
 }
 
@@ -789,7 +844,7 @@ nav a:hover {
 }
 
 .auth-modal-content {
-  background: var(--bg); 
+  background: var(--surface-card); 
   padding: 20px; 
   border-radius: 8px;
   width: 300px; 
@@ -800,20 +855,20 @@ nav a:hover {
   width: 100%; 
   padding: 10px; 
   margin: 10px 0;
-  border: 1px solid #ccc; 
+  border: 1px solid var(--divider); 
   border-radius: 5px;
 }
 
 .auth-form button, #forgotPasswordForm button{
   background-color: var(--accent);
-  color: var(--bg);
+  color: var(--surface-card);
   font-size: 18px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .auth-form button:hover, #forgotPasswordForm button:hover {
-  background-color: #00332f;
+  background-color: var(--bg-modal);
 }
 
 .auth-tabs button { 
@@ -824,8 +879,8 @@ nav a:hover {
 }
 
 .auth-tabs .active { 
-  background: #333; 
-  color: #fff; 
+  background: var(--bg-alt); 
+  color: var(--text-inverse); 
 }
 
 .auth-form { 
@@ -855,7 +910,7 @@ nav a:hover {
 
 .forgot-password a {
   font-size: 0.9rem;
-  color: #007BFF;
+  color: var(--link);
   text-decoration: none;
 }
 
@@ -878,7 +933,7 @@ nav a:hover {
   padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  color: var(--bg);
+  color: var(--surface-card);
   font-weight: bold;
   min-width: 250px;
   max-width: 350px;
@@ -887,9 +942,9 @@ nav a:hover {
   animation: slideIn 0.5s forwards;
 }
 
-.toast-success { background-color: #00b894; }
-.toast-error   { background-color: #d63031; }
-.toast-info    { background-color: #0984e3; }
+.toast-success { background-color: var(--success); }
+.toast-error   { background-color: var(--error); }
+.toast-info    { background-color: var(--info); }
 
 @keyframes slideIn {
   to { transform: translateX(0); opacity: 1; }
@@ -924,7 +979,7 @@ nav a:hover {
 }
 
 .post-interactions .bookmark.saved {
-  color: #e0245e;
+  color: var(--like);
 }
 
 .post-interactions .bookmark.clicked {
@@ -956,8 +1011,8 @@ nav a:hover {
 
 /* When liked */
 .like-btn.liked i {
-  color: #e0245e;
-  background: linear-gradient(145deg, #b30000, #ff1a1a);
+  color: var(--like);
+  background: linear-gradient(145deg, var(--like-gradient-dark), var(--like-gradient-light));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -987,11 +1042,7 @@ nav a:hover {
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    120deg,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(255, 255, 255, 0) 80%
-  );
+  background: var(--glass-gradient);
   transform: skewX(-25deg);
   transition: 0.5s;
   opacity: 0;
@@ -1018,7 +1069,7 @@ nav a:hover {
 
 .comments-section {
   margin-top: 10px;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--divider);
   padding-top: 8px;
   display: none;
 }
@@ -1028,7 +1079,7 @@ nav a:hover {
 }
 
 .comment {
-  background: var(--bg);
+  background: var(--surface-card);
   padding: 5px 10px;
   border-radius: 5px;
   margin-bottom: 5px;
@@ -1048,7 +1099,7 @@ nav a:hover {
   flex: 1;
   padding: 10px 5px;
   border-radius: 5px;
-  background-color: var(--bg);
+  background-color: var(--surface-card);
   border: none;
   outline: none;
 }
@@ -1056,7 +1107,7 @@ nav a:hover {
 .comment-form button {
   padding: 5px 10px;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--surface-card);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -1064,7 +1115,7 @@ nav a:hover {
 }
 
 .comment-form button:hover {
-  background: #00332f;
+  background: var(--bg-modal);
 }
 
 .no-comments {
@@ -1080,7 +1131,7 @@ nav a:hover {
 }
 
 .error-comments {
-  color: crimson;
+  color: var(--like-gradient-dark);
   font-size: 0.9rem;
   font-weight: bold;
 }
@@ -1107,7 +1158,7 @@ nav a:hover {
   scrollbar-width: thin;
   padding: 8px;
   border-radius: 6px;
-  background: #fafafa;
+  background: var(--surface-card);
   margin-bottom: 6px;
 }
 
@@ -1142,8 +1193,8 @@ nav a:hover {
   position: absolute;
   right: 0;
   top: 100%;
-  background: var(--bg);
-  border: 1px solid #ddd;
+  background: var(--surface-card);
+  border: 1px solid var(--divider);
   border-radius: 6px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   display: flex;
@@ -1157,7 +1208,7 @@ nav a:hover {
 
 .delete-comment-btn {
   border: none;
-  color: var(--bg);
+  color: var(--surface-card);
   padding: 5px 10px;
   text-align: left;
   cursor: pointer;
@@ -1167,7 +1218,7 @@ nav a:hover {
 }
 
 .delete-comment-btn:hover {
-  background-color: #00332f;
+  background-color: var(--bg-modal);
 }
 
 .auth-section {
@@ -1175,11 +1226,11 @@ nav a:hover {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: var(--bg);
+  background-color: var(--surface-card);
 }
 
 .auth-container {
-  background-color: var(--bg);
+  background-color: var(--surface-card);
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -1198,7 +1249,7 @@ nav a:hover {
   padding: 0.75rem;
   margin: 0.5rem 0;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--divider);
 }
 
 .auth-container .btn {
@@ -1209,7 +1260,7 @@ nav a:hover {
 .related-posts {
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--surface-muted);
 }
 
 .related-posts h3 {
@@ -1234,7 +1285,7 @@ nav a:hover {
 
 .related-post-card small {
   font-weight: 600;
-  background: rgba(0, 77, 64, 0.08);
+  background: var(--tag-bg);
   color: var(--accent);
   padding: 6px 14px;
   border-radius: 14px;
@@ -1243,7 +1294,7 @@ nav a:hover {
 
 .post-card {
   position: relative;
-  background: #fff;
+  background: var(--surface-card);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
@@ -1266,9 +1317,9 @@ nav a:hover {
   margin-bottom: 0.4rem;
 }
 
-.tag {
+.post-body .tag {
   display: inline-block;
-  background: var(--bg2);
+  background: var(--surface-soft);
   color: var(--secondary);
   font-size: 0.75rem;
   padding: 0.2rem 0.6rem;
@@ -1277,7 +1328,7 @@ nav a:hover {
 }
 
 .excerpt {
-  color: #555;
+  color: var(--bg-muted);
   font-size: 0.95rem;
   margin: 0.6rem 0;
 }
@@ -1286,9 +1337,8 @@ nav a:hover {
   display: flex;
   justify-content: space-between;
   font-size: 0.75rem;
-  color: #777;
+  color: var(--bg-muted);
 }
-
 
 .post-card .bookmark {
   position: absolute;
@@ -1305,11 +1355,118 @@ nav a:hover {
 }
 
 .post-card .bookmark.saved {
-  color: #e0245e;
+  color: var(--like);
 }
 
 .post-card .bookmark.clicked {
   transform: scale(1.3);
+}
+
+.settings-section {
+  background: var(--surface-card);
+  padding: 1.2rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-section h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.setting-item:last-child {
+  border-bottom: none;
+}
+
+.setting-item:not(.disabled):hover {
+  background: var(--surface-soft);
+  cursor: pointer;
+}
+
+.setting-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.setting-left i {
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.setting-item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.setting-item small {
+  color: var(--muted);
+}
+
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.theme-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--surface-muted);
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.theme-switch .slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.theme-switch input:checked + .slider {
+  background-color: var(--primary);
+}
+
+.theme-switch input:checked + .slider::before {
+  transform: translateX(24px);
 }
 
 
@@ -1360,7 +1517,7 @@ nav a:hover {
     padding: 8px;
     border-radius: 5px;
     outline: none;
-    background-color: var(--bg);
+    background-color: var(--surface-card);
   }
 
   .user-menu-details{

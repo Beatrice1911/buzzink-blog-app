@@ -1632,6 +1632,36 @@ savedPosts?.addEventListener("click", () => {
   window.location.href = "saved.html";
 });
 
+const settings = document.getElementById("settings");
+settings?.addEventListener("click", () => {
+  window.location.href = "settings.html"
+})
+
+const themeToggle = document.getElementById("themeToggle");
+const root = document.documentElement;
+
+// Load saved theme
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme === "dark") {
+  root.setAttribute("data-theme", "dark");
+  if (themeToggle) themeToggle.checked = true;
+} else {
+  root.setAttribute("data-theme", "light");
+}
+
+// Theme toggle handler
+themeToggle?.addEventListener("change", () => {
+  if (themeToggle.checked) {
+    root.setAttribute("data-theme", "dark");
+    localStorage.setItem("theme", "dark");
+  } else {
+    root.setAttribute("data-theme", "light");
+    localStorage.setItem("theme", "light");
+  }
+});
+
+
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
