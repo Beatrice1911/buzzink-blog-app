@@ -41,6 +41,20 @@ if (window.location.pathname.endsWith("post.html")) {
   })();
 }
 
+const body = document.body;
+
+function applyTheme(theme) {
+  if (theme === "dark") {
+    body.classList.add("dark");
+    logo.src = "/Images/logo-dark-theme_optimized_.png";
+  } else {
+    body.classList.remove("dark");
+    logo.src = "/Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png";
+  }
+
+  localStorage.setItem("theme", theme);
+}
+
 // Normalize user object
 function normalizeUser(user) {
   if (!user) return null;
@@ -1655,15 +1669,20 @@ themeToggle?.addEventListener("change", () => {
   if (themeToggle.checked) {
     root.setAttribute("data-theme", "dark");
     localStorage.setItem("theme", "dark");
+    logo.src = "/Images/logo-dark-theme_optimized_.png"
   } else {
     root.setAttribute("data-theme", "light");
     localStorage.setItem("theme", "light");
+    logo.src = "/Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png"
   }
 });
 
 
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  applyTheme(savedTheme);
+
   const user = await checkUser();
   window.currentUser = user;
 
