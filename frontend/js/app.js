@@ -2,6 +2,7 @@ const API_BASE = "https://buzzink.onrender.com";
 const API_URL = `/api/posts`;
 const AUTH_URL = `/api/auth`;
 const COMMENTS_URL = `/api/comments`;
+let postStatus = "published";
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
