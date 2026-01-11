@@ -1683,7 +1683,7 @@ async function loadSavedPosts() {
   }
 }
 
-async function loadDrafts() {
+async function loadDrafts(page = 1) {
   try {
     posts = [];
     const res = await apiFetch(`/api/posts/mine?status=draft&page=${page}`);
@@ -1700,20 +1700,19 @@ async function loadDrafts() {
       return;
     }
 
-    // posts.forEach(post => {
-    //   container.innerHTML += `
-    //     <div class="post draft">
-    //       <h3>${post.title || "Untitled Draft"}</h3>
-    //       <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
-    //       <div class="post-actions">
-    //         <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
-    //         <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
-    //       </div>
-    //     </div>
-    //   `;
-    // });
+    posts.forEach(post => {
+      container.innerHTML += `
+        <div class="post draft">
+          <h3>${post.title || "Untitled Draft"}</h3>
+          <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
+          <div class="post-actions">
+            <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
+            <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
+          </div>
+        </div>
+      `;
+    });
 
-    displayPosts("draftsContainer");
     renderPagination();
   } catch (err) {
     console.error("Failed to load drafts", err);
