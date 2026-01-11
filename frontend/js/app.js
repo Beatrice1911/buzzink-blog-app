@@ -1444,8 +1444,14 @@ async function loadSinglePost() {
     };
 
     bookmarkIcon.addEventListener("click", async () => {
+      const token = localStorage.getItem("token");
       const slug = bookmarkIcon.dataset.slug;
       const isSaved = bookmarkIcon.dataset.saved === "true";
+
+      if (!token) {
+        showToast("Please log in to save posts");
+        return;
+      }
 
       bookmarkIcon.classList.add("clicked");
       setTimeout(() => bookmarkIcon.classList.remove("clicked"), 200);
