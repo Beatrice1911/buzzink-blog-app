@@ -447,7 +447,9 @@ if (postForm) {
   if (postIdentifier) {
     (async () => {
       try {
-        const res = await apiFetch(`${API_URL}/${postIdentifier}`);
+        const res = await apiFetch(isDraftEdit
+          ? `${API_URL}/draft/${postIdentifier}`
+          : `${API_URL}/${postIdentifier}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
@@ -480,6 +482,7 @@ if (postForm) {
       formData.append("title", document.getElementById("title").value);
       formData.append("content", document.getElementById("content").value);
       formData.append("category", document.getElementById("category").value);
+      const status = postStatus;
       formData.append("status", postStatus);
 
       const imageFile = document.getElementById("image").files[0];
@@ -488,7 +491,9 @@ if (postForm) {
       }
 
       try {
-        const res = await apiFetch(`${API_URL}/${postIdentifier}`, {
+        const res = await apiFetch(isDraftEdit
+          ? `${API_URL}/draft/${postIdentifier}`
+          : `${API_URL}/${postIdentifier}`, {
           method: "PUT",
           body: formData,
         });

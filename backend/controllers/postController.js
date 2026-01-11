@@ -122,6 +122,21 @@ const getPostBySlug = async (req, res) => {
   }
 };
 
+const getDraftById = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    if (String(post.authorId) !== String(req.user._id)) {
+      return res.status(403).json({ message: "Not allowed to edit this draft" });
+    }
+
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const createPost = async (req, res) => {
   try {
     const { title, content, category, status = "draft" } = req.body;
@@ -204,6 +219,39 @@ const updatePost = async (req, res) => {
   } catch (err) {
     console.error("Error updating post:", err);
     res.status(500).json({ message: "Failed to update post" });
+  }
+};
+
+const updateDraft = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: "Post not found" });
+
+    if (String(post.authorId) !== String(req.user._id)) {
+      return res.status(403).json({ message: "Not allowed to edit this draft" });
+    }
+
+    post.title = req.body.title ?? post.title;
+    post.content = req.body.content ?? post.content;
+    post.category = req.body.category ?? post.category;
+    const oldStatus = post.status;
+    post.status = req.body.status ?? post.status;
+
+    if (oldStatus === "draft" && post.status === "published" && !post.slug) {
+      post.slug = slugify(title, { lower: true, strict: true });
+    }
+    
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "buzzink_posts"
+      });
+      post.image = result.secure_url;
+    }
+
+    await post.save();
+    res.json(post);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -427,4 +475,6 @@ module.exports = {
   savePost,
   unsavePost,
   getSavedPosts,
+  getDraftById,
+  updateDraft,
 };
