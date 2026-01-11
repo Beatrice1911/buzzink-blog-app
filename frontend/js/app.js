@@ -443,9 +443,14 @@ if (postForm) {
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
+         if (post.status === "draft" && post.authorId !== window.currentUser?.id) {
+          throw new Error("You are not allowed to edit this draft");
+        }
+
         document.getElementById("title").value = post.title || "";
         document.getElementById("content").value = post.content || "";
         document.getElementById("category").value = post.category || "";
+        postStatus = post.status || "draft";
 
         if (post.image) {
           const imgPreview = document.getElementById("imagePreview");
@@ -480,7 +485,14 @@ if (postForm) {
         if (res.ok) {
           showToast("Post updated successfully!", "success");
           localStorage.removeItem("editSlug");
-          window.location.href = "all-posts.html";
+
+          const updatedPost = await res.json();
+
+          if (updatedPost.status === "draft") {
+            window.location.href = "drafts.html";
+          } else {
+            window.location.href = "all-posts.html";
+          }
         } else {
           console.error("Update failed:", await res.text());
         }
