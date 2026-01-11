@@ -11,15 +11,13 @@ const getPosts = async (req, res) => {
     const { page = 1, limit = 6 } = req.query;
     const userId = req.user?.id || null;
 
-    let filter = {};
+    let filter = { status: "published" };
     if (req.path.includes("/mine")) {
       filter = { authorId: userId };
+    }
 
-      if (req.query.status) {
-        filter.status = req.query.status;
-      }
-    } else {
-      filter.status = "published";
+    if (req.query.status) {
+      filter.status = req.query.status;
     }
 
     if (req.query.authorId) {
