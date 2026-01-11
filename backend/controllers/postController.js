@@ -11,17 +11,12 @@ const getPosts = async (req, res) => {
     const { page = 1, limit = 6, status } = req.query;
     const userId = req.user?.id ? new mongoose.Types.ObjectId(req.user.id) : null;
 
-    let filter = {
-      $or: [
-        { status: "published" },
-        { status: { $exists: false } }
-      ]
-    };
+    let filter = {};
     if (req.path.includes("/mine")) {
       filter.authorId = userId;
 
       if (status) {
-        filter.status = { $in: Array.isArray(status) ? status : [status] };
+        filter.status = status;
       }
     } else {
         filter.$or = [
