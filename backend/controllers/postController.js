@@ -8,21 +8,18 @@ const User = require("../models/User")
 
 const getPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 6 } = req.query;
-    const userId = req.user?.id || null;
+    const { page = 1, limit = 6, status } = req.query;
+    const userId = req.user?.id ? new mongoose.Types.ObjectId(req.user.id) : null;
 
-    let filter = {
-      $or: [
-        { status: "published" },
-        { status: { $exists: false } }
-      ]
-    };
+    let filter = {};
     if (req.path.includes("/mine")) {
-      filter.authorId = new mongoose.Types.ObjectId(userId);
-    }
+      filter.authorId = userId;
 
-    if (req.query.status) {
-      filter.status = { $in: Array.isArray(req.query.status) ? req.query.status : [req.query.status] };
+      if (status) {
+        filter.status = { $in: Array.isArray(status) ? status : [status] };
+      }
+    } else {
+      filter.status = "published";
     }
 
     if (req.query.authorId) {
@@ -54,6 +51,8 @@ const getPosts = async (req, res) => {
       const likedByUser = userId
         ? post.likes.some(like => like._id.toString() === userId)
         : false;
+
+      const dateToShow = post.publishedAt || post.createdAt || Date.now();
  
       return {
         ...post,
@@ -61,6 +60,7 @@ const getPosts = async (req, res) => {
         likesCount: post.likes.length,
         likedBy: post.likes.map(like => like.name),
         likedByUser,
+        displayDate: new Date(dateToShow),
       };
     });
 
@@ -113,20 +113,6 @@ const getPostBySlug = async (req, res) => {
     console.error("Get post by slug error:", err);
     res.status(500).json({ message: "Server error" });
   }
-};
-
-const getMyDrafts = async (req, res) => {
-  try {
-    const drafts = await Post.find({
-    authorId: req.user.id,
-      status: "draft"
-    }).sort({ updatedAt: -1 });
-
-    res.json(drafts);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch drafts" });
-  }
-  
 };
 
 const createPost = async (req, res) => {
@@ -434,5 +420,4 @@ module.exports = {
   savePost,
   unsavePost,
   getSavedPosts,
-  getMyDrafts,
 };
