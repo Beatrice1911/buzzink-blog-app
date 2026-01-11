@@ -305,6 +305,10 @@ const getPostsByCategory = async (req, res) => {
 
 const savePost = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const user = req.user;
     const post = await Post.findOne({ slug: req.params.slug });
 
@@ -317,12 +321,17 @@ const savePost = async (req, res) => {
 
     res.status(200).json({ message: "Post saved successfully" });
   } catch (err) {
+    console.error("Save post error:", err);
     res.status(500).json({ message: "Failed to save post" })
   }
 }
 
 const unsavePost = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    };
+
     const user = req.user;
     const post = await Post.findOne({ slug: req.params.slug });
 
@@ -335,6 +344,7 @@ const unsavePost = async (req, res) => {
 
     res.status(200).json({ message: "Post removed from saved posts" });
   } catch (err) {
+    console.error("Unsave post error:", err);
     res.status(500).json({ message: "Failed to unsave post"});
   }
 }
