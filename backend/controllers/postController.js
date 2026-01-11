@@ -14,6 +14,12 @@ const getPosts = async (req, res) => {
     let filter = {};
     if (req.path.includes("/mine")) {
       filter = { authorId: userId };
+
+      if (req.query.status) {
+        filter.status = req.query.status;
+      }
+    } else {
+      filter.status = "published";
     }
 
     if (req.query.authorId) {
@@ -23,7 +29,7 @@ const getPosts = async (req, res) => {
     const total = await Post.countDocuments(filter);
 
     const posts = await Post.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ publishedAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit))
       .populate("likes", "name profilePhoto")
@@ -65,6 +71,10 @@ const getPostBySlug = async (req, res) => {
 
     if (!post) return res.status(404).json({ message: "Post not found" });
 
+    if (post.status === "draft" && post.authorId.toString() !== userId) {
+      return res.status(403).json({ message: "This post is a draft" });
+    }
+
     const likedByUser = userId
       ? post.likes.some(like => like._id.toString() === userId)
       : false;
@@ -90,10 +100,23 @@ const getPostBySlug = async (req, res) => {
   }
 };
 
+const getMyDrafts = async (req, res) => {
+  try {
+    const drafts = await Post.find({
+    authorId: req.user.id,
+      status: "draft"
+    }).sort({ updatedAt: -1 });
+
+    res.json(drafts);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch drafts" });
+  }
+  
+};
 
 const createPost = async (req, res) => {
   try {
-    const { title, content, category } = req.body;
+    const { title, content, category, status = "draft" } = req.body;
     if (!title || !content || !category) {
       return res.status(400).json({ message: "Title, content, and category are required" });
     }
@@ -119,7 +142,8 @@ const createPost = async (req, res) => {
       authorName,
       category,
       image: imagePath,
-      date: new Date(),
+      status,
+      publishedAt: status === "published" ? new Date() : null
     });
 
     await newPost.save();
@@ -129,10 +153,11 @@ const createPost = async (req, res) => {
       content: newPost.content,
       category: newPost.category,
       image: newPost.image,
-      date: newPost.date,
       authorId: authorId,
       authorName: authorName,
       slug: newPost.slug,
+      status: newPost.status,
+      publishedAt: newPost.publishedAt,
     });
 
   } catch (err) {
@@ -159,6 +184,11 @@ const updatePost = async (req, res) => {
 
     if (title) {
       post.slug = slugify(title, { lower: true, strict: true });
+    }
+
+    if (req.body.status === "published" && post.status === "draft") {
+      post.status = "published";
+      post.publishedAt = new Date();
     }
      
     await post.save();
@@ -389,4 +419,5 @@ module.exports = {
   savePost,
   unsavePost,
   getSavedPosts,
+  getMyDrafts,
 };

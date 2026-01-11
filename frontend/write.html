@@ -59,6 +59,7 @@
     <div class="user-menu-details" id="userMenuDetails">
         <p id="profile-edit">Profile</p>
         <p id="myPosts">My Posts</p>
+        <p id="myDrafts">My Drafts</p>
         <p id="savedPosts">Saved Posts</p>
         <p id="settings">Settings</p>
         <button id="logoutBtn" class="hidden">Logout</button>
@@ -87,7 +88,11 @@
                 <option value="Sports">Sports</option>
                 <option value="Other">Other</option>
             </select>
-            <button type="submit" class="add-post-btn">Add Post</button>
+            <div class="post-form-buttons">
+                <button type="submit" class="draft post-form-btn" data-status="draft" id="saveDraftBtn">Save as Draft</button>
+                <button type="submit" class="add-post-btn post-form-btn" data-status="published" id="publishBtn">Add Post</button>
+            </div>
+            
         </form>
     </div>
 

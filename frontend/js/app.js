@@ -10,6 +10,7 @@ const logo = document.querySelector(".logo");
 const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const savedPosts = document.getElementById("savedPosts");
+const myDrafts = document.getElementById("myDrafts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
 const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
@@ -228,6 +229,10 @@ function displayPosts(containerId, limit = null) {
 
   let displayList = [...posts];
 
+  if (containerId !== "myPostsContainer") {
+    displayList = displayList.filter(post => post.status !== "draft");
+  }
+
   if (containerId === "allPostsContainer") {
     const categoryFilter = document.getElementById("categoryFilter");
     if (categoryFilter) {
@@ -287,6 +292,7 @@ function displayPosts(containerId, limit = null) {
         <p class="tag">${post.category}</p>
         <h2>
           <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
+          ${post.status === "draft" ? `<span class="draft-badge">Draft</span>` : ""}
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
         <a href="profile.html?id=${postAuthorId}" class="author"><em>By ${authorName}</em></a>
@@ -364,11 +370,12 @@ function displayPosts(containerId, limit = null) {
 }
 
 // Add a new post
-async function addPost(title, content, category, imageFile) {
+async function addPost(title, content, category, imageFile, status = "published") {
   const formData = new FormData();
   formData.append("title", title);
   formData.append("content", content);
   formData.append("category", category);
+  formData.append("status", status);
   if (imageFile) formData.append("image", imageFile);
 
   const res = await apiFetch(`${API_URL}`, {
@@ -437,6 +444,14 @@ if (postForm) {
       }
     })();
 
+    document.getElementById("saveDraftBtn")?.addEventListener("click", () => {
+      postStatus = "draft";
+    });
+
+    document.getElementById("publishBtn")?.addEventListener("click", () => {
+      postStatus = "published";
+    });
+
     postForm.onsubmit = async function (e) {
       e.preventDefault();
 
@@ -444,6 +459,7 @@ if (postForm) {
       formData.append("title", document.getElementById("title").value);
       formData.append("content", document.getElementById("content").value);
       formData.append("category", document.getElementById("category").value);
+      formData.append("status", postStatus);
 
       const imageFile = document.getElementById("image").files[0];
       if (imageFile) {
@@ -480,7 +496,7 @@ if (postForm) {
       console.log("Submitting new post:", { title, content, category, imageFile });
 
       try {
-        const newPost = await addPost(title, content, category, imageFile);
+        const newPost = await addPost(title, content, category, imageFile, postStatus);
         console.log("Post created successfully!", newPost);
         showToast("Post created successfully!", "success");
         postForm.reset();
@@ -507,7 +523,7 @@ function refreshPage() {
   }
 }
 
-// Category filter change handling
+// Category filter change handling          
 document.getElementById("categoryFilter")?.addEventListener("change", () => {
   displayPosts("allPostsContainer");
 });
@@ -1343,6 +1359,13 @@ async function loadSinglePost() {
         ? post.authorId.name
         : post.authorName || "Unknown";
 
+    if (post.status === "draft") {
+      if (!userId || String(userId) !== String(postAuthorId)) {
+        document.getElementById("singlePostContainer").innerHTML =
+          "<p>This draft is not published.</p>";
+        return;
+      }
+    }
     const isAuthor =
       userId && String(postAuthorId) === String(userId);
 
@@ -1648,6 +1671,41 @@ async function loadSavedPosts() {
   }
 }
 
+async function loadDrafts() {
+  try {
+    const res = await apiFetch("/api/posts/mine?status=draft");
+    const data = await res.json();
+
+    const drafts = data.posts || [];
+    const container = document.getElementById("draftsContainer");
+    container.innerHTML = "";
+
+    if (!drafts.length) {
+      container.innerHTML = "<p>No drafts yet.</p>";
+      return;
+    }
+
+    drafts.forEach(post => {
+      container.innerHTML += `
+        <div class="post draft">
+          <h3>${post.title || "Untitled Draft"}</h3>
+          <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
+          <div class="post-actions">
+            <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
+            <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Failed to load drafts", err);
+  }
+}
+
+myDrafts?.addEventListener("click", () => {
+  window.location.href = "drafts.html";
+});
+
 savedPosts?.addEventListener("click", () => {
   window.location.href = "saved.html";
 });
@@ -1705,6 +1763,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadSinglePost();
   } else if (window.location.pathname.endsWith("saved.html")) {
     loadSavedPosts();
+  } else if (window.location.pathname.endsWith("drafts.html")) {
+    loadDrafts();
   } else {
     fetchPosts();
   }
