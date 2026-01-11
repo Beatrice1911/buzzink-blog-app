@@ -278,14 +278,22 @@ nav a.active::after {
 
 .mobile-search {
   width: 80%;
-  max-height: 0;
+  display: none;
   overflow: hidden;
   transition: all 0.3s ease;
   z-index: 999;
   background-color: var(--surface-card);
-  margin: 0 auto;
+  margin: 5px auto;
   border-radius: 5px;
   border: 1px solid #ccc;
+}
+
+.mobile-search input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  outline: none;
+  background-color: var(--surface-card);
 }
 
 [data-theme="dark"] nav a {
@@ -1649,15 +1657,7 @@ nav a.active::after {
   }
 
   .mobile-search.show {
-    max-height: 60px;
-  }
-
-  .mobile-search input {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    outline: none;
-    background-color: var(--surface-card);
+    display: block;
   }
 
   .user-menu-details{
