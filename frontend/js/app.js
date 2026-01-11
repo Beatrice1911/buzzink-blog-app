@@ -49,7 +49,7 @@ function applyTheme(theme) {
     logo.src = "/Images/logo-dark-theme_optimized_.png";
   } else {
     body.classList.remove("dark");
-    logo.src = "/Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png";
+    logo.src = "/Images/logo_optimized.png";
   }
 
   localStorage.setItem("theme", theme);
@@ -1299,7 +1299,7 @@ function injectPostJsonLd(post) {
       "name": "BuzzInk",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://buzzink.onrender.com/Images/logo.png"
+        "url": "https://buzzink.onrender.com/Images/logo_optimized.png"
       }
     },
     "datePublished": post.createdAt || post.date,
@@ -1679,7 +1679,7 @@ themeToggle?.addEventListener("change", () => {
   } else {
     root.setAttribute("data-theme", "light");
     localStorage.setItem("theme", "light");
-    logo.src = "/Images/file_00000000578c620a96dd07f74956d7c3_optimized_.png"
+    logo.src = "/Images/logo_optimized.png"
   }
 });
 
