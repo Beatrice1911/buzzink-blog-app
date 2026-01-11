@@ -11,7 +11,12 @@ const getPosts = async (req, res) => {
     const { page = 1, limit = 6, status } = req.query;
     const userId = req.user?.id ? new mongoose.Types.ObjectId(req.user.id) : null;
 
-    let filter = {};
+    let filter = {
+      $or: [
+        { status: "published" },
+        { status: { $exists: false } }
+      ]
+    };
     if (req.path.includes("/mine")) {
       filter.authorId = userId;
 
@@ -52,7 +57,10 @@ const getPosts = async (req, res) => {
         ? post.likes.some(like => like._id.toString() === userId)
         : false;
 
-      const dateToShow = post.publishedAt || post.createdAt || Date.now();
+      const displayDate =
+        post.status === "published"
+          ? post.publishedAt
+          : post.createdAt;
  
       return {
         ...post,
@@ -60,7 +68,7 @@ const getPosts = async (req, res) => {
         likesCount: post.likes.length,
         likedBy: post.likes.map(like => like.name),
         likedByUser,
-        displayDate: new Date(dateToShow),
+        displayDate
       };
     });
 
