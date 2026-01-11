@@ -18,7 +18,7 @@ const getPosts = async (req, res) => {
       ]
     };
     if (req.path.includes("/mine")) {
-      filter.authorId = userId;
+      filter.authorId = new mongoose.Types.ObjectId(userId);
     }
 
     if (req.query.status) {
