@@ -89,7 +89,7 @@ async function updateAvatar(user) {
       });
     }
 
-    window.currentUser = user;   
+    window.currentUser = user;
 
   } catch (err) {
     console.warn("Failed to load auth user:", err);
@@ -167,7 +167,7 @@ function getImageUrl(image) {
   return "/Images/fallback.jpg";
 }
 
-function formatText (text) {
+function formatText(text) {
   return text.replace(/\n/g, '<br>');
 }
 
@@ -233,7 +233,7 @@ function displayPosts(containerId, limit = null) {
   let displayList = [...posts];
 
   if (containerId === "allPostsContainer" || containerId === "featuredPostsContainer") {
-    displayList = displayList.filter(post => post.status !== "drafts");
+    displayList = displayList.filter(post => post.status !== "draft");
   }
 
   if (containerId === "allPostsContainer") {
@@ -421,6 +421,14 @@ function editPost(slug) {
   window.location.href = "write.html";
 }
 
+document.getElementById("saveDraftBtn")?.addEventListener("click", () => {
+  postStatus = "draft";
+});
+
+document.getElementById("publishBtn")?.addEventListener("click", () => {
+  postStatus = "published";
+});
+
 // Handle post form for adding/editing posts
 const postForm = document.getElementById("postForm");
 if (postForm) {
@@ -446,14 +454,6 @@ if (postForm) {
         console.error("Error loading post:", err);
       }
     })();
-
-    document.getElementById("saveDraftBtn")?.addEventListener("click", () => {
-      postStatus = "draft";
-    });
-
-    document.getElementById("publishBtn")?.addEventListener("click", () => {
-      postStatus = "published";
-    });
 
     postForm.onsubmit = async function (e) {
       e.preventDefault();
@@ -857,7 +857,7 @@ async function apiFetch(url, options = {}) {
       });
     }
   }
-  
+
   return res;
 }
 
@@ -1552,7 +1552,7 @@ const fetchRelatedPosts = async (slug) => {
   try {
     const res = await apiFetch(`${API_URL}/slug/${slug}/related`);
     const relatedPosts = await res.json();
-    
+
     renderRelatedPosts(relatedPosts);
   } catch (err) {
     console.error("Failed to fetch related posts.", err);
@@ -1678,7 +1678,7 @@ async function loadSavedPosts() {
 
 
   } catch (err) {
-    console.error(err);       
+    console.error(err);
     savedPostsContainer.innerHTML = "<p>Error loading saved posts.</p>";
   }
 }
@@ -1686,30 +1686,35 @@ async function loadSavedPosts() {
 async function loadDrafts() {
   try {
     posts = [];
-    const res = await apiFetch("/api/posts/mine?status=draft");
+    const res = await apiFetch(`/api/posts/mine?status=draft&page=${page}`);
     const data = await res.json();
 
-    const drafts = data.posts || [];
+    posts = data.posts || [];
+    currentPage = data.currentPage || 1;
+    totalPages = data.totalPages || 1;
     const container = document.getElementById("draftsContainer");
     container.innerHTML = "";
 
-    if (!drafts.length) {
+    if (!posts.length) {
       container.innerHTML = "<p>No drafts yet.</p>";
       return;
     }
 
-    drafts.forEach(post => {
-      container.innerHTML += `
-        <div class="post draft">
-          <h3>${post.title || "Untitled Draft"}</h3>
-          <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
-          <div class="post-actions">
-            <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
-            <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
-          </div>
-        </div>
-      `;
-    });
+    // posts.forEach(post => {
+    //   container.innerHTML += `
+    //     <div class="post draft">
+    //       <h3>${post.title || "Untitled Draft"}</h3>
+    //       <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
+    //       <div class="post-actions">
+    //         <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
+    //         <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
+    //       </div>
+    //     </div>
+    //   `;
+    // });
+
+    displayPosts("draftsContainer");
+    renderPagination();
   } catch (err) {
     console.error("Failed to load drafts", err);
   }

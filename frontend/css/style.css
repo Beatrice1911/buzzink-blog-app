@@ -1399,7 +1399,7 @@ nav a.active::after {
   margin-top: 18px;
 }
 
-#savedPostsContainer > p {
+#savedPostsContainer > p, #draftsContainer > p {
   color: var(--text);
 }
 
