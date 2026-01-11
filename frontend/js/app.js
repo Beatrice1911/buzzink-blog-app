@@ -423,10 +423,12 @@ function editPost(slug) {
 
 document.getElementById("saveDraftBtn")?.addEventListener("click", () => {
   postStatus = "draft";
+  postForm.requestSubmit();
 });
 
 document.getElementById("publishBtn")?.addEventListener("click", () => {
   postStatus = "published";
+  postForm.requestSubmit();
 });
 
 // Handle post form for adding/editing posts

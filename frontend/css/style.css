@@ -1401,6 +1401,7 @@ nav a.active::after {
 
 #savedPostsContainer > p, #draftsContainer > p {
   color: var(--text);
+  text-align: center;
 }
 
 .post-card {
