@@ -174,6 +174,7 @@ function formatText (text) {
 // Fetch posts with pagination
 async function fetchPosts(page = 1, limit = 6) {
   try {
+    posts = [];
     const res = await apiFetch(`${API_URL}?page=${page}&limit=${limit}`);
     const data = await res.json();
 
@@ -192,6 +193,7 @@ async function fetchPosts(page = 1, limit = 6) {
 // Fetch posts created by the logged-in user
 async function fetchMyPosts(page = 1, limit = 6) {
   try {
+    posts = [];
     const res = await apiFetch(`${API_URL}/mine?page=${page}&limit=${limit}`);
 
     if (!res.ok) {
@@ -230,8 +232,8 @@ function displayPosts(containerId, limit = null) {
 
   let displayList = [...posts];
 
-  if (containerId !== "myPostsContainer") {
-    displayList = displayList.filter(post => post.status !== "draft");
+  if (containerId === "allPostsContainer" || containerId === "featuredPostsContainer") {
+    displayList = displayList.filter(post => post.status !== "drafts");
   }
 
   if (containerId === "allPostsContainer") {
@@ -598,7 +600,15 @@ function renderPagination() {
     const btn = document.createElement("button");
     btn.textContent = i;
     btn.className = i === currentPage ? "pg-active" : "";
-    btn?.addEventListener("click", () => fetchPosts(i));
+    btn?.addEventListener("click", () => {
+      if (document.getElementById("draftsContainer")) {
+        loadDrafts(i);
+      } else if (document.getElementById("myPostsContainer")) {
+        fetchMyPosts(i);
+      } else {
+        fetchPosts(i);
+      }
+    });
     container.appendChild(btn);
   }
 }
@@ -1601,6 +1611,7 @@ const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 async function loadSavedPosts() {
   try {
+    posts = [];
     const res = await apiFetch(`${API_URL}/saved/me`)
 
     if (!res.ok) throw new Error("Failed to fetch");
@@ -1674,6 +1685,7 @@ async function loadSavedPosts() {
 
 async function loadDrafts() {
   try {
+    drafts = [];
     const res = await apiFetch("/api/posts/mine?status=draft");
     const data = await res.json();
 
