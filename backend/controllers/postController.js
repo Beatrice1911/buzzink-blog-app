@@ -22,7 +22,7 @@ const getPosts = async (req, res) => {
     }
 
     if (req.query.status) {
-      filter.status = req.query.status;
+      filter.status = { $in: Array.isArray(req.query.status) ? req.query.status : [req.query.status] };
     }
 
     if (req.query.authorId) {
@@ -46,8 +46,8 @@ const getPosts = async (req, res) => {
     ]);
 
     await Post.populate(posts, [
-      { path: "likes", select: "name profilePhoto" },
-      { path: "authorId", select: "_id name profilePhoto" }
+      { path: "likes", select: "name profilePhoto", strictPopulate: false },
+      { path: "authorId", select: "_id name profilePhoto", strictPopulate: false }
     ]);
 
     const updatedPosts = posts.map(post => {
@@ -56,7 +56,7 @@ const getPosts = async (req, res) => {
         : false;
  
       return {
-        ...post.toObject(),
+        ...post,
         slug: post.slug,
         likesCount: post.likes.length,
         likedBy: post.likes.map(like => like.name),
