@@ -24,7 +24,11 @@ const getPosts = async (req, res) => {
         filter.status = { $in: Array.isArray(status) ? status : [status] };
       }
     } else {
-      filter.status = "published";
+        filter.$or = [
+          { status: "published" },
+          { status: { $exists: false } },
+          { status: null }
+        ];
     }
 
     if (req.query.authorId) {
