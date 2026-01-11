@@ -415,10 +415,14 @@ async function deletePost(slug) {
 }
 
 // Edit a post
-function editPost(slug) {
-  localStorage.removeItem("editSlug");
-  localStorage.setItem("editSlug", slug);
-  window.location.href = "write.html";
+function editPost(identifier, isDraft = false) {
+    localStorage.removeItem("editSlug");
+    if (isDraft) {
+        localStorage.setItem("editId", identifier);
+    } else {
+        localStorage.setItem("editSlug", identifier);
+    }
+    window.location.href = "write.html";
 }
 
 document.getElementById("saveDraftBtn")?.addEventListener("click", () => {
@@ -434,17 +438,24 @@ document.getElementById("publishBtn")?.addEventListener("click", () => {
 // Handle post form for adding/editing posts
 const postForm = document.getElementById("postForm");
 if (postForm) {
+  const editId = localStorage.getItem("editId");
   const editSlug = localStorage.getItem("editSlug");
 
-  if (editSlug && editSlug !== "null") {
+  const postIdentifier = editSlug && editSlug !== "null" ? editSlug : editId && editId !== "null" ? editId : null;
+  const isDraftEdit = !editSlug && editId;
+
+  if (postIdentifier) {
     (async () => {
       try {
-        const res = await apiFetch(`${API_URL}/${editSlug}`);
+        const res = await apiFetch(`${API_URL}/${postIdentifier}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
-         if (post.authorId !== window.currentUser?.id) {
-          throw new Error("You are not allowed to edit this draft");
+        const currentUserId = window.currentUser?._id || window.currentUser?.id;
+        const postAuthorId = (typeof post.authorId === "object" && post.authorId !== null) ? post.authorId._id : post.authorId;
+
+        if (String(postAuthorId) !== String(currentUserId)) {
+          throw new Error(`You are not allowed to edit this ${isDraftEdit ? "draft" : "post"}`);
         }
 
         document.getElementById("title").value = post.title || "";
@@ -477,14 +488,15 @@ if (postForm) {
       }
 
       try {
-        const res = await apiFetch(`${API_URL}/${editSlug}`, {
+        const res = await apiFetch(`${API_URL}/${postIdentifier}`, {
           method: "PUT",
           body: formData,
         });
 
         if (res.ok) {
-          showToast("Post updated successfully!", "success");
+          showToast(`${isDraftEdit ? "Draft" : "Post"} updated successfully!`, "success");
           localStorage.removeItem("editSlug");
+          localStorage.removeItem("editId");
 
           const updatedPost = await res.json();
 
@@ -503,6 +515,7 @@ if (postForm) {
     };
   } else {
     localStorage.removeItem("editSlug");
+    localStorage.removeItem("editId");
     postForm?.addEventListener("submit", async function (e) {
       e.preventDefault();
       const title = document.getElementById("title").value;
