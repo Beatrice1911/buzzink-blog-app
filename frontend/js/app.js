@@ -439,11 +439,15 @@ if (postForm) {
   if (editSlug && editSlug !== "null") {
     (async () => {
       try {
-        const res = await apiFetch(`${API_URL}/${editSlug}`);
+        const res = await apiFetch(`${API_URL}/${editSlug}`, {
+          headers: {
+            Authorization: `Bearer ${window.currentUser?.token}`,
+          },
+        });
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
-         if (post.status === "draft" && post.authorId !== window.currentUser?.id) {
+         if (post.authorId !== window.currentUser?.id) {
           throw new Error("You are not allowed to edit this draft");
         }
 
@@ -1717,7 +1721,7 @@ async function loadDrafts(page = 1) {
     posts.forEach(post => {
       container.innerHTML += `
         <div class="post draft">
-          <h3>${post.title || "Untitled Draft"}</h3>
+          <h2>${post.title || "Untitled Draft"}</h2>
           <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
           <div class="post-actions">
             <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
