@@ -1685,7 +1685,7 @@ async function loadSavedPosts() {
 
 async function loadDrafts() {
   try {
-    drafts = [];
+    posts = [];
     const res = await apiFetch("/api/posts/mine?status=draft");
     const data = await res.json();
 
