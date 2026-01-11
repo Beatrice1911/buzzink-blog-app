@@ -11,9 +11,14 @@ const getPosts = async (req, res) => {
     const { page = 1, limit = 6 } = req.query;
     const userId = req.user?.id || null;
 
-    let filter = { status: "published" };
+    let filter = {
+      $or: [
+        { status: "published" },
+        { status: { $exists: false } }
+      ]
+    };
     if (req.path.includes("/mine")) {
-      filter = { authorId: userId };
+      filter.authorId = userId;
     }
 
     if (req.query.status) {
