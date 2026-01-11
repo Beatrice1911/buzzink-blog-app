@@ -439,11 +439,7 @@ if (postForm) {
   if (editSlug && editSlug !== "null") {
     (async () => {
       try {
-        const res = await apiFetch(`${API_URL}/${editSlug}`, {
-          headers: {
-            Authorization: `Bearer ${window.currentUser?.token}`,
-          },
-        });
+        const res = await apiFetch(`${API_URL}/${editSlug}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
