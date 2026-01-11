@@ -312,8 +312,7 @@ nav a.active::after {
 /* Hero Section */
 .hero {
   background: url("/Images/work-3938875_1280.jpg");
-  min-height: 70vh;
-  min-height: 100svh;
+  min-height: 90svh;
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -1754,7 +1753,6 @@ nav a.active::after {
 }
 @media (max-height: 650px) {
   .hero {
-    min-height: auto;
     padding: 2rem 1rem;
   }
 }
