@@ -297,7 +297,7 @@ function displayPosts(containerId, limit = null) {
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
         <a href="profile.html?id=${postAuthorId}" class="author"><em>By ${authorName}</em></a>
-        <small>${new Date(post.date).toLocaleString()}</small>
+        <small>${post.displayDate.toLocaleString()}</small>
         <br>
         <div class="post-interactions-container">
           <div class="post-interactions">
@@ -564,7 +564,7 @@ function searchPosts(e) {
         <h2>${post.title}</h2>
         <p>${post.content}</p>
         <p><em>By ${post.authorName || "Unknown"}</em></p>
-        <small>${new Date(post.date).toLocaleString()}</small>
+        <small>${post.displayDate.toLocaleString()}</small>
       </div>
     `;
     container.appendChild(div);
@@ -1319,7 +1319,7 @@ function injectPostJsonLd(post) {
         "url": "https://buzzink.onrender.com/Images/logo_optimized.png"
       }
     },
-    "datePublished": post.createdAt || post.date,
+    "datePublished": post.postToDate || post.date,
     "dateModified": post.updatedAt || post.date,
     "mainEntityOfPage": {
       "@type": "WebPage",
@@ -1377,7 +1377,7 @@ async function loadSinglePost() {
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
       <p onclick="window.location.href='profile.html?id=${postAuthorId}'" style="cursor: pointer;" class="author"><em>By ${authorName}</em></p>
-      <small>${new Date(post.date).toLocaleString()}</small>
+      <small>${post.displayDate.toLocaleString()}</small>
       <div class="content">
         <p>${formatText(post.content)}</p>
       </div>
@@ -1631,7 +1631,7 @@ async function loadSavedPosts() {
           </p>
           <div class="post-meta">
             <small>By ${post.authorId?.name || "Unknown"}</small>
-            <small>${new Date(post.date).toLocaleDateString()}</small>
+            <small>${post.displayDate.toLocaleDateString()}</small>
           </div>
         </div>
         <button 
