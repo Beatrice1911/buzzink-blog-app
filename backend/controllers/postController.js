@@ -31,12 +31,24 @@ const getPosts = async (req, res) => {
 
     const total = await Post.countDocuments(filter);
 
-    const posts = await Post.find(filter)
-      .sort({ publishedAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(Number(limit))
-      .populate("likes", "name profilePhoto")
-      .populate("authorId", "_id name profilePhoto");
+    const posts = await Post.aggregate([
+      { $match: filter },
+      {
+        $addFields: {
+          sortDate: {
+            $ifNull: ["$publishedAt", "$createdAt"]
+          }
+        }
+      },
+      { $sort: { sortDate: -1 } },
+      { $skip: (page - 1) * limit },
+      { $limit: Number(limit) }
+    ]);
+
+    await Post.populate(posts, [
+      { path: "likes", select: "name profilePhoto" },
+      { path: "authorId", select: "_id name profilePhoto" }
+    ]);
 
     const updatedPosts = posts.map(post => {
       const likedByUser = userId
