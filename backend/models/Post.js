@@ -10,20 +10,11 @@ const postSchema = new mongoose.Schema(
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     category: { type: String, required: true },
     image: { type: String, default: "" },
-    // date: { type: Date, default: Date.now },
+    date: { type: Date, default: Date.now },
     views: { type: Number, default: 0 },
     viewedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     commentCount: { type: Number, default: 0 },
     trendingScore: { type: Number, default: 0 },
-    status: {
-      type: String,
-      enum: ["draft", "published"],
-      default: "published"
-    },
-    publishedAt: {
-      type: Date,
-      default: null
-    },
   },
   { timestamps: true } 
 );
