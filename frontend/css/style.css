@@ -815,7 +815,7 @@ nav a.active::after {
   color: var(--text-inverse);
   border: none;
   padding: 10px 15px;
-  margin: 5px 0;
+  margin: 5px auto;
   cursor: pointer;
   border-radius: 15px;
   font-weight: bold;
