@@ -809,7 +809,7 @@ nav a.active::after {
   resize: vertical;
 }
 
-.add-form-btn {
+.add-post-btn {
   background: var(--brand-gradient);
   box-shadow: var(--shadow-sm);
   color: var(--text-inverse);
@@ -822,7 +822,7 @@ nav a.active::after {
   font-size: 24px;
 }
 
-.add-form-btn:hover {
+.add-post-btn:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
