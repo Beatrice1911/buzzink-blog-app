@@ -1086,7 +1086,12 @@ document.addEventListener("click", async (e) => {
   if (editBtn) {
     e.preventDefault();
     e.stopPropagation();
-    editPost(editBtn.dataset.slug);
+
+    if (editBtn.dataset.draft === "true") {
+      editPost(editBtn.dataset.id, true);
+    } else {
+      editPost(editBtn.dataset.slug);
+    }
     return;
   }
 
@@ -1095,7 +1100,12 @@ document.addEventListener("click", async (e) => {
   if (deletePostBtn) {
     e.preventDefault();
     e.stopPropagation();
-    deletePost(deletePostBtn.dataset.slug);
+
+    if (deletePostBtn.dataset.draft === "true") {
+      deletePost(deletePostBtn.dataset.id);
+    } else {
+      deletePost(deletePostBtn.dataset.slug);
+    }
     return;
   }
 
@@ -1738,8 +1748,8 @@ async function loadDrafts(page = 1) {
           <h2>${post.title || "Untitled Draft"}</h2>
           <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
           <div class="post-actions">
-            <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
-            <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
+            <button class="edit-btn btn" data-slug="${post._id}">Edit</button>
+            <button class="delete-btn btn" data-slug="${post._id}">Delete</button>
           </div>
         </div>
       `;
