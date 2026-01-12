@@ -441,15 +441,15 @@ if (postForm) {
   const editId = localStorage.getItem("editId");
   const editSlug = localStorage.getItem("editSlug");
 
-  const postIdentifier = editSlug && editSlug !== "null" ? editSlug : editId && editId !== "null" ? editId : null;
-  const isDraftEdit = !editSlug && editId;
+  const isDraft = !!editId;
+  const identifier = isDraft ? editId : editSlug;
 
-  if (postIdentifier) {
+  if (identifier) {
     (async () => {
       try {
-        const res = await apiFetch(isDraftEdit
-          ? `${API_URL}/draft/${postIdentifier}`
-          : `${API_URL}/${postIdentifier}`);
+        const res = await apiFetch(isDraft
+          ? `${API_URL}/draft/${identifier}`
+          : `${API_URL}/${identifier}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
@@ -457,7 +457,7 @@ if (postForm) {
         const postAuthorId = (typeof post.authorId === "object" && post.authorId !== null) ? post.authorId._id : post.authorId;
 
         if (String(postAuthorId) !== String(currentUserId)) {
-          throw new Error(`You are not allowed to edit this ${isDraftEdit ? "draft" : "post"}`);
+          throw new Error(`You are not allowed to edit this ${isDraft ? "draft" : "post"}`);
         }
 
         document.getElementById("title").value = post.title || "";
@@ -491,15 +491,15 @@ if (postForm) {
       }
 
       try {
-        const res = await apiFetch(isDraftEdit
-          ? `${API_URL}/draft/${postIdentifier}`
-          : `${API_URL}/${postIdentifier}`, {
+        const res = await apiFetch(isDraft
+          ? `${API_URL}/draft/${identifier}`
+          : `${API_URL}/${identifier}`, {
           method: "PUT",
           body: formData,
         });
 
         if (res.ok) {
-          showToast(`${isDraftEdit ? "Draft" : "Post"} updated successfully!`, "success");
+          showToast(`${isDraft ? "Draft" : "Post"} updated successfully!`, "success");
           localStorage.removeItem("editSlug");
           localStorage.removeItem("editId");
 
@@ -1088,10 +1088,14 @@ document.addEventListener("click", async (e) => {
     e.stopPropagation();
 
     if (editBtn.dataset.draft === "true") {
-      editPost(editBtn.dataset.id, true);
+      localStorage.setItem("editId", editBtn.dataset.id);
+      localStorage.removeItem("editSlug");
     } else {
-      editPost(editBtn.dataset.slug);
+      localStorage.setItem("editSlug", editBtn.dataset.slug);
+      localStorage.removeItem("editId");
     }
+
+    window.location.href = "write.html";
     return;
   }
 
@@ -1748,7 +1752,7 @@ async function loadDrafts(page = 1) {
           <h2>${post.title || "Untitled Draft"}</h2>
           <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
           <div class="post-actions">
-            <button class="edit-btn btn" data-slug="${post._id}">Edit</button>
+            <button class="edit-btn btn" data-slug="${post._id}" data-draft="true">Edit</button>
             <button class="delete-btn btn" data-slug="${post._id}">Delete</button>
           </div>
         </div>
