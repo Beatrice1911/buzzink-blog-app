@@ -8,22 +8,12 @@ const User = require("../models/User")
 
 const getPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 6, status } = req.query;
-    const userId = req.user?.id ? new mongoose.Types.ObjectId(req.user.id) : null;
+    const { page = 1, limit = 6 } = req.query;
+    const userId = req.user?.id || null;
 
     let filter = {};
     if (req.path.includes("/mine")) {
-      filter.authorId = userId;
-
-      if (status) {
-        filter.status = status;
-      }
-    } else {
-        filter.$or = [
-          { status: "published" },
-          { status: { $exists: false } },
-          { status: null }
-        ];
+      filter = { authorId: userId };
     }
 
     if (req.query.authorId) {
@@ -32,42 +22,24 @@ const getPosts = async (req, res) => {
 
     const total = await Post.countDocuments(filter);
 
-    const posts = await Post.aggregate([
-      { $match: filter },
-      {
-        $addFields: {
-          sortDate: {
-            $ifNull: ["$publishedAt", "$createdAt"]
-          }
-        }
-      },
-      { $sort: { sortDate: -1 } },
-      { $skip: (page - 1) * limit },
-      { $limit: Number(limit) }
-    ]);
-
-    await Post.populate(posts, [
-      { path: "likes", select: "name profilePhoto", strictPopulate: false },
-      { path: "authorId", select: "_id name profilePhoto", strictPopulate: false }
-    ]);
+    const posts = await Post.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .populate("likes", "name profilePhoto")
+      .populate("authorId", "_id name profilePhoto");
 
     const updatedPosts = posts.map(post => {
       const likedByUser = userId
         ? post.likes.some(like => like._id.toString() === userId)
         : false;
-
-      const displayDate =
-        post.status === "published"
-          ? post.publishedAt
-          : post.createdAt;
  
       return {
-        ...post,
+        ...post.toObject(),
         slug: post.slug,
         likesCount: post.likes.length,
         likedBy: post.likes.map(like => like.name),
         likedByUser,
-        displayDate
       };
     });
 
@@ -92,10 +64,6 @@ const getPostBySlug = async (req, res) => {
       .populate("authorId", "_id name profilePhoto");
 
     if (!post) return res.status(404).json({ message: "Post not found" });
-
-    if (post.status === "draft" && post.authorId.toString() !== userId) {
-      return res.status(403).json({ message: "This post is a draft" });
-    }
 
     const likedByUser = userId
       ? post.likes.some(like => like._id.toString() === userId)
@@ -122,24 +90,10 @@ const getPostBySlug = async (req, res) => {
   }
 };
 
-const getDraftById = async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-
-    if (String(post.authorId) !== String(req.user._id)) {
-      return res.status(403).json({ message: "Not allowed to edit this draft" });
-    }
-
-    res.json(post);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
 
 const createPost = async (req, res) => {
   try {
-    const { title, content, category, status = "draft" } = req.body;
+    const { title, content, category } = req.body;
     if (!title || !content || !category) {
       return res.status(400).json({ message: "Title, content, and category are required" });
     }
@@ -165,8 +119,7 @@ const createPost = async (req, res) => {
       authorName,
       category,
       image: imagePath,
-      status,
-      publishedAt: status === "published" ? new Date() : null
+      date: new Date(),
     });
 
     await newPost.save();
@@ -176,11 +129,10 @@ const createPost = async (req, res) => {
       content: newPost.content,
       category: newPost.category,
       image: newPost.image,
+      date: newPost.date,
       authorId: authorId,
       authorName: authorName,
       slug: newPost.slug,
-      status: newPost.status,
-      publishedAt: newPost.publishedAt,
     });
 
   } catch (err) {
@@ -208,50 +160,12 @@ const updatePost = async (req, res) => {
     if (title) {
       post.slug = slugify(title, { lower: true, strict: true });
     }
-
-    if (req.body.status === "published" && post.status === "draft") {
-      post.status = "published";
-      post.publishedAt = new Date();
-    }
      
     await post.save();
     res.json(post);
   } catch (err) {
     console.error("Error updating post:", err);
     res.status(500).json({ message: "Failed to update post" });
-  }
-};
-
-const updateDraft = async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ message: "Post not found" });
-
-    if (String(post.authorId) !== String(req.user._id)) {
-      return res.status(403).json({ message: "Not allowed to edit this draft" });
-    }
-
-    post.title = req.body.title ?? post.title;
-    post.content = req.body.content ?? post.content;
-    post.category = req.body.category ?? post.category;
-    const oldStatus = post.status;
-    post.status = req.body.status ?? post.status;
-
-    if (oldStatus === "draft" && post.status === "published" && !post.slug) {
-      post.slug = slugify(title, { lower: true, strict: true });
-    }
-    
-    if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "buzzink_posts"
-      });
-      post.image = result.secure_url;
-    }
-
-    await post.save();
-    res.json(post);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
   }
 };
 
@@ -475,6 +389,4 @@ module.exports = {
   savePost,
   unsavePost,
   getSavedPosts,
-  getDraftById,
-  updateDraft,
 };

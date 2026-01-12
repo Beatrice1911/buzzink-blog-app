@@ -2,7 +2,6 @@ const API_BASE = "https://buzzink.onrender.com";
 const API_URL = `/api/posts`;
 const AUTH_URL = `/api/auth`;
 const COMMENTS_URL = `/api/comments`;
-let postStatus = "published";
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.getElementById("mobileMenu");
 const searchIcon = document.querySelector(".search-icon");
@@ -11,7 +10,6 @@ const logo = document.querySelector(".logo");
 const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const savedPosts = document.getElementById("savedPosts");
-const myDrafts = document.getElementById("myDrafts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
 const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
@@ -89,7 +87,7 @@ async function updateAvatar(user) {
       });
     }
 
-    window.currentUser = user;
+    window.currentUser = user;   
 
   } catch (err) {
     console.warn("Failed to load auth user:", err);
@@ -167,14 +165,13 @@ function getImageUrl(image) {
   return "/Images/fallback.jpg";
 }
 
-function formatText(text) {
+function formatText (text) {
   return text.replace(/\n/g, '<br>');
 }
 
 // Fetch posts with pagination
 async function fetchPosts(page = 1, limit = 6) {
   try {
-    posts = [];
     const res = await apiFetch(`${API_URL}?page=${page}&limit=${limit}`);
     const data = await res.json();
 
@@ -193,7 +190,6 @@ async function fetchPosts(page = 1, limit = 6) {
 // Fetch posts created by the logged-in user
 async function fetchMyPosts(page = 1, limit = 6) {
   try {
-    posts = [];
     const res = await apiFetch(`${API_URL}/mine?page=${page}&limit=${limit}`);
 
     if (!res.ok) {
@@ -231,10 +227,6 @@ function displayPosts(containerId, limit = null) {
   container.innerHTML = "";
 
   let displayList = [...posts];
-
-  if (containerId === "allPostsContainer" || containerId === "featuredPostsContainer") {
-    displayList = displayList.filter(post => post.status !== "draft");
-  }
 
   if (containerId === "allPostsContainer") {
     const categoryFilter = document.getElementById("categoryFilter");
@@ -295,11 +287,10 @@ function displayPosts(containerId, limit = null) {
         <p class="tag">${post.category}</p>
         <h2>
           <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
-          ${post.status === "draft" ? `<span class="draft-badge">Draft</span>` : ""}
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
         <a href="profile.html?id=${postAuthorId}" class="author"><em>By ${authorName}</em></a>
-        <small>${new Date(post.displayDate).toLocaleString()}</small>
+        <small>${new Date(post.date).toLocaleString()}</small>
         <br>
         <div class="post-interactions-container">
           <div class="post-interactions">
@@ -373,12 +364,11 @@ function displayPosts(containerId, limit = null) {
 }
 
 // Add a new post
-async function addPost(title, content, category, imageFile, status = "published") {
+async function addPost(title, content, category, imageFile) {
   const formData = new FormData();
   formData.append("title", title);
   formData.append("content", content);
   formData.append("category", category);
-  formData.append("status", status);
   if (imageFile) formData.append("image", imageFile);
 
   const res = await apiFetch(`${API_URL}`, {
@@ -415,55 +405,27 @@ async function deletePost(slug) {
 }
 
 // Edit a post
-function editPost(identifier, isDraft = false) {
-    localStorage.removeItem("editSlug");
-    if (isDraft) {
-        localStorage.setItem("editId", identifier);
-    } else {
-        localStorage.setItem("editSlug", identifier);
-    }
-    window.location.href = "write.html";
+function editPost(slug) {
+  localStorage.removeItem("editSlug");
+  localStorage.setItem("editSlug", slug);
+  window.location.href = "write.html";
 }
-
-document.getElementById("saveDraftBtn")?.addEventListener("click", () => {
-  postStatus = "draft";
-  postForm.requestSubmit();
-});
-
-document.getElementById("publishBtn")?.addEventListener("click", () => {
-  postStatus = "published";
-  postForm.requestSubmit();
-});
 
 // Handle post form for adding/editing posts
 const postForm = document.getElementById("postForm");
 if (postForm) {
-  const editId = localStorage.getItem("editId");
   const editSlug = localStorage.getItem("editSlug");
 
-  const isDraft = !!editId;
-  const identifier = isDraft ? editId : editSlug;
-
-  if (identifier) {
+  if (editSlug && editSlug !== "null") {
     (async () => {
       try {
-        const res = await apiFetch(isDraft
-          ? `${API_URL}/draft/${identifier}`
-          : `${API_URL}/${identifier}`);
+        const res = await apiFetch(`${API_URL}/${editSlug}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
-
-        const currentUserId = window.currentUser?._id || window.currentUser?.id;
-        const postAuthorId = (typeof post.authorId === "object" && post.authorId !== null) ? post.authorId._id : post.authorId;
-
-        if (String(postAuthorId) !== String(currentUserId)) {
-          throw new Error(`You are not allowed to edit this ${isDraft ? "draft" : "post"}`);
-        }
 
         document.getElementById("title").value = post.title || "";
         document.getElementById("content").value = post.content || "";
         document.getElementById("category").value = post.category || "";
-        postStatus = post.status || "draft";
 
         if (post.image) {
           const imgPreview = document.getElementById("imagePreview");
@@ -482,8 +444,6 @@ if (postForm) {
       formData.append("title", document.getElementById("title").value);
       formData.append("content", document.getElementById("content").value);
       formData.append("category", document.getElementById("category").value);
-      const status = postStatus;
-      formData.append("status", postStatus);
 
       const imageFile = document.getElementById("image").files[0];
       if (imageFile) {
@@ -491,25 +451,15 @@ if (postForm) {
       }
 
       try {
-        const res = await apiFetch(isDraft
-          ? `${API_URL}/draft/${identifier}`
-          : `${API_URL}/${identifier}`, {
+        const res = await apiFetch(`${API_URL}/${editSlug}`, {
           method: "PUT",
           body: formData,
         });
 
         if (res.ok) {
-          showToast(`${isDraft ? "Draft" : "Post"} updated successfully!`, "success");
+          showToast("Post updated successfully!", "success");
           localStorage.removeItem("editSlug");
-          localStorage.removeItem("editId");
-
-          const updatedPost = await res.json();
-
-          if (updatedPost.status === "draft") {
-            window.location.href = "drafts.html";
-          } else {
-            window.location.href = "all-posts.html";
-          }
+          window.location.href = "all-posts.html";
         } else {
           console.error("Update failed:", await res.text());
         }
@@ -520,7 +470,6 @@ if (postForm) {
     };
   } else {
     localStorage.removeItem("editSlug");
-    localStorage.removeItem("editId");
     postForm?.addEventListener("submit", async function (e) {
       e.preventDefault();
       const title = document.getElementById("title").value;
@@ -531,7 +480,7 @@ if (postForm) {
       console.log("Submitting new post:", { title, content, category, imageFile });
 
       try {
-        const newPost = await addPost(title, content, category, imageFile, postStatus);
+        const newPost = await addPost(title, content, category, imageFile);
         console.log("Post created successfully!", newPost);
         showToast("Post created successfully!", "success");
         postForm.reset();
@@ -598,7 +547,7 @@ function searchPosts(e) {
         <h2>${post.title}</h2>
         <p>${post.content}</p>
         <p><em>By ${post.authorName || "Unknown"}</em></p>
-        <small>${new Date(post.displayDate).toLocaleString()}</small>
+        <small>${new Date(post.date).toLocaleString()}</small>
       </div>
     `;
     container.appendChild(div);
@@ -632,15 +581,7 @@ function renderPagination() {
     const btn = document.createElement("button");
     btn.textContent = i;
     btn.className = i === currentPage ? "pg-active" : "";
-    btn?.addEventListener("click", () => {
-      if (document.getElementById("draftsContainer")) {
-        loadDrafts(i);
-      } else if (document.getElementById("myPostsContainer")) {
-        fetchMyPosts(i);
-      } else {
-        fetchPosts(i);
-      }
-    });
+    btn?.addEventListener("click", () => fetchPosts(i));
     container.appendChild(btn);
   }
 }
@@ -889,7 +830,7 @@ async function apiFetch(url, options = {}) {
       });
     }
   }
-
+  
   return res;
 }
 
@@ -1086,16 +1027,7 @@ document.addEventListener("click", async (e) => {
   if (editBtn) {
     e.preventDefault();
     e.stopPropagation();
-
-    if (editBtn.dataset.draft === "true") {
-      localStorage.setItem("editId", editBtn.dataset.id);
-      localStorage.removeItem("editSlug");
-    } else {
-      localStorage.setItem("editSlug", editBtn.dataset.slug);
-      localStorage.removeItem("editId");
-    }
-
-    window.location.href = "write.html";
+    editPost(editBtn.dataset.slug);
     return;
   }
 
@@ -1104,12 +1036,7 @@ document.addEventListener("click", async (e) => {
   if (deletePostBtn) {
     e.preventDefault();
     e.stopPropagation();
-
-    if (deletePostBtn.dataset.draft === "true") {
-      deletePost(deletePostBtn.dataset.id);
-    } else {
-      deletePost(deletePostBtn.dataset.slug);
-    }
+    deletePost(deletePostBtn.dataset.slug);
     return;
   }
 
@@ -1375,7 +1302,7 @@ function injectPostJsonLd(post) {
         "url": "https://buzzink.onrender.com/Images/logo_optimized.png"
       }
     },
-    "datePublished": post.displayDate || post.date,
+    "datePublished": post.createdAt || post.date,
     "dateModified": post.updatedAt || post.date,
     "mainEntityOfPage": {
       "@type": "WebPage",
@@ -1416,13 +1343,6 @@ async function loadSinglePost() {
         ? post.authorId.name
         : post.authorName || "Unknown";
 
-    if (post.status === "draft") {
-      if (!userId || String(userId) !== String(postAuthorId)) {
-        document.getElementById("singlePostContainer").innerHTML =
-          "<p>This draft is not published.</p>";
-        return;
-      }
-    }
     const isAuthor =
       userId && String(postAuthorId) === String(userId);
 
@@ -1433,7 +1353,7 @@ async function loadSinglePost() {
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
       <p onclick="window.location.href='profile.html?id=${postAuthorId}'" style="cursor: pointer;" class="author"><em>By ${authorName}</em></p>
-      <small>${new Date(post.displayDate).toLocaleString()}</small>
+      <small>${new Date(post.date).toLocaleString()}</small>
       <div class="content">
         <p>${formatText(post.content)}</p>
       </div>
@@ -1598,7 +1518,7 @@ const fetchRelatedPosts = async (slug) => {
   try {
     const res = await apiFetch(`${API_URL}/slug/${slug}/related`);
     const relatedPosts = await res.json();
-
+    
     renderRelatedPosts(relatedPosts);
   } catch (err) {
     console.error("Failed to fetch related posts.", err);
@@ -1657,7 +1577,6 @@ const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 async function loadSavedPosts() {
   try {
-    posts = [];
     const res = await apiFetch(`${API_URL}/saved/me`)
 
     if (!res.ok) throw new Error("Failed to fetch");
@@ -1688,7 +1607,7 @@ async function loadSavedPosts() {
           </p>
           <div class="post-meta">
             <small>By ${post.authorId?.name || "Unknown"}</small>
-            <small>${new Date(post.displayDate).toLocaleDateString()}</small>
+            <small>${new Date(post.date).toLocaleDateString()}</small>
           </div>
         </div>
         <button 
@@ -1724,50 +1643,10 @@ async function loadSavedPosts() {
 
 
   } catch (err) {
-    console.error(err);
+    console.error(err);       
     savedPostsContainer.innerHTML = "<p>Error loading saved posts.</p>";
   }
 }
-
-async function loadDrafts(page = 1) {
-  try {
-    posts = [];
-    const res = await apiFetch(`/api/posts/mine?status=draft&page=${page}`);
-    const data = await res.json();
-
-    posts = data.posts || [];
-    currentPage = data.currentPage || 1;
-    totalPages = data.totalPages || 1;
-    const container = document.getElementById("draftsContainer");
-    container.innerHTML = "";
-
-    if (!posts.length) {
-      container.innerHTML = "<p>No drafts yet.</p>";
-      return;
-    }
-
-    posts.forEach(post => {
-      container.innerHTML += `
-        <div class="post draft">
-          <h2>${post.title || "Untitled Draft"}</h2>
-          <small>Last edited: ${new Date(post.updatedAt).toLocaleString()}</small>
-          <div class="post-actions">
-            <button class="edit-btn btn" data-slug="${post._id}" data-draft="true">Edit</button>
-            <button class="delete-btn btn" data-slug="${post._id}">Delete</button>
-          </div>
-        </div>
-      `;
-    });
-
-    renderPagination();
-  } catch (err) {
-    console.error("Failed to load drafts", err);
-  }
-}
-
-myDrafts?.addEventListener("click", () => {
-  window.location.href = "drafts.html";
-});
 
 savedPosts?.addEventListener("click", () => {
   window.location.href = "saved.html";
@@ -1826,8 +1705,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadSinglePost();
   } else if (window.location.pathname.endsWith("saved.html")) {
     loadSavedPosts();
-  } else if (window.location.pathname.endsWith("drafts.html")) {
-    loadDrafts();
   } else {
     fetchPosts();
   }
