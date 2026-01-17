@@ -459,7 +459,7 @@ const setPostingState = (isPosting) => {
     `;
   } else {
     addPostBtn.disabled = false;
-    addPostBtn.innerHTML = "Post";
+    addPostBtn.innerHTML = "Add Post";
   }
 };
 const postForm = document.getElementById("postForm");
