@@ -104,7 +104,7 @@ const createPost = async (req, res) => {
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            folder,
+            folder: "buzzink_posts",
             resource_type: "image",
             format: "jpg",
             fetch_format: "auto",
@@ -181,7 +181,7 @@ const updatePost = async (req, res) => {
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            folder,
+            folder: "buzzink_posts",
             resource_type: "image",
             format: "jpg",
             fetch_format: "auto",
