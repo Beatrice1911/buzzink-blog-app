@@ -449,6 +449,19 @@ function editPost(slug) {
 }
 
 // Handle post form for adding/editing posts
+const addPostBtn = document.querySelector(".add-post-btn");
+
+const setPostingState = (isPosting) => {
+  if (isPosting) {
+    addPostBtn.disabled = true;
+    addPostBtn.innerHTML = `
+      <i class="fa-solid fa-spinner fa-spin"></i> Posting...
+    `;
+  } else {
+    addPostBtn.disabled = false;
+    addPostBtn.innerHTML = "Post";
+  }
+};
 const postForm = document.getElementById("postForm");
 if (postForm) {
   const editSlug = localStorage.getItem("editSlug");
@@ -488,6 +501,7 @@ if (postForm) {
       }
 
       try {
+        setPostingState(true);
         const res = await apiFetch(`${API_URL}/${editSlug}`, {
           method: "PUT",
           body: formData,
@@ -503,6 +517,8 @@ if (postForm) {
       } catch (err) {
         console.error("Error updating post:", err);
         showToast("Failed to update post!", "error");
+      } finally {
+        setPostingState(false)
       }
     };
   } else {
@@ -522,6 +538,7 @@ if (postForm) {
       });
 
       try {
+        setPostingState(true);
         const newPost = await addPost(title, content, category, imageFile);
         console.log("Post created successfully!", newPost);
         showToast("Post created successfully!", "success");
@@ -531,6 +548,8 @@ if (postForm) {
       } catch (err) {
         console.error("Error adding post:", err);
         showToast("Failed to add post!", "error");
+      } finally {
+        setPostingState(false);
       }
     });
   }
