@@ -97,6 +97,19 @@ const createPost = async (req, res) => {
       return res.status(400).json({ message: "Title, content, and category are required" });
     }
 
+    const uploadBufferToCloudinary = (buffer, folder = "buzzink_posts") => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(buffer);
+      });
+    };
+
     let imagePath = "";
 
     if (req.file) {
@@ -110,24 +123,11 @@ const createPost = async (req, res) => {
           .toBuffer();
       }
 
-      const result = await cloudinary.uploader.upload_stream(
-        { folder: "buzzink_posts" },
-        (error, result) => {
-          if (error) throw error;
-          imagePath = result.secure_url;
-        }
-      );
+      const result = await uploadBufferToCloudinary(bufferToUpload);
 
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "buzzink_posts" },
-        (error, result) => {
-          if (error) throw error;
-          imagePath = result.secure_url;
-        }
-      );
-      stream.end(bufferToUpload);
+      imagePath = result.secure_url;
     }
-
+    
     const slug = slugify(title, { lower: true, strict: true });
 
     const authorId = req.user.id;
