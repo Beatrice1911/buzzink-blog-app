@@ -829,6 +829,15 @@ nav a.active::after {
   box-shadow: var(--shadow-lg);
 }
 
+.add-post-btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.add-post-btn i.fa-spinner {
+  margin-right: 6px;
+}
+
 /* Single Post Container */
 .single-post-container {
   background: var(--surface-card);
