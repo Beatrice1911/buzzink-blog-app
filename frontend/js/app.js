@@ -12,8 +12,11 @@ const myPosts = document.getElementById("myPosts");
 const savedPosts = document.getElementById("savedPosts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
-const DEFAULT_AVATAR = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
-document.getElementById("canonicalUrl")?.setAttribute("href", window.location.href);
+const DEFAULT_AVATAR =
+  "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
+document
+  .getElementById("canonicalUrl")
+  ?.setAttribute("href", window.location.href);
 
 // Set meta tags for SEO and social sharing
 if (window.location.pathname.endsWith("post.html")) {
@@ -33,11 +36,21 @@ if (window.location.pathname.endsWith("post.html")) {
     document.getElementById("postDescription")?.setAttribute("content", desc);
     document.getElementById("ogTitle")?.setAttribute("content", post.title);
     document.getElementById("ogDescription")?.setAttribute("content", desc);
-    document.getElementById("ogImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
-    document.getElementById("ogUrl")?.setAttribute("content", window.location.href);
-    document.getElementById("twitterTitle")?.setAttribute("content", post.title);
-    document.getElementById("twitterDescription")?.setAttribute("content", desc);
-    document.getElementById("twitterImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
+    document
+      .getElementById("ogImage")
+      ?.setAttribute("content", post.image || "/Images/fallback.jpg");
+    document
+      .getElementById("ogUrl")
+      ?.setAttribute("content", window.location.href);
+    document
+      .getElementById("twitterTitle")
+      ?.setAttribute("content", post.title);
+    document
+      .getElementById("twitterDescription")
+      ?.setAttribute("content", desc);
+    document
+      .getElementById("twitterImage")
+      ?.setAttribute("content", post.image || "/Images/fallback.jpg");
   })();
 }
 
@@ -60,7 +73,7 @@ function normalizeUser(user) {
   if (!user) return null;
   return {
     ...user,
-    id: user.id || user._id
+    id: user.id || user._id,
   };
 }
 
@@ -80,15 +93,14 @@ async function updateAvatar(user) {
 
     const avatars = document.querySelectorAll(".user-icon");
     if (avatars) {
-      avatars.forEach(avatar => {
+      avatars.forEach((avatar) => {
         avatar.src = user.profilePhoto?.trim()
           ? user.profilePhoto
           : DEFAULT_AVATAR;
       });
     }
 
-    window.currentUser = user;   
-
+    window.currentUser = user;
   } catch (err) {
     console.warn("Failed to load auth user:", err);
   }
@@ -125,7 +137,10 @@ menuToggle?.addEventListener("click", (e) => {
 });
 
 // Clear editSlug on write.html if not editing
-if (window.location.pathname.endsWith("write.html") && !localStorage.getItem("editSlug")) {
+if (
+  window.location.pathname.endsWith("write.html") &&
+  !localStorage.getItem("editSlug")
+) {
   localStorage.removeItem("editSlug");
 }
 
@@ -165,8 +180,8 @@ function getImageUrl(image) {
   return "/Images/fallback.jpg";
 }
 
-function formatText (text) {
-  return text.replace(/\n/g, '<br>');
+function formatText(text) {
+  return text.replace(/\n/g, "<br>");
 }
 
 // Fetch posts with pagination
@@ -210,7 +225,6 @@ async function fetchMyPosts(page = 1, limit = 6) {
       const container = document.getElementById("myPostsContainer");
       if (container) renderNoAuthorPost(container);
     }
-
   } catch (err) {
     console.error("Error fetching my posts:", err);
     showToast("Failed to load your posts!", "error");
@@ -233,7 +247,9 @@ function displayPosts(containerId, limit = null) {
     if (categoryFilter) {
       const selectedCategory = categoryFilter?.value;
       if (selectedCategory !== "all") {
-        displayList = displayList.filter((post) => post.category === selectedCategory);
+        displayList = displayList.filter(
+          (post) => post.category === selectedCategory,
+        );
       }
     }
   }
@@ -260,9 +276,10 @@ function displayPosts(containerId, limit = null) {
     const div = document.createElement("div");
     div.classList.add("post");
 
-    const preview = post.content.length > 150
-      ? post.content.substring(0, 150) + "..."
-      : post.content;
+    const preview =
+      post.content.length > 150
+        ? post.content.substring(0, 150) + "..."
+        : post.content;
 
     const postAuthorId =
       typeof post.authorId === "object" && post.authorId !== null
@@ -274,16 +291,16 @@ function displayPosts(containerId, limit = null) {
         ? post.authorId.name
         : post.authorName || "Unknown";
 
-
-    const isAuthor =
-      userId && String(postAuthorId) === String(userId);
+    const isAuthor = userId && String(postAuthorId) === String(userId);
 
     div.innerHTML = `
-      ${post.image
-        ? `<a href="post.html?slug=${post.slug}">
+      ${
+        post.image
+          ? `<a href="post.html?slug=${post.slug}">
              <img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">
            </a>`
-        : ""}
+          : ""
+      }
         <p class="tag">${post.category}</p>
         <h2>
           <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
@@ -316,12 +333,16 @@ function displayPosts(containerId, limit = null) {
           </form>
           <div class="comments-list"></div>
         </div>
-        ${isAuthor ? `
+        ${
+          isAuthor
+            ? `
         <div class="post-actions">
             <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
             <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
         </div>
-        ` : ""}
+        `
+            : ""
+        }
     `;
     container.appendChild(div);
 
@@ -338,7 +359,7 @@ function displayPosts(containerId, limit = null) {
     const likedByEl = div.querySelector(".liked-by");
 
     const likedByIds = Array.isArray(post.likes)
-      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
+      ? post.likes.map((l) => (typeof l === "object" ? l._id : l))
       : [];
 
     if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
@@ -373,7 +394,7 @@ async function addPost(title, content, category, imageFile) {
 
   const res = await apiFetch(`${API_URL}`, {
     method: "POST",
-    body: formData
+    body: formData,
   });
 
   if (!res.ok) throw new Error("Failed to add post");
@@ -477,7 +498,12 @@ if (postForm) {
       const category = document.getElementById("category").value;
       const imageFile = document.getElementById("image").files[0];
 
-      console.log("Submitting new post:", { title, content, category, imageFile });
+      console.log("Submitting new post:", {
+        title,
+        content,
+        category,
+        imageFile,
+      });
 
       try {
         const newPost = await addPost(title, content, category, imageFile);
@@ -491,7 +517,7 @@ if (postForm) {
         showToast("Failed to add post!", "error");
       }
     });
-  };
+  }
 }
 
 // Refresh posts display
@@ -507,7 +533,7 @@ function refreshPage() {
   }
 }
 
-// Category filter change handling          
+// Category filter change handling
 document.getElementById("categoryFilter")?.addEventListener("change", () => {
   displayPosts("allPostsContainer");
 });
@@ -525,7 +551,7 @@ function searchPosts(e) {
     (post) =>
       post.title.toLowerCase().includes(searchValue) ||
       post.content.toLowerCase().includes(searchValue) ||
-      post.category.toLowerCase().includes(searchValue)
+      post.category.toLowerCase().includes(searchValue),
   );
 
   container.innerHTML = "";
@@ -539,9 +565,11 @@ function searchPosts(e) {
     const div = document.createElement("div");
     div.classList.add("post");
     div.innerHTML = `
-      ${post.image
-        ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">`
-        : ""}
+      ${
+        post.image
+          ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">`
+          : ""
+      }
       <div class="post-content">
         <p class="tag">${post.category}</p>
         <h2>${post.title}</h2>
@@ -569,7 +597,7 @@ function searchPosts(e) {
   }
 }
 
-search.forEach(input => input.addEventListener("keyup", searchPosts));
+search.forEach((input) => input.addEventListener("keyup", searchPosts));
 
 // Render pagination buttons
 function renderPagination() {
@@ -599,31 +627,33 @@ const userMenuDetails = document.getElementById("userMenuDetails");
 const logoutBtn = document.getElementById("logoutBtn");
 
 // User icon click to toggle menu or show auth modal
-userIcon.forEach(icon => icon?.addEventListener("click", () => {
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
+userIcon.forEach((icon) =>
+  icon?.addEventListener("click", () => {
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser ? JSON.parse(storedUser) : null;
 
-  if (user && user.id) {
-    userMenuDetails.classList.toggle("show");
-    authModal.classList.add("hidden");
-  } else {
-    userMenuDetails.classList.add("hidden");
-    authModal.classList.remove("hidden");
-    loginTab.classList.add("active");
-    registerTab.classList.remove("active");
-    loginForm.classList.remove("hidden");
-    registerForm.classList.add("hidden");
-    loginForm?.reset();
-    registerForm?.reset();
-  }
-}));
+    if (user && user.id) {
+      userMenuDetails.classList.toggle("show");
+      authModal.classList.add("hidden");
+    } else {
+      userMenuDetails.classList.add("hidden");
+      authModal.classList.remove("hidden");
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+      loginForm.classList.remove("hidden");
+      registerForm.classList.add("hidden");
+      loginForm?.reset();
+      registerForm?.reset();
+    }
+  }),
+);
 
 // Close menus/modals on outside click
 document.addEventListener("click", (e) => {
   if (
     userMenuDetails?.classList.contains("show") &&
     !userMenuDetails.contains(e.target) &&
-    ![...userIcon].some(icon => icon.contains(e.target))
+    ![...userIcon].some((icon) => icon.contains(e.target))
   ) {
     userMenuDetails.classList.remove("show");
   }
@@ -657,7 +687,7 @@ registerTab?.addEventListener("click", () => {
 });
 
 // Write post button click handling
-writePostBtns.forEach(btn => {
+writePostBtns.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const storedUser = localStorage.getItem("user");
     const user = storedUser ? JSON.parse(storedUser) : null;
@@ -686,7 +716,7 @@ loginForm?.addEventListener("submit", async (e) => {
   const res = await apiFetch(`${AUTH_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email, password }),
   });
 
   const data = await res.json();
@@ -698,7 +728,7 @@ loginForm?.addEventListener("submit", async (e) => {
 
   const user = normalizeUser(data.user);
   localStorage.setItem("token", data.token);
-  localStorage.setItem("refreshToken", data.refreshToken)
+  localStorage.setItem("refreshToken", data.refreshToken);
   localStorage.setItem("user", JSON.stringify(user));
   window.currentUser = user;
   localStorage.setItem("role", user.role);
@@ -724,14 +754,17 @@ registerForm?.addEventListener("submit", async (e) => {
   const res = await apiFetch(`${AUTH_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password })
+    body: JSON.stringify({ name, email, password }),
   });
 
   const data = await res.json();
   console.log("Register response:", data);
 
   if (!res.ok) {
-    showToast(`Registration failed: ${data.message || "Unknown error"}`, "error");
+    showToast(
+      `Registration failed: ${data.message || "Unknown error"}`,
+      "error",
+    );
   }
 
   const user = normalizeUser(data.user);
@@ -787,7 +820,6 @@ async function checkUser() {
     updateAvatar(user);
 
     return user;
-
   } catch {
     logout(true);
     return null;
@@ -797,9 +829,9 @@ async function checkUser() {
 // Update UI based on user status
 function updateUI(user) {
   if (user?.id) {
-    userIcon.forEach(icon => icon.title = `Logged in as ${user.name}`);
+    userIcon.forEach((icon) => (icon.title = `Logged in as ${user.name}`));
   } else {
-    userIcon.forEach(icon => icon.title = "Click to Login/Register");
+    userIcon.forEach((icon) => (icon.title = "Click to Login/Register"));
     userMenuDetails?.classList.remove("show");
   }
 }
@@ -817,7 +849,7 @@ async function apiFetch(url, options = {}) {
 
   let res = await fetch(fullUrl, {
     credentials: "include",
-    ...options
+    ...options,
   });
 
   if (res.status === 401) {
@@ -826,11 +858,11 @@ async function apiFetch(url, options = {}) {
       options.headers["Authorization"] = `Bearer ${token}`;
       res = await fetch(fullUrl, {
         credentials: "include",
-        ...options
+        ...options,
       });
     }
   }
-  
+
   return res;
 }
 
@@ -843,13 +875,14 @@ async function refreshToken() {
     const res = await fetch(`${AUTH_URL}/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: storedRefreshToken })
+      body: JSON.stringify({ refreshToken: storedRefreshToken }),
     });
 
     if (!res.ok) throw new Error("Refresh failed");
     const data = await res.json();
     localStorage.setItem("token", data.token);
-    if (data.refreshToken) localStorage.setItem("refreshToken", data.refreshToken);
+    if (data.refreshToken)
+      localStorage.setItem("refreshToken", data.refreshToken);
 
     const user = normalizeUser(data.user);
     localStorage.setItem("user", JSON.stringify(user));
@@ -857,7 +890,6 @@ async function refreshToken() {
     updateUI(user);
 
     return data.token;
-
   } catch (err) {
     return null;
   }
@@ -895,8 +927,9 @@ async function handleLike(btn) {
   const postId = btn.dataset.postId;
   const heart = btn.querySelector("i");
   const countEl = btn.querySelector(".like-count");
-  const likedByEl = btn.closest(".post-interactions-container")?.querySelector(".liked-by");
-
+  const likedByEl = btn
+    .closest(".post-interactions-container")
+    ?.querySelector(".liked-by");
 
   const alreadyLiked = btn.classList.contains("liked");
   const token = localStorage.getItem("token");
@@ -927,13 +960,18 @@ async function handleLike(btn) {
 
       countEl.textContent = data.likes ?? 0;
 
+      likedByEl.dataset.postId = postId;
+      likedByEl.dataset.likedBy = JSON.stringify(data.likedBy || []);
+
       if (data.likedBy && data.likedBy.length > 0) {
+        likedByEl.classList.remove("disabled");
         if (data.likedBy.length === 1) {
           likedByEl.textContent = `Liked by ${data.likedBy[0]}`;
         } else {
           likedByEl.textContent = `Liked by ${data.likedBy[0]} and ${data.likedBy.length - 1} others`;
         }
       } else {
+        likedByEl.classList.add("disabled");
         likedByEl.textContent = "No likes yet";
       }
     } else {
@@ -947,7 +985,7 @@ async function handleLike(btn) {
 
 // Toggle comments section
 async function toggleComments(commentBtn) {
-  const postId = commentBtn.dataset.postId
+  const postId = commentBtn.dataset.postId;
 
   if (!postId) return;
 
@@ -977,11 +1015,13 @@ async function handleDeleteComment(deleteBtn) {
   if (deleteBtn.dataset.deleting === "true") return;
   deleteBtn.dataset.deleting = "true";
   const commentId = deleteBtn.dataset.commentId;
-  const confirmDelete = confirm("Are you sure you want to delete this comment?");
+  const confirmDelete = confirm(
+    "Are you sure you want to delete this comment?",
+  );
   if (!confirmDelete) {
     deleteBtn.dataset.deleting = "false";
     return;
-  };
+  }
 
   try {
     const res = await apiFetch(`${COMMENTS_URL}/${commentId}`, {
@@ -1020,6 +1060,20 @@ async function handleDeleteComment(deleteBtn) {
   }
 }
 
+function openLikesModal(users) {
+  const list = document.getElementById("likesList");
+  list.innerHTML = "";
+
+  users.forEach(name => {
+    const li = document.createElement("li");
+    li.textContent = name;
+    list.appendChild(li);
+  });
+
+  document.getElementById("likesModal").classList.remove("hidden");
+}
+
+
 // Global event handlers
 document.addEventListener("click", async (e) => {
   // Edit post handling
@@ -1046,7 +1100,7 @@ document.addEventListener("click", async (e) => {
     e.preventDefault();
     handleLike(likeBtn);
     return;
-  };
+  }
 
   // Comment button handling
   const commentBtn = e.target.closest(".comment-btn");
@@ -1054,7 +1108,18 @@ document.addEventListener("click", async (e) => {
     e.preventDefault();
     toggleComments(commentBtn);
     return;
-  };
+  }
+
+  const likesInfo = e.target.closest(".likes-info");
+  if (likesInfo && !likesInfo.classList.contains("disabled")) {
+    e.preventDefault();
+
+    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
+    if (!likedBy.length) return;
+
+    openLikesModal(likedBy);
+    return;
+  }
 
   // Delete comment handling
   const deleteBtn = e.target.closest(".delete-comment-btn");
@@ -1070,7 +1135,9 @@ document.addEventListener("click", async (e) => {
 
   // Close all menus if clicking elsewhere
   if (!menuBtn && !options) {
-    document.querySelectorAll(".menu-options").forEach(opt => opt.classList.add("hidden"));
+    document
+      .querySelectorAll(".menu-options")
+      .forEach((opt) => opt.classList.add("hidden"));
     return;
   }
 
@@ -1115,7 +1182,6 @@ document.addEventListener("submit", async (e) => {
 
   await postComment(postId, commentText, commentsList, commentCountSpan);
   commentInput.value = "";
-
 });
 
 // Comments functionality
@@ -1123,7 +1189,9 @@ async function fetchComments(postId, commentsList, limit = 3) {
   try {
     commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
 
-    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}?_=${Date.now()}`);
+    const res = await apiFetch(
+      `${COMMENTS_URL}/post/${postId}?_=${Date.now()}`,
+    );
     if (!res.ok) throw new Error("Failed to fetch comments");
 
     const comments = await res.json();
@@ -1131,7 +1199,8 @@ async function fetchComments(postId, commentsList, limit = 3) {
     commentsList.innerHTML = "";
 
     if (comments.length === 0) {
-      commentsList.innerHTML = "<p class='no-comments'>No comments yet. Be the first to comment!</p>";
+      commentsList.innerHTML =
+        "<p class='no-comments'>No comments yet. Be the first to comment!</p>";
       return;
     }
 
@@ -1169,7 +1238,8 @@ async function fetchComments(postId, commentsList, limit = 3) {
     }
   } catch (err) {
     console.error("Error fetching comments:", err);
-    commentsList.innerHTML = "<p class='error-comments'>Failed to load comments.</p>";
+    commentsList.innerHTML =
+      "<p class='error-comments'>Failed to load comments.</p>";
   }
 }
 
@@ -1192,15 +1262,16 @@ function renderComments(comments, commentsList) {
     div.innerHTML = `
       <div class="comment-header">
         <p><strong class="comment-author" style="cursor: pointer;">${comment.authorId?.name || "Anonymous"}:</strong> ${formatText(comment.text)}</p>
-        ${isOwner
-        ? `<div class="comment-menu">
+        ${
+          isOwner
+            ? `<div class="comment-menu">
                   <button class="menu-btn">⋮</button>
                   <div class="menu-options hidden">
                     <button class="delete-comment-btn" data-comment-id="${comment._id}">Delete</button>
                   </div>
                 </div>`
-        : ""
-      }
+            : ""
+        }
       </div>  
       <small>${new Date(comment.createdAt).toLocaleString()}</small>
     `;
@@ -1287,27 +1358,27 @@ function injectPostJsonLd(post) {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": post.title,
-    "description": post.content.slice(0, 160),
-    "image": post.image ? [post.image] : [],
-    "author": {
+    headline: post.title,
+    description: post.content.slice(0, 160),
+    image: post.image ? [post.image] : [],
+    author: {
       "@type": "Person",
-      "name": post.authorName || "BuzzInk Contributor"
+      name: post.authorName || "BuzzInk Contributor",
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "BuzzInk",
-      "logo": {
+      name: "BuzzInk",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://buzzink.onrender.com/Images/logo_optimized.png"
-      }
+        url: "https://buzzink.onrender.com/Images/logo_optimized.png",
+      },
     },
-    "datePublished": post.createdAt || post.date,
-    "dateModified": post.updatedAt || post.date,
-    "mainEntityOfPage": {
+    datePublished: post.createdAt || post.date,
+    dateModified: post.updatedAt || post.date,
+    mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": window.location.href
-    }
+      "@id": window.location.href,
+    },
   };
 
   const script = document.createElement("script");
@@ -1317,7 +1388,6 @@ function injectPostJsonLd(post) {
 
   document.head.appendChild(script);
 }
-
 
 // Load single post details
 async function loadSinglePost() {
@@ -1343,8 +1413,7 @@ async function loadSinglePost() {
         ? post.authorId.name
         : post.authorName || "Unknown";
 
-    const isAuthor =
-      userId && String(postAuthorId) === String(userId);
+    const isAuthor = userId && String(postAuthorId) === String(userId);
 
     const container = document.getElementById("singlePostContainer");
 
@@ -1384,11 +1453,15 @@ async function loadSinglePost() {
         </form>
         <div class="comments-list"></div>
       </div>
-      ${isAuthor ? `
+      ${
+        isAuthor
+          ? `
       <div class="post-actions">
         <button class="edit-btn btn" data-slug="${post.slug}">Edit</button>
         <button class="delete-btn btn" data-slug="${post.slug}">Delete</button>
-      </div>` : ""}
+      </div>`
+          : ""
+      }
     `;
 
     const img = container.querySelector(".post-image");
@@ -1404,7 +1477,7 @@ async function loadSinglePost() {
     const likedByEl = container?.querySelector(".liked-by");
 
     const likedByIds = Array.isArray(post.likes)
-      ? post.likes.map(l => (typeof l === "object" ? l._id : l))
+      ? post.likes.map((l) => (typeof l === "object" ? l._id : l))
       : [];
 
     if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
@@ -1441,7 +1514,7 @@ async function loadSinglePost() {
       const icon = bookmarkIcon.querySelector("i");
       icon.classList.toggle("fa-solid", isSaved);
       icon.classList.toggle("fa-regular", !isSaved);
-    };
+    }
 
     bookmarkIcon.addEventListener("click", async () => {
       const token = localStorage.getItem("token");
@@ -1456,16 +1529,20 @@ async function loadSinglePost() {
       bookmarkIcon.classList.add("clicked");
       setTimeout(() => bookmarkIcon.classList.remove("clicked"), 200);
 
-      const url = isSaved ? `/api/posts/${slug}/unsave` : `/api/posts/${slug}/save`;
+      const url = isSaved
+        ? `/api/posts/${slug}/unsave`
+        : `/api/posts/${slug}/save`;
 
       try {
         const res = await apiFetch(url, {
-          method: "POST"
+          method: "POST",
         });
         const data = await res.json();
         setBookmarkState(!isSaved);
-        showToast(!isSaved ? "Post saved" : "Removed from saved posts", "success")
-
+        showToast(
+          !isSaved ? "Post saved" : "Removed from saved posts",
+          "success",
+        );
       } catch (err) {
         console.error("Failed to toggle bookmark", err);
         showToast("Something went wrong", "error");
@@ -1475,7 +1552,8 @@ async function loadSinglePost() {
     injectPostJsonLd(post);
   } catch (err) {
     console.error(err);
-    document.getElementById("singlePostContainer").innerHTML = "<p>Error loading post.</p>";
+    document.getElementById("singlePostContainer").innerHTML =
+      "<p>Error loading post.</p>";
   }
 
   fetchRelatedPosts(postSlug);
@@ -1487,16 +1565,19 @@ const fetchTrendingPosts = async () => {
   const data = await res.json();
 
   const trendingList = document.getElementById("trending-list");
-  trendingList.innerHTML = data.map((post, index) => {
-    const rankIcons = ["🥇", "🥈", "🥉"];
-    const rankDisplay = rankIcons[index] || `#${index + 1}`;
-    return `
+  trendingList.innerHTML = data
+    .map((post, index) => {
+      const rankIcons = ["🥇", "🥈", "🥉"];
+      const rankDisplay = rankIcons[index] || `#${index + 1}`;
+      return `
     <li>
       <span class="trending-rank">${rankDisplay}</span>
       <a href="post.html?slug=${post.slug}" class="trending-title">${post.title}</a>
       <i class="fa-solid fa-bolt trending-icon" title="Trending now"></i>
     </li>
-  `}).join("");
+  `;
+    })
+    .join("");
 };
 
 function renderRelatedPosts(posts) {
@@ -1506,24 +1587,28 @@ function renderRelatedPosts(posts) {
     return;
   }
 
-  container.innerHTML = posts.map(post => `
+  container.innerHTML = posts
+    .map(
+      (post) => `
       <article class="related-post-card">
         <h4><a href="post.html?slug=${post.slug}">${post.title}</a></h4>
         <small>${post.category}</small>
       </article>
-    `).join("");
+    `,
+    )
+    .join("");
 }
 
 const fetchRelatedPosts = async (slug) => {
   try {
     const res = await apiFetch(`${API_URL}/slug/${slug}/related`);
     const relatedPosts = await res.json();
-    
+
     renderRelatedPosts(relatedPosts);
   } catch (err) {
     console.error("Failed to fetch related posts.", err);
   }
-}
+};
 
 // Profile edit button handling
 const profileEdit = document.getElementById("profile-edit");
@@ -1559,10 +1644,13 @@ function initForgotPassword() {
         const res = await fetch("/api/auth/forgot-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email })
+          body: JSON.stringify({ email }),
         });
         const data = await res.json();
-        showToast(data.message || "Check your email for the reset link.", "success");
+        showToast(
+          data.message || "Check your email for the reset link.",
+          "success",
+        );
         forgotPasswordModal.classList.add("hidden");
       } catch (err) {
         console.error(err);
@@ -1577,7 +1665,7 @@ const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 async function loadSavedPosts() {
   try {
-    const res = await apiFetch(`${API_URL}/saved/me`)
+    const res = await apiFetch(`${API_URL}/saved/me`);
 
     if (!res.ok) throw new Error("Failed to fetch");
 
@@ -1588,9 +1676,13 @@ async function loadSavedPosts() {
       return;
     }
 
-    savedPostsContainer.innerHTML = posts.map(post => `
+    savedPostsContainer.innerHTML = posts
+      .map(
+        (post) => `
       <article class="post-card">
-        ${post.image ? `
+        ${
+          post.image
+            ? `
           <img 
             src="${getImageUrl(post.image)}" 
             alt="${post.title}" 
@@ -1598,7 +1690,9 @@ async function loadSavedPosts() {
             loading="lazy"
             onclick="window.location.href='post.html?slug=${post.slug}'"
           >
-        ` : ""}
+        `
+            : ""
+        }
         <div class="post-body" onclick="window.location.href='post.html?slug=${post.slug}'">
           <h2>${post.title}</h2>
           <p class="tag">${post.category}</p>
@@ -1618,9 +1712,11 @@ async function loadSavedPosts() {
           <i class="fa-solid fa-bookmark"></i>
         </button>
       </article>
-    `).join("");
+    `,
+      )
+      .join("");
 
-    document.querySelectorAll(".bookmark").forEach(btn => {
+    document.querySelectorAll(".bookmark").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         e.stopPropagation(); // prevent card click
 
@@ -1633,17 +1729,14 @@ async function loadSavedPosts() {
 
           btn.closest(".post-card").remove();
           showToast("Removed from saved posts", "success");
-
         } catch (err) {
           console.error(err);
           showToast("Failed to remove", "error");
         }
       });
     });
-
-
   } catch (err) {
-    console.error(err);       
+    console.error(err);
     savedPostsContainer.innerHTML = "<p>Error loading saved posts.</p>";
   }
 }
@@ -1654,8 +1747,8 @@ savedPosts?.addEventListener("click", () => {
 
 const settings = document.getElementById("settings");
 settings?.addEventListener("click", () => {
-  window.location.href = "settings.html"
-})
+  window.location.href = "settings.html";
+});
 
 const themeToggle = document.getElementById("themeToggle");
 const root = document.documentElement;
@@ -1675,14 +1768,13 @@ themeToggle?.addEventListener("change", () => {
   if (themeToggle.checked) {
     root.setAttribute("data-theme", "dark");
     localStorage.setItem("theme", "dark");
-    logo.src = "/Images/logo-dark-theme_optimized_.png"
+    logo.src = "/Images/logo-dark-theme_optimized_.png";
   } else {
     root.setAttribute("data-theme", "light");
     localStorage.setItem("theme", "light");
-    logo.src = "/Images/logo_optimized.png"
+    logo.src = "/Images/logo_optimized.png";
   }
 });
-
 
 // Initial user check
 document.addEventListener("DOMContentLoaded", async () => {
