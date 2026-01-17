@@ -1,6 +1,8 @@
 :root {
   --primary: #6d28d9;
   --secondary: #4f46e5;
+  --brand-primary: var(--primary);
+  --brand-secondary: var(--secondary);
 
   --accent: #004d40;
   --accent-light: #00adb5;
@@ -25,10 +27,12 @@
   --surface-page: #f6f7fb;
   --surface-muted: #c9c7c7;
   --surface-soft: #eef2ff;
-  --surface-footer: #121212;
+  --surface-footer: #1f2937;
   --bg-modal: #00332f;
   --bg-alt: #333;
   --bg-muted: #555;
+  --page-bg: var(--surface-page);
+  --card-bg: var(--surface-card);
 
   --text: #1f2937;
   --text-hover: #555; 
@@ -37,6 +41,8 @@
   --text-inverse: #fafafa;
   --muted: #6b7280;
   --link: #007BFF;
+  --text-main: var(--text);
+  --text-muted: var(--muted);
 
   --border-light: #eee;
   --border-muted: #f0f0f0;
@@ -676,7 +682,7 @@ nav a.active::after {
 /* Footer Styles */
 .footer {
   background-color: var(--surface-footer);
-  color: var(--text-light);
+  color: #d1d5db;
   padding: 40px 20px 20px;
   margin-top: 40px;
   font-family: "Poppins", sans-serif;
