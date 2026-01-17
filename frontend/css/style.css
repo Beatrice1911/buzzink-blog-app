@@ -1667,7 +1667,6 @@ nav a.active::after {
   border-radius: 12px;
   width: 100%;
   max-width: 400px;
-  text-align: center;
   /* position: relative;
   box-shadow: 0 8px 25px rgba(0,0,0,0.2); */
   box-shadow: 0 -4px 15px rgba(0,0,0,0.2);
@@ -1679,7 +1678,7 @@ nav a.active::after {
   position: absolute;
   top: 8px;
   right: 12px;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: bold;
   color: var(--text);
   cursor: pointer;
@@ -1690,7 +1689,7 @@ nav a.active::after {
   color: var(--text-hover);
 }
 
-#likesList {
+.likes-list {
   list-style: none;
   padding: 0;
   margin-top: 15px;
@@ -1698,7 +1697,7 @@ nav a.active::after {
   overflow-y: auto;
 }
 
-#likesList li {
+.likes-list li {
   padding: 8px 0;
   border-bottom: 1px solid var(--border-light);
   font-size: 15px;
