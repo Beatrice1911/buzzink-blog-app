@@ -98,31 +98,25 @@ const createPost = async (req, res) => {
         .json({ message: "Title, content, and category are required" });
     }
 
-    const uploadBufferToCloudinary = (buffer, folder = "buzzink_posts") => {
-      return new Promise((resolve, reject) => {
+    let imagePath = "";
+
+    if (req.file) {
+      const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder, resource_type: "image", format: "jpg" },
+          {
+            folder,
+            resource_type: "image",
+            format: "jpg",
+            fetch_format: "auto",
+            quality: "auto",
+          },
           (error, result) => {
             if (error) reject(error);
             else resolve(result);
           },
         );
-        stream.end(buffer);
-      });
-    };
-
-    let imagePath = "";
-
-    if (req.file) {
-      const ext = path.extname(req.file.originalname).toLowerCase();
-
-      let bufferToUpload = req.file.buffer;
-
-      if (ext === ".heic" || ext === ".heif") {
-        bufferToUpload = await sharp(buffer).jpeg({ quality: 90 }).toBuffer();
-      }
-
-      const result = await uploadBufferToCloudinary(bufferToUpload);
+        stream.end(req.file.buffer);
+      })
 
       imagePath = result.secure_url;
     }
@@ -184,32 +178,26 @@ const updatePost = async (req, res) => {
     }
 
     if (req.file) {
-      const ext = path.extname(req.file.originalname).toLowerCase();
-      let bufferToUpload = req.file.buffer;
-
-      if (ext === ".heic" || ext === ".heif") {
-        bufferToUpload = await sharp(req.file.buffer)
-          .jpeg({ quality: 90 })
-          .toBuffer();
-      }
-
       const result = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            folder: "buzzink_posts",
+            folder,
             resource_type: "image",
             format: "jpg",
+            fetch_format: "auto",
+            quality: "auto",
           },
           (error, result) => {
             if (error) reject(error);
             else resolve(result);
           },
         );
-        stream.end(bufferToUpload);
-      });
+        stream.end(req.file.buffer);
+      })
 
       post.image = result.secure_url;
     }
+
 
     await post.save();
     res.json(post);
