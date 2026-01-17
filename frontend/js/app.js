@@ -326,13 +326,11 @@ function displayPosts(containerId, limit = null) {
           </div>
           <span class="liked-by likes-info">No likes yet</span>
         </div>
-        <div id="likesModal" class="hidden">
-          <div class="modal-content">
+        <div id="likesModal-POSTID" class="likes-modal hidden slide-up">
+          <div class="likes-modal-content">
+            <span id="closeLikesModal-POSTID" class="close-btn">&times;</span>
             <h3>Liked by</h3>
-            <ul id="likesList"></ul>
-            <button onclick="document.getElementById('likesModal').classList.add('hidden')">
-              &times;
-            </button>
+            <ul id="likesList-POSTID"></ul>            
           </div>
         </div>
         <div class="comments-section">
@@ -1078,18 +1076,30 @@ async function handleDeleteComment(deleteBtn) {
   }
 }
 
-function openLikesModal(users) {
-  const list = document.getElementById("likesList");
+function openLikesModal(postId, users) {
+  const modal = document.getElementById(`likesModal-${postId}`);
+  const list = document.getElementById(`likesList-${postId}`);
   list.innerHTML = "";
-
-  users.forEach((name) => {
+  users.forEach(user => {
     const li = document.createElement("li");
-    li.textContent = name;
+    li.textContent = user;
     list.appendChild(li);
   });
 
-  document.getElementById("likesModal").classList.remove("hidden");
+  modal.classList.remove("hidden");
+  setTimeout(() => modal.classList.add("active"), 10);
+
+  const closeBtn = document.getElementById(`closeLikesModal-${postId}`);
+  closeBtn.onclick = () => closeLikesModal(postId);
+  modal.onclick = e => { if(e.target === modal) closeLikesModal(postId); }
 }
+
+function closeLikesModal(postId) {
+  const modal = document.getElementById(`likesModal-${postId}`);
+  modal.classList.remove("active");
+  setTimeout(() => modal.classList.add("hidden"), 300);
+}
+
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
@@ -1134,7 +1144,8 @@ document.addEventListener("click", async (e) => {
     const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
     if (!likedBy.length) return;
 
-    openLikesModal(likedBy);
+    const postId = likesInfo.dataset.posId;
+    openLikesModal(postId, likedBy);
     return;
   }
 
@@ -1463,13 +1474,11 @@ async function loadSinglePost() {
         </div>
         <span class="liked-by likes-info">No likes yet</span>
       </div>
-      <div id="likesModal" class="hidden">
-        <div class="modal-content">
+      <div id="likesModal-POSTID" class="likes-modal hidden slide-up">
+        <div class="likes-modal-content">
+          <span id="closeLikesModal-POSTID" class="close-btn">&times;</span>
           <h3>Liked by</h3>
-          <ul id="likesList"></ul>
-          <button class="close" onclick="document.getElementById('likesModal').classList.add('hidden')">
-            &times;
-          </button>
+          <ul id="likesList-POSTID"></ul>            
         </div>
       </div>
       <div class="comments-section show">
