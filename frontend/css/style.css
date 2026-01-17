@@ -247,7 +247,7 @@ nav a.active::after {
 }
 
 #logoutBtn {
-  width: 40%;
+  width: auto;
   padding: 6px 12px;
   background: var(--bg-alt);
   color: var(--text-inverse) !important;
@@ -1681,7 +1681,6 @@ nav a.active::after {
   }
 
   .user-menu-details #logoutBtn {
-    min-width: 50%;
     padding: 6px 15px;
   }
 

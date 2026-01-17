@@ -326,6 +326,15 @@ function displayPosts(containerId, limit = null) {
           </div>
           <span class="liked-by likes-info">No likes yet</span>
         </div>
+        <div id="likesModal" class="hidden">
+          <div class="modal-content">
+            <h3>Liked by</h3>
+            <ul id="likesList"></ul>
+            <button onclick="document.getElementById('likesModal').classList.add('hidden')">
+              &times;
+            </button>
+          </div>
+        </div>
         <div class="comments-section">
           <form class="comment-form">
             <input type="text" class="comment-input" placeholder="Write a comment..." required />
@@ -357,6 +366,15 @@ function displayPosts(containerId, limit = null) {
     const likeBtn = div.querySelector(".like-btn");
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
+
+    likedByEl.dataset.postId = post._id;
+    likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
+
+    if (post.likedBy && post.likedBy.length > 0) {
+      likedByEl.classList.remove("disabled");
+    } else {
+      likedByEl.classList.add("disabled");
+    }
 
     const likedByIds = Array.isArray(post.likes)
       ? post.likes.map((l) => (typeof l === "object" ? l._id : l))
@@ -1064,7 +1082,7 @@ function openLikesModal(users) {
   const list = document.getElementById("likesList");
   list.innerHTML = "";
 
-  users.forEach(name => {
+  users.forEach((name) => {
     const li = document.createElement("li");
     li.textContent = name;
     list.appendChild(li);
@@ -1072,7 +1090,6 @@ function openLikesModal(users) {
 
   document.getElementById("likesModal").classList.remove("hidden");
 }
-
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
@@ -1446,6 +1463,15 @@ async function loadSinglePost() {
         </div>
         <span class="liked-by likes-info">No likes yet</span>
       </div>
+      <div id="likesModal" class="hidden">
+        <div class="modal-content">
+          <h3>Liked by</h3>
+          <ul id="likesList"></ul>
+          <button class="close" onclick="document.getElementById('likesModal').classList.add('hidden')">
+            &times;
+          </button>
+        </div>
+      </div>
       <div class="comments-section show">
         <form class="comment-form">
           <input type="text" class="comment-input" placeholder="Write a comment..." required />
@@ -1475,6 +1501,15 @@ async function loadSinglePost() {
     const likeBtn = container?.querySelector(".like-btn");
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
+
+    likedByEl.dataset.postId = post._id;
+    likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
+
+    if (post.likedBy && post.likedBy.length > 0) {
+      likedByEl.classList.remove("disabled");
+    } else {
+      likedByEl.classList.add("disabled");
+    }
 
     const likedByIds = Array.isArray(post.likes)
       ? post.likes.map((l) => (typeof l === "object" ? l._id : l))
