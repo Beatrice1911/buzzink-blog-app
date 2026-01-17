@@ -1,10 +1,10 @@
 :root {
-  --bg-color: #f8fafc;
-  --card-bg: #fff;
-  --text-color: #333;
-  --text-secondary: #555;
-  --primary-color: #0077b6;
-  --primary-hover: #023e8a;
+  --bg-color: var(--page-bg);
+  --card-bg: var(--card-bg);
+  --text-color: var(--text-main);
+  --text-secondary: var(--text-muted);
+  --primary-color: var(--brand-primary);
+  --primary-hover: var(--secondary);
   --danger-color: #b91c1c;
   --danger-bg: #fee2e2;
   --shadow-card: rgba(0, 0, 0, 0.08);
