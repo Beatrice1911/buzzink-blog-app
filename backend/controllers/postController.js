@@ -115,19 +115,19 @@ const createPost = async (req, res) => {
     if (req.file) {
       const ext = path.extname(req.file.originalname).toLowerCase();
 
-      let bufferToUpload = req.file.buffer; 
+      let buffer = req.file.buffer; 
 
       if (ext === ".heic" || ext === ".heif") {
-        bufferToUpload = await sharp(req.file.buffer)
+        bufferToUpload = await sharp(buffer)
           .jpeg({ quality: 90 })
           .toBuffer();
       }
 
-      const result = await uploadBufferToCloudinary(bufferToUpload);
+      const result = await uploadBufferToCloudinary(buffer);
 
       imagePath = result.secure_url;
     }
-    
+
     const slug = slugify(title, { lower: true, strict: true });
 
     const authorId = req.user.id;
