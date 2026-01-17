@@ -24,7 +24,7 @@ const router = express.Router();
 //   },
 // });
 
-const upload = multer({ storage: multer.memoryStorage({}) });
+const upload = multer({ storage: multer.memoryStorage() });
 
 const { getPosts, getPostBySlug, createPost, updatePost, deletePost, likePost, unlikePost, getTrendingPosts, incrementView, getPostsByCategory, savePost, unsavePost, getSavedPosts } = require("../controllers/postController");
 
