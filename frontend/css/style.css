@@ -634,7 +634,7 @@ nav a.active::after {
 
 .tag {
   background: var(--tag-bg);
-  width: auto;
+  width: 30%;
   padding: 6px 14px;
   border: none;
   color: var(--accent) !important;
@@ -869,7 +869,7 @@ nav a.active::after {
   color: var(--accent);
   font-size: 0.8rem;
   font-weight: bold;
-  width: auto;
+  width: 30%;
   padding: 5px 10px;
   border-radius: 20px;
   margin: 10px 0;
@@ -1166,7 +1166,6 @@ nav a.active::after {
   font-weight: bold;
   font-size: 1rem;
   color: var(--text);
-  margin-left: 3px;
 }
 
 .comments-section {
@@ -1429,7 +1428,7 @@ nav a.active::after {
   background: var(--surface-soft);
   color: var(--secondary);
   font-size: 0.75rem;
-  width: auto;
+  width: 30%;
   padding: 0.2rem 0.6rem;
   border-radius: 20px;
   margin-bottom: 0.6rem;
@@ -1682,7 +1681,7 @@ nav a.active::after {
   }
 
   .user-menu-details #logoutBtn {
-    width: 60%;
+    min-width: 50%;
     padding: 6px 15px;
   }
 
@@ -1739,7 +1738,6 @@ nav a.active::after {
 
   .like-btn, .comment-btn, .share-btn {
     font-size: 1.25rem;
-    padding: 6px;
   }
 
   .like-count, .comment-count {
