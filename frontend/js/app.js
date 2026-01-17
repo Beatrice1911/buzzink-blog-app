@@ -1144,7 +1144,7 @@ document.addEventListener("click", async (e) => {
     const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
     if (!likedBy.length) return;
 
-    const postId = likesInfo.dataset.posId;
+    const postId = likesInfo.dataset.postId;
     openLikesModal(postId, likedBy);
     return;
   }

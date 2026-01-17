@@ -1053,8 +1053,8 @@ nav a.active::after {
 .post-interactions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-left: 10px;
+  gap: 8px;
+  margin-left: 5px;
   font-size: 0.9rem;
   margin-top: 5px;
   justify-content: flex-start;
