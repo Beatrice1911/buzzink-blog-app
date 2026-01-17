@@ -1,10 +1,9 @@
-const express = require("express");
+const sharp = require("sharp");
 const mongoose = require("mongoose");
-const multer = require("multer");
 const Post = require("../models/Post");
 const cloudinary = require("../config/cloudinary");
 const slugify = require("slugify");
-const User = require("../models/User")
+const User = require("../models/User");
 
 const getPosts = async (req, res) => {
   try {
@@ -99,11 +98,34 @@ const createPost = async (req, res) => {
     }
 
     let imagePath = "";
+
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "buzzink_posts"
-      });
-      imagePath = result.secure_url;
+      const ext = path.extname(req.file.originalname).toLowerCase();
+
+      let bufferToUpload = req.file.buffer; 
+
+      if (ext === ".heic" || ext === ".heif") {
+        bufferToUpload = await sharp(req.file.buffer)
+          .jpeg({ quality: 90 })
+          .toBuffer();
+      }
+
+      const result = await cloudinary.uploader.upload_stream(
+        { folder: "buzzink_posts" },
+        (error, result) => {
+          if (error) throw error;
+          imagePath = result.secure_url;
+        }
+      );
+
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "buzzink_posts" },
+        (error, result) => {
+          if (error) throw error;
+          imagePath = result.secure_url;
+        }
+      );
+      stream.end(bufferToUpload);
     }
 
     const slug = slugify(title, { lower: true, strict: true });
