@@ -326,11 +326,11 @@ function displayPosts(containerId, limit = null) {
           </div>
           <span class="liked-by likes-info">No likes yet</span>
         </div>
-        <div id="likesModal-POSTID" class="likes-modal hidden slide-up">
+        <div id="likesModal-${post._id}" class="likes-modal hidden slide-up">
           <div class="likes-modal-content">
-            <span id="closeLikesModal-POSTID" class="close-btn">&times;</span>
+            <span id="closeLikesModal-${post._id}" class="close-btn">&times;</span>
             <h3>Liked by</h3>
-            <ul id="likesList-POSTID"></ul>            
+            <ul id="likesList-${post._id}"></ul>            
           </div>
         </div>
         <div class="comments-section">
@@ -1474,11 +1474,11 @@ async function loadSinglePost() {
         </div>
         <span class="liked-by likes-info">No likes yet</span>
       </div>
-      <div id="likesModal-POSTID" class="likes-modal hidden slide-up">
+      <div id="likesModal-${post._id}" class="likes-modal hidden slide-up">
         <div class="likes-modal-content">
-          <span id="closeLikesModal-POSTID" class="close-btn">&times;</span>
+          <span id="closeLikesModal-${post._id}" class="close-btn">&times;</span>
           <h3>Liked by</h3>
-          <ul id="likesList-POSTID"></ul>            
+          <ul id="likesList-${post._id}"></ul>            
         </div>
       </div>
       <div class="comments-section show">
