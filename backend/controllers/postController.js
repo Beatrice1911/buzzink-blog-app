@@ -4,6 +4,7 @@ const Post = require("../models/Post");
 const cloudinary = require("../config/cloudinary");
 const slugify = require("slugify");
 const User = require("../models/User");
+const path = require("path");
 
 const getPosts = async (req, res) => {
   try {
@@ -28,16 +29,16 @@ const getPosts = async (req, res) => {
       .populate("likes", "name profilePhoto")
       .populate("authorId", "_id name profilePhoto");
 
-    const updatedPosts = posts.map(post => {
+    const updatedPosts = posts.map((post) => {
       const likedByUser = userId
-        ? post.likes.some(like => like._id.toString() === userId)
+        ? post.likes.some((like) => like._id.toString() === userId)
         : false;
- 
+
       return {
         ...post.toObject(),
         slug: post.slug,
         likesCount: post.likes.length,
-        likedBy: post.likes.map(like => like.name),
+        likedBy: post.likes.map((like) => like.name),
         likedByUser,
       };
     });
@@ -53,7 +54,6 @@ const getPosts = async (req, res) => {
   }
 };
 
-
 const getPostBySlug = async (req, res) => {
   try {
     const userId = req.user?.id || null;
@@ -65,21 +65,21 @@ const getPostBySlug = async (req, res) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     const likedByUser = userId
-      ? post.likes.some(like => like._id.toString() === userId)
+      ? post.likes.some((like) => like._id.toString() === userId)
       : false;
 
     let savedByUser = false;
     if (userId) {
       const user = await User.findById(userId).select("savedPosts");
       savedByUser = user.savedPosts.some(
-        savedPostId => savedPostId.toString() === post._id.toString()
+        (savedPostId) => savedPostId.toString() === post._id.toString(),
       );
     }
 
     res.json({
       ...post.toObject(),
       likesCount: post.likes.length,
-      likedBy: post.likes.map(like => like.name),
+      likedBy: post.likes.map((like) => like.name),
       likedByUser,
       savedByUser,
     });
@@ -89,22 +89,23 @@ const getPostBySlug = async (req, res) => {
   }
 };
 
-
 const createPost = async (req, res) => {
   try {
     const { title, content, category } = req.body;
     if (!title || !content || !category) {
-      return res.status(400).json({ message: "Title, content, and category are required" });
+      return res
+        .status(400)
+        .json({ message: "Title, content, and category are required" });
     }
 
     const uploadBufferToCloudinary = (buffer, folder = "buzzink_posts") => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder },
+          { folder, resource_type: "image", format: "jpg" },
           (error, result) => {
             if (error) reject(error);
             else resolve(result);
-          }
+          },
         );
         stream.end(buffer);
       });
@@ -115,15 +116,13 @@ const createPost = async (req, res) => {
     if (req.file) {
       const ext = path.extname(req.file.originalname).toLowerCase();
 
-      let buffer = req.file.buffer; 
+      let bufferToUpload = req.file.buffer;
 
       if (ext === ".heic" || ext === ".heif") {
-        bufferToUpload = await sharp(buffer)
-          .jpeg({ quality: 90 })
-          .toBuffer();
+        bufferToUpload = await sharp(buffer).jpeg({ quality: 90 }).toBuffer();
       }
 
-      const result = await uploadBufferToCloudinary(buffer);
+      const result = await uploadBufferToCloudinary(bufferToUpload);
 
       imagePath = result.secure_url;
     }
@@ -156,7 +155,6 @@ const createPost = async (req, res) => {
       authorName: authorName,
       slug: newPost.slug,
     });
-
   } catch (err) {
     console.error("Error creating post:", err);
     res.status(500).json({ message: "Failed to create post" });
@@ -172,7 +170,9 @@ const updatePost = async (req, res) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (post.authorId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You are not the author of this post" });
+      return res
+        .status(403)
+        .json({ message: "You are not the author of this post" });
     }
 
     post.title = title || post.title;
@@ -182,7 +182,35 @@ const updatePost = async (req, res) => {
     if (title) {
       post.slug = slugify(title, { lower: true, strict: true });
     }
-     
+
+    if (req.file) {
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      let bufferToUpload = req.file.buffer;
+
+      if (ext === ".heic" || ext === ".heif") {
+        bufferToUpload = await sharp(req.file.buffer)
+          .jpeg({ quality: 90 })
+          .toBuffer();
+      }
+
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "buzzink_posts",
+            resource_type: "image",
+            format: "jpg",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+        stream.end(bufferToUpload);
+      });
+
+      post.image = result.secure_url;
+    }
+
     await post.save();
     res.json(post);
   } catch (err) {
@@ -197,7 +225,9 @@ const deletePost = async (req, res) => {
     const post = await Post.findOne({ slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
     if (post.authorId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You are not the author of this post" });
+      return res
+        .status(403)
+        .json({ message: "You are not the author of this post" });
     }
 
     await Post.findOneAndDelete({ slug: req.params.slug });
@@ -213,18 +243,20 @@ const likePost = async (req, res) => {
     const post = await Post.findById(req.params.slug);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (!post.likes.some(u => u.toString() === req.user.id)) {
+    if (!post.likes.some((u) => u.toString() === req.user.id)) {
       post.likes.push(req.user.id);
       updateTrendingScore(post);
       await post.save();
     }
 
-    const updatedPost = await Post.findById(req.params.slug)
-      .populate("likes", "name");
+    const updatedPost = await Post.findById(req.params.slug).populate(
+      "likes",
+      "name",
+    );
 
     res.json({
       likes: updatedPost.likes.length,
-      likedBy: updatedPost.likes.map(u => u.name)
+      likedBy: updatedPost.likes.map((u) => u.name),
     });
   } catch (err) {
     console.error("Like error:", err);
@@ -237,16 +269,18 @@ const unlikePost = async (req, res) => {
     const post = await Post.findById(req.params.slug);
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    post.likes = post.likes.filter(u => u.toString() !== req.user.id);
+    post.likes = post.likes.filter((u) => u.toString() !== req.user.id);
     updateTrendingScore(post);
     await post.save();
 
-    const updatedPost = await Post.findById(req.params.slug)
-      .populate("likes", "name");
+    const updatedPost = await Post.findById(req.params.slug).populate(
+      "likes",
+      "name",
+    );
 
     res.json({
       likes: updatedPost.likes.length,
-      likedBy: updatedPost.likes.map(u => u.name)
+      likedBy: updatedPost.likes.map((u) => u.name),
     });
   } catch (err) {
     console.error("Unlike error:", err);
@@ -255,31 +289,33 @@ const unlikePost = async (req, res) => {
 };
 
 const getTrendingPosts = async (req, res) => {
-  const posts = await Post.find()
+  const posts = await Post.find();
 
-  const trendingPosts = posts.map(post => ({
-    ...post.toObject(),
-    trendingScore: updateTrendingScore(post)
-  }))
-  .sort((a, b) => b.trendingScore - a.trendingScore)
-  .slice(0, 5);
+  const trendingPosts = posts
+    .map((post) => ({
+      ...post.toObject(),
+      trendingScore: updateTrendingScore(post),
+    }))
+    .sort((a, b) => b.trendingScore - a.trendingScore)
+    .slice(0, 5);
 
   res.json(trendingPosts);
-}
+};
 
 const updateTrendingScore = (post) => {
   const likesCount = post.likes?.length || 0;
   const commentCount = post.commentCount || 0;
   const viewsCount = post.views || 0;
 
-  const ageInHours = (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60);
+  const ageInHours =
+    (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60);
 
-  const engagementScore = (likesCount * 3) + commentCount * 2 + (viewsCount * 0.5);
+  const engagementScore = likesCount * 3 + commentCount * 2 + viewsCount * 0.5;
 
-  const decay = Math.max(1, (ageInHours / 18));
+  const decay = Math.max(1, ageInHours / 18);
 
   return engagementScore / decay;
-}; 
+};
 
 const incrementView = async (req, res) => {
   const post = await Post.findById(req.params.id);
@@ -294,7 +330,7 @@ const incrementView = async (req, res) => {
     } else {
       post.viewedBy.push(req.user._id);
     }
-  } 
+  }
 
   if (shouldIncrement) {
     post.views += 1;
@@ -302,7 +338,7 @@ const incrementView = async (req, res) => {
   }
 
   res.json({ views: post.views });
-}
+};
 
 const getPostsByCategory = async (req, res) => {
   try {
@@ -314,7 +350,7 @@ const getPostsByCategory = async (req, res) => {
 
     const relatedPosts = await Post.find({
       category: post.category,
-      slug: { $ne: post.slug }
+      slug: { $ne: post.slug },
     })
       .limit(4)
       .select("title slug category createdAt image");
@@ -323,7 +359,7 @@ const getPostsByCategory = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch related posts" });
   }
-}
+};
 
 const savePost = async (req, res) => {
   try {
@@ -334,25 +370,25 @@ const savePost = async (req, res) => {
     const user = req.user;
     const post = await Post.findOne({ slug: req.params.slug });
 
-    if (!post) return res.status(404).json({message: "Post not found"} );
+    if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (!user.savedPosts.includes(post._id)) {
-      user.savedPosts.push(post._id)
+      user.savedPosts.push(post._id);
       await user.save();
     }
 
     res.status(200).json({ message: "Post saved successfully" });
   } catch (err) {
     console.error("Save post error:", err);
-    res.status(500).json({ message: "Failed to save post" })
+    res.status(500).json({ message: "Failed to save post" });
   }
-}
+};
 
 const unsavePost = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
-    };
+    }
 
     const user = req.user;
     const post = await Post.findOne({ slug: req.params.slug });
@@ -360,42 +396,39 @@ const unsavePost = async (req, res) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     user.savedPosts = user.savedPosts.filter(
-      id => id.toString() !== post._id.toString()
+      (id) => id.toString() !== post._id.toString(),
     );
     await user.save();
 
     res.status(200).json({ message: "Post removed from saved posts" });
   } catch (err) {
     console.error("Unsave post error:", err);
-    res.status(500).json({ message: "Failed to unsave post"});
+    res.status(500).json({ message: "Failed to unsave post" });
   }
-}
+};
 
 const getSavedPosts = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await User.findById(userId)
-      .populate({
-        path: "savedPosts",
-        populate: {
-          path: "authorId",
-          select: "name profilePhoto"
-        }
-      });
+    const user = await User.findById(userId).populate({
+      path: "savedPosts",
+      populate: {
+        path: "authorId",
+        select: "name profilePhoto",
+      },
+    });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     res.json(user.savedPosts);
-
   } catch (err) {
     console.error("Get saved posts error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
-
 
 module.exports = {
   getPosts,
