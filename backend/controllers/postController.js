@@ -284,6 +284,7 @@ const getTrendingPosts = async (req, res) => {
       ...post.toObject(),
       trendingScore: updateTrendingScore(post),
     }))
+    .filter(post => post.trendingScore > 0)
     .sort((a, b) => b.trendingScore - a.trendingScore)
     .slice(0, 5);
 
@@ -292,17 +293,19 @@ const getTrendingPosts = async (req, res) => {
 
 const updateTrendingScore = (post) => {
   const likesCount = post.likes?.length || 0;
-  const commentCount = post.commentCount || 0;
+  const commentCount = post.commentsCount || post.commentCount || 0;
   const viewsCount = post.views || 0;
 
+  const createdAt = post.createdAt ? new Date(post.createdAt) : new Date();
+
   const ageInHours =
-    (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60);
+    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
 
   const engagementScore = likesCount * 3 + commentCount * 2 + viewsCount * 0.5;
 
   const decay = Math.max(1, ageInHours / 18);
 
-  return engagementScore / decay;
+  return (engagementScore + 1) / decay;
 };
 
 const incrementView = async (req, res) => {
