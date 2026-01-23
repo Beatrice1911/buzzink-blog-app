@@ -12,6 +12,7 @@ const myPosts = document.getElementById("myPosts");
 const savedPosts = document.getElementById("savedPosts");
 const search = document.querySelectorAll(".search");
 const postImages = document.querySelectorAll(".post-image");
+let isLikesModalOpen = false;
 const DEFAULT_AVATAR =
   "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 document
@@ -1097,6 +1098,12 @@ async function handleDeleteComment(deleteBtn) {
 }
 
 function openLikesModal(postId, users) {
+  const currentlyOpen = document.querySelector(".likes-modal.active");
+  if (currentlyOpen) {
+    const prevId = currentlyOpen.id.replace("likesModal-", "");
+    closeLikesModal(prevId);
+  }
+
   const modal = document.getElementById(`likesModal-${postId}`);
   const list = document.getElementById(`likesList-${postId}`);
   if (!modal || !list) return;
@@ -1135,7 +1142,6 @@ function closeLikesModal(postId) {
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
-  let isLikesModalOpen = false;
   // Edit post handling
   const editBtn = e.target.closest(".edit-btn");
   if (editBtn) {
@@ -1175,12 +1181,20 @@ document.addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
-    if (!likedBy.length) return;
-
     const postId = likesInfo.dataset.postId;
+    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
+    if (!postId || likedBy.length === 0) return;
+    
     openLikesModal(postId, likedBy);
     return;
+  }
+
+  if (isLikesModalOpen) {
+    const openModal = document.querySelector(".likes-modal.active");
+    if (openModal && !openModal.contains(e.target)) {
+      const modalId = openModal.id.replace("likesModal-", "");
+      closeLikesModal(modalId);
+    }
   }
 
   // Delete comment handling
