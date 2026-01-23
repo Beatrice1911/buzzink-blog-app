@@ -1159,6 +1159,7 @@ document.addEventListener("click", async (e) => {
   const likesInfo = e.target.closest(".likes-info");
   if (likesInfo && !likesInfo.classList.contains("disabled")) {
     e.preventDefault();
+    e.stopPropagation();
 
     const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
     if (!likedBy.length) return;
