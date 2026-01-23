@@ -684,26 +684,6 @@ userIcon.forEach((icon) =>
   }),
 );
 
-// Close menus/modals on outside click
-document.addEventListener("click", (e) => {
-  if (isLikesModalOpen) return;
-  if (
-    userMenuDetails?.classList.contains("show") &&
-    !userMenuDetails.contains(e.target) &&
-    ![...userIcon].some((icon) => icon.contains(e.target))
-  ) {
-    userMenuDetails.classList.remove("show");
-  }
-
-  if (
-    mobileMenu?.classList.contains("active") &&
-    !mobileMenu.contains(e.target) &&
-    !menuToggle.contains(e.target)
-  ) {
-    mobileMenu.classList.remove("active");
-  }
-});
-
 // Close auth modal
 closeModal?.addEventListener("click", () => {
   authModal.classList.add("hidden");
@@ -1220,6 +1200,22 @@ document.addEventListener("click", async (e) => {
   if (menuBtn) {
     const menu = menuBtn.nextElementSibling;
     menu.classList.toggle("hidden");
+  }
+
+  if (
+    userMenuDetails?.classList.contains("show") &&
+    !userMenuDetails.contains(e.target) &&
+    ![...userIcon].some((icon) => icon.contains(e.target))
+  ) {
+    userMenuDetails.classList.remove("show");
+  }
+
+  if (
+    mobileMenu?.classList.contains("active") &&
+    !mobileMenu.contains(e.target) &&
+    !menuToggle.contains(e.target)
+  ) {
+    mobileMenu.classList.remove("active");
   }
 });
 
