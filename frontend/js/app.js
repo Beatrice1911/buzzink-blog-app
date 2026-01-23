@@ -1113,27 +1113,6 @@ function closeLikesModal(postId) {
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
-  const likesInfo = e.target.closest(".likes-info");
-  if (likesInfo && !likesInfo.classList.contains("disabled")) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const postId = likesInfo.dataset.postId;
-    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
-    if (!postId || likedBy.length === 0) return;
-    
-    openLikesModal(postId, likedBy);
-    return;
-  }
-
-  if (isLikesModalOpen) {
-    const openModal = document.querySelector(".likes-modal.active");
-    if (openModal && !openModal.contains(e.target)) {
-      const modalId = openModal.id.replace("likesModal-", "");
-      closeLikesModal(modalId);
-    }
-  }
-  
   // Edit post handling
   const editBtn = e.target.closest(".edit-btn");
   if (editBtn) {
@@ -1168,6 +1147,28 @@ document.addEventListener("click", async (e) => {
     return;
   }
 
+  // Open likes modal
+  const likesInfo = e.target.closest(".likes-info");
+  if (likesInfo && !likesInfo.classList.contains("disabled")) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const postId = likesInfo.dataset.postId;
+    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
+    if (!postId || likedBy.length === 0) return;
+    
+    openLikesModal(postId, likedBy);
+    return;
+  }
+
+  if (isLikesModalOpen) {
+    const openModal = document.querySelector(".likes-modal.active");
+    if (openModal && !openModal.contains(e.target)) {
+      const modalId = openModal.id.replace("likesModal-", "");
+      closeLikesModal(modalId);
+    }
+  }
+
   // Delete comment handling
   const deleteBtn = e.target.closest(".delete-comment-btn");
   if (deleteBtn) {
@@ -1193,6 +1194,7 @@ document.addEventListener("click", async (e) => {
     menu.classList.toggle("hidden");
   }
 
+  // Handle user menu
   if (
     userMenuDetails?.classList.contains("show") &&
     !userMenuDetails.contains(e.target) &&
@@ -1201,6 +1203,7 @@ document.addEventListener("click", async (e) => {
     userMenuDetails.classList.remove("show");
   }
 
+  // Handle mobile menu
   if (
     mobileMenu?.classList.contains("active") &&
     !mobileMenu.contains(e.target) &&
