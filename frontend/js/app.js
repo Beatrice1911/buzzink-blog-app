@@ -518,7 +518,7 @@ if (postForm) {
         console.error("Error updating post:", err);
         showToast("Failed to update post!", "error");
       } finally {
-        setPostingState(false)
+        setPostingState(false);
       }
     };
   } else {
@@ -685,6 +685,7 @@ userIcon.forEach((icon) =>
 
 // Close menus/modals on outside click
 document.addEventListener("click", (e) => {
+  if (isLikesModalOpen) return;
   if (
     userMenuDetails?.classList.contains("show") &&
     !userMenuDetails.contains(e.target) &&
@@ -1098,30 +1099,43 @@ async function handleDeleteComment(deleteBtn) {
 function openLikesModal(postId, users) {
   const modal = document.getElementById(`likesModal-${postId}`);
   const list = document.getElementById(`likesList-${postId}`);
+  if (!modal || !list) return;
+
   list.innerHTML = "";
-  users.forEach(user => {
+  users.forEach((user) => {
     const li = document.createElement("li");
     li.textContent = user;
     list.appendChild(li);
   });
 
+  isLikesModalOpen = true;
+
   modal.classList.remove("hidden");
-  setTimeout(() => modal.classList.add("active"), 10);
+  requestAnimationFrame(() => modal.classList.add("active"));
+
+  modal.querySelector(".likes-modal-content").addEventListener("click", (e) => e.stopPropagation());
+
+  modal.onclick = () => closeLikesModal(postId);
 
   const closeBtn = document.getElementById(`closeLikesModal-${postId}`);
-  closeBtn.onclick = () => closeLikesModal(postId);
-  modal.onclick = e => { if(e.target === modal) closeLikesModal(postId); }
+  closeBtn?.addEventListener("click", e => {
+      e.stopPropagation();
+      closeLikesModal(postId);
+    });
 }
-
 function closeLikesModal(postId) {
   const modal = document.getElementById(`likesModal-${postId}`);
+  if (!modal) return;
   modal.classList.remove("active");
-  setTimeout(() => modal.classList.add("hidden"), 300);
+  setTimeout(() => {
+    modal.classList.add("hidden");
+    isLikesModalOpen = false;
+  }, 300);
 }
-
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
+  let isLikesModalOpen = false;
   // Edit post handling
   const editBtn = e.target.closest(".edit-btn");
   if (editBtn) {
