@@ -1078,12 +1078,6 @@ async function handleDeleteComment(deleteBtn) {
 }
 
 function openLikesModal(postId, users) {
-  const currentlyOpen = document.querySelector(".likes-modal.active");
-  if (currentlyOpen) {
-    const prevId = currentlyOpen.id.replace("likesModal-", "");
-    closeLikesModal(prevId);
-  }
-
   const modal = document.getElementById(`likesModal-${postId}`);
   const list = document.getElementById(`likesList-${postId}`);
   if (!modal || !list) return;
@@ -1095,20 +1089,17 @@ function openLikesModal(postId, users) {
     list.appendChild(li);
   });
 
-  isLikesModalOpen = true;
-
   modal.classList.remove("hidden");
   requestAnimationFrame(() => modal.classList.add("active"));
+  isLikesModalOpen = true;
 
   modal.querySelector(".likes-modal-content").addEventListener("click", (e) => e.stopPropagation());
-
-  modal.onclick = () => closeLikesModal(postId);
 
   const closeBtn = document.getElementById(`closeLikesModal-${postId}`);
   closeBtn?.addEventListener("click", e => {
       e.stopPropagation();
       closeLikesModal(postId);
-    });
+    }, { once: true });
 }
 function closeLikesModal(postId) {
   const modal = document.getElementById(`likesModal-${postId}`);
@@ -1122,6 +1113,27 @@ function closeLikesModal(postId) {
 
 // Global event handlers
 document.addEventListener("click", async (e) => {
+  const likesInfo = e.target.closest(".likes-info");
+  if (likesInfo && !likesInfo.classList.contains("disabled")) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const postId = likesInfo.dataset.postId;
+    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
+    if (!postId || likedBy.length === 0) return;
+    
+    openLikesModal(postId, likedBy);
+    return;
+  }
+
+  if (isLikesModalOpen) {
+    const openModal = document.querySelector(".likes-modal.active");
+    if (openModal && !openModal.contains(e.target)) {
+      const modalId = openModal.id.replace("likesModal-", "");
+      closeLikesModal(modalId);
+    }
+  }
+  
   // Edit post handling
   const editBtn = e.target.closest(".edit-btn");
   if (editBtn) {
@@ -1154,27 +1166,6 @@ document.addEventListener("click", async (e) => {
     e.preventDefault();
     toggleComments(commentBtn);
     return;
-  }
-
-  const likesInfo = e.target.closest(".likes-info");
-  if (likesInfo && !likesInfo.classList.contains("disabled")) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const postId = likesInfo.dataset.postId;
-    const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
-    if (!postId || likedBy.length === 0) return;
-    
-    openLikesModal(postId, likedBy);
-    return;
-  }
-
-  if (isLikesModalOpen) {
-    const openModal = document.querySelector(".likes-modal.active");
-    if (openModal && !openModal.contains(e.target)) {
-      const modalId = openModal.id.replace("likesModal-", "");
-      closeLikesModal(modalId);
-    }
   }
 
   // Delete comment handling
