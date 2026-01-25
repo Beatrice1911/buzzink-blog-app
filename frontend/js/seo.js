@@ -1,6 +1,6 @@
 import { apiFetch } from "./api.js";
 
-export async function setUpPostSEO() {
+export function setUpPostSEO() {
   if (window.location.pathname.endsWith("post.html")) {
     (async () => {
       const params = new URLSearchParams(window.location.search);
