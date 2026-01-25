@@ -1,4 +1,4 @@
-import { setupPostSEO } from "./seo.js";
+import { setUpPostSEO } from "./seo.js";
 import { fetchPosts, fetchMyPosts, fetchTrendingPosts, loadSavedPosts, loadSinglePost, refreshPage } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
@@ -25,7 +25,7 @@ if (window.location.pathname.endsWith("index.html")) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  setupPostSEO();
+  setUpPostSEO();
   initEvents();
   initAuth();
   initUI();
