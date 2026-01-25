@@ -40,6 +40,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await updateAvatar(user);
 
-  routeByPage
+  routeByPage();
   refreshPage();
 });
