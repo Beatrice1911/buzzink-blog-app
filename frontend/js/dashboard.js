@@ -1,61 +1,19 @@
 const API_URI = `/api/users/me`;
-const REFRESH_URI = `/api/auth/refresh`;
-
-let tokenDashboard = localStorage.getItem("token");
-let refreshTokenDashboard = localStorage.getItem("refreshToken");
-
-// Refresh access token
-async function refreshAccessToken() {
-  try {
-    console.log("Refreshing with token:", refreshTokenDashboard);
-
-    const res = await fetch(REFRESH_URI, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: refreshTokenDashboard }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.token && data.refreshToken) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      tokenDashboard = data.token;
-      refreshTokenDashboard = data.refreshToken;
-      console.log("Token refreshed successfully!");
-      return true;
-    }
-  } catch (err) {
-    console.error("Error refreshing token:", err);
-    return false;
-  }
-}
 
 // Fetch current user data
 async function loadProfile() {
   try {
     const res = await fetch(API_URI, {
-      headers: {
-        Authorization: `Bearer ${tokenDashboard}`,
-      },
+      credentials: "include",
     });
 
-    const data = await res.json();
-
-    // Handle expired token cases flexibly
-    if (res.status === 401) {
-      console.warn("Access token expired, trying refresh...");
-      const refreshed = await refreshAccessToken();
-      if (refreshed) {
-        return loadProfile();
-      } else {
-        showToastUser("Session expired. Please log in again.", "error");
-        window.location.href = "index.html";
-        return;
-      }
+    if (!res.ok) {
+      showToastUser("Session expired. Please log in again.", "error");
+      window.location.href = "index.html";
+      return;
     }
 
-    if (!res.ok) throw new Error(data.message || "Failed to fetch profile");
+    const data = await res.json();
 
     // Update UI
     document.getElementById("userName").textContent = data.name;
@@ -84,6 +42,7 @@ async function loadProfile() {
     document.getElementById("bio").value = data.bio || "";
   } catch (err) {
     console.error("Error loading profile:", err);
+    showToastUser("Failed to load profile. Please try again.", "error");
   }
 }
 
@@ -106,9 +65,7 @@ saveChangesBtn.addEventListener("click", async (e) => {
   try {
     const res = await fetch(API_URI, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${tokenDashboard}`,
-      },
+      credentials: "include",
       body: formData,
     });
 
@@ -142,9 +99,7 @@ removePhotoBtn.addEventListener("click", async () => {
     formData.append("removePhoto", "true");
     const res = await fetch(API_URI, {
       method: "PUT",
-      headers: {
-        Authorization: `Bearer ${tokenDashboard}`,
-      },
+      credentials: "include",
       body: formData,
     });
 

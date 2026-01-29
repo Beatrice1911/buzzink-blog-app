@@ -31,7 +31,9 @@ export function updateUI(user) {
 
 export async function updateAvatar(user) {
   try {
-    const res = await apiFetch("/api/users/me");
+    const res = await apiFetch("/api/users/me", {
+      credentials: "include",
+    });
 
     if (!res.ok) return;
 
@@ -62,6 +64,7 @@ function initLogin() {
     const res = await apiFetch(`${AUTH_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -99,6 +102,7 @@ function initRegister() {
     const res = await apiFetch(`${AUTH_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ name, email, password }),
     });
 
@@ -135,14 +139,10 @@ function initLogout() {
 }
 
 export async function checkUser() {
-  if (!token) {
-    updateUI(null);
-    updateAvatar(null);
-    return null;
-  }
-
   try {
-    const res = await apiFetch(`${AUTH_URL}/me`);
+    const res = await apiFetch(`${AUTH_URL}/me`, {
+      credentials: "include",
+    });
 
     if (!res.ok) throw new Error("Not authenticated");
 
@@ -155,13 +155,24 @@ export async function checkUser() {
     updateAvatar(user);
 
     return user;
-  } catch {
+  } catch (err) {
+    updateUI(null);
+    updateAvatar(null);
     logout(true);
     return null;
   }
 }
 
-export function logout(silent = false) {
+export async function logout(silent = false) {
+  try {
+    await apiFetch(`${AUTH_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (err) {
+    console.warn("Logout request failed:", err);
+  }
+
   localStorage.removeItem("user");
   window.currentUser = null;
   updateUI(null);
