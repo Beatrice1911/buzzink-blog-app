@@ -1,4 +1,5 @@
 import { registerForm, loginForm } from "./auth";
+import { body } from "./config";
 
 export const userIcon = document.querySelectorAll(".user-icon");
 export const userMenuDetails = document.getElementById("userMenuDetails");
