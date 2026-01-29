@@ -129,23 +129,12 @@ exports.me = async (req, res, next) => {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.json({ user: null });
 
-    res
-      .cookie("accessToken", token, {
-        ...cookieOptions,
-        maxAge: ms(JWT_EXPIRES_IN),
-      })
-      .cookie("refreshToken", refreshToken, {
-        ...cookieOptions,
-        maxAge: ms(JWT_REFRESH_EXPIRES_IN),
-      })
-      .json({
-        user: {
-          id: user._id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        },
-      });
+    res.json({
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    });
   } catch (err) {
     next(err);
   }
