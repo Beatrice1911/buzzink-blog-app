@@ -11,10 +11,12 @@ const JWT_REFRESH_SECRET =
   process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + "_refresh";
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "None",
+  secure: isProd,
+  sameSite: isProd ? "None" : "Lax",
 };
 
 function signToken(user) {
