@@ -63,9 +63,9 @@ app.use((err, req, res, next) => {
     .json({ message: err.message || "Server error" });
 });
 
-app.use(express.static(path.join(__dirname, "../frontend")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend", "index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
 app.use(
