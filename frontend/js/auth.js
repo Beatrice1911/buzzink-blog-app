@@ -2,6 +2,7 @@ import { apiFetch } from "./api.js";
 import { AUTH_URL, DEFAULT_AVATAR } from "./config.js";
 import { showToast } from "./ui.js";
 import { refreshPage } from "./posts.js";
+import { userIcon, userMenuDetails } from "./ui.js";
 
 export const loginForm = document.getElementById("loginForm");
 export const registerForm = document.getElementById("registerForm");
