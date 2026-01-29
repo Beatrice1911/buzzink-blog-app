@@ -166,7 +166,7 @@ export async function checkUser() {
 
 export async function logout(silent = false) {
   try {
-    await apiFetch(`${AUTH_URL}/logout`, {
+    await fetch(`${AUTH_URL}/logout`, {
       method: "POST",
       credentials: "include",
     });

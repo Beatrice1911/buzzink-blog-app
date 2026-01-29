@@ -1,5 +1,5 @@
 import { AUTH_URL } from "./config.js";
-import { updateUI } from "./auth.js";
+import { updateUI, logout } from "./auth.js";
 
 export async function apiFetch(url, options = {}) {
   let res = await fetch(url, {
