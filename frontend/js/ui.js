@@ -16,6 +16,7 @@ const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const savedPosts = document.getElementById("savedPosts");
 const profileEdit = document.getElementById("profile-edit");
+const themeToggle = document.getElementById("themeToggle");
 
 export function showToast(message, type = "info", duration = 5000) {
   const container = document.getElementById("toast-container");
@@ -166,7 +167,6 @@ function initTheme() {
 }
 
 export function loadSavedTheme() {
-  const themeToggle = document.getElementById("themeToggle");
   const root = document.documentElement;
 
   const savedTheme = localStorage.getItem("theme");
