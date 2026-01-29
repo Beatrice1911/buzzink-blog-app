@@ -5,10 +5,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const sendEmail = async ({ to, subject, html }) => {
   try {
     await resend.emails.send({
-    from: "BuzzInk <onboarding@resend.dev>",
-    to,
-    subject,
-    html
+      from: "BuzzInk <onboarding@resend.dev>",
+      to,
+      subject,
+      html,
     });
   } catch (error) {
     console.error("Error sending email:", error);

@@ -8,7 +8,6 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 dotenv.config();
 
-
 const authRoutes = require("./routes/authRoutes");
 const postsRoutes = require("./routes/postRoutes");
 const userRoutes = require("./routes/userRoutes");
@@ -26,7 +25,7 @@ app.use(cookieParser());
 const allowedOrigins = [
   "http://127.0.0.1:5500",
   "http://localhost:5500",
-  "https://buzzink.onrender.com"
+  "https://buzzink.onrender.com",
 ];
 
 const corsOptions = {
@@ -38,7 +37,7 @@ const corsOptions = {
       return callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -56,14 +55,15 @@ app.use("/api/users", userRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/admin", adminRoutes);
 
-
 app.use((err, req, res, next) => {
   console.error(err);
   if (res.headersSent) return next(err);
-  res.status(err.status || 500).json({ message: err.message || "Server error" });
+  res
+    .status(err.status || 500)
+    .json({ message: err.message || "Server error" });
 });
 
-app.use(express.static(path.join(__dirname, "../frontend"))); 
+app.use(express.static(path.join(__dirname, "../frontend")));
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "index.html"));
 });
@@ -77,20 +77,24 @@ app.use(
         scriptSrc: ["'self'", "'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https:"],
         imgSrc: ["'self'", "data:", "https:", "https://res.cloudinary.com"],
-        connectSrc: ["'self'", "https://buzzink.onrender.com", "http://localhost:5000"],
+        connectSrc: [
+          "'self'",
+          "https://buzzink.onrender.com",
+          "http://localhost:5000",
+        ],
       },
     },
-  })
+  }),
 );
 
 const PORT = process.env.PORT || 5000;
 connectDB()
   .then(() => {
-    app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));
+    app.listen(PORT, () =>
+      console.log(`API running on http://localhost:${PORT}`),
+    );
   })
   .catch((err) => {
     console.error("Failed to start server:", err);
     process.exit(1);
   });
-
-

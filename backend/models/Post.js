@@ -5,8 +5,8 @@ const postSchema = new mongoose.Schema(
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     content: { type: String, required: true },
-    authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
-    authorName: { type: String},
+    authorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    authorName: { type: String },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     category: { type: String, required: true },
     image: { type: String, default: "" },
@@ -16,7 +16,7 @@ const postSchema = new mongoose.Schema(
     commentCount: { type: Number, default: 0 },
     trendingScore: { type: Number, default: 0 },
   },
-  { timestamps: true } 
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Post", postSchema);

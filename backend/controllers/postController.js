@@ -116,7 +116,7 @@ const createPost = async (req, res) => {
           },
         );
         stream.end(req.file.buffer);
-      })
+      });
 
       imagePath = result.secure_url;
     }
@@ -193,11 +193,10 @@ const updatePost = async (req, res) => {
           },
         );
         stream.end(req.file.buffer);
-      })
+      });
 
       post.image = result.secure_url;
     }
-
 
     await post.save();
     res.json(post);
@@ -284,7 +283,7 @@ const getTrendingPosts = async (req, res) => {
       ...post.toObject(),
       trendingScore: updateTrendingScore(post),
     }))
-    .filter(post => post.trendingScore > 0)
+    .filter((post) => post.trendingScore > 0)
     .sort((a, b) => b.trendingScore - a.trendingScore)
     .slice(0, 5);
 
@@ -298,8 +297,7 @@ const updateTrendingScore = (post) => {
 
   const createdAt = post.createdAt ? new Date(post.createdAt) : new Date();
 
-  const ageInHours =
-    (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
+  const ageInHours = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
 
   const engagementScore = likesCount * 3 + commentCount * 2 + viewsCount * 0.5;
 

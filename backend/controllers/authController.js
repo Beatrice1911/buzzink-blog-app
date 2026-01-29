@@ -2,28 +2,38 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const RefreshToken = require("../models/RefreshToken");
 const ms = require("ms");
-const crypto = require('crypto');
+const crypto = require("crypto");
 const sendEmail = require("../config/sendEmail");
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "15m";
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || (process.env.JWT_SECRET + "_refresh");
+const JWT_REFRESH_SECRET =
+  process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET + "_refresh";
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "7d";
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
+};
 
 function signToken(user) {
   return jwt.sign(
-    { sub: user._id.toString(), email: user.email, name: user.name, role: user.role },
+    {
+      sub: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    },
     JWT_SECRET,
-    { expiresIn: JWT_EXPIRES_IN }
+    { expiresIn: JWT_EXPIRES_IN },
   );
 }
 
 async function signRefreshToken(user) {
-  const token = jwt.sign(
-    { sub: user._id.toString() },
-    JWT_REFRESH_SECRET,
-    { expiresIn: JWT_REFRESH_EXPIRES_IN }
-  );
+  const token = jwt.sign({ sub: user._id.toString() }, JWT_REFRESH_SECRET, {
+    expiresIn: JWT_REFRESH_EXPIRES_IN,
+  });
 
   await RefreshToken.deleteMany({ userId: user._id });
 
@@ -39,7 +49,8 @@ async function signRefreshToken(user) {
 exports.register = async (req, res, next) => {
   try {
     const { email, password, name, role } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Email and password required" });
+    if (!email || !password)
+      return res.status(400).json({ message: "Email and password required" });
 
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ message: "User already exists" });
@@ -50,11 +61,23 @@ exports.register = async (req, res, next) => {
     const token = signToken(user);
     const refreshToken = await signRefreshToken(user);
 
-    res.json({
-      token,
-      refreshToken,
-      user: { id: user._id, email: user.email, name: user.name, role: user.role }
-    });
+    res
+      .cookie("accessToken", token, {
+        ...cookieOptions,
+        maxAge: ms(JWT_EXPIRES_IN),
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: ms(JWT_REFRESH_EXPIRES_IN),
+      })
+      .json({
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      });
   } catch (err) {
     next(err);
   }
@@ -63,7 +86,8 @@ exports.register = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ message: "Email and password required" });
+    if (!email || !password)
+      return res.status(400).json({ message: "Email and password required" });
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
@@ -74,11 +98,23 @@ exports.login = async (req, res, next) => {
     const token = signToken(user);
     const refreshToken = await signRefreshToken(user);
 
-    res.json({
-      token,
-      refreshToken,
-      user: { id: user._id, email: user.email, name: user.name, role: user.role }
-    });
+    res
+      .cookie("accessToken", token, {
+        ...cookieOptions,
+        maxAge: ms(JWT_EXPIRES_IN),
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: ms(JWT_REFRESH_EXPIRES_IN),
+      })
+      .json({
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      });
   } catch (err) {
     next(err);
   }
@@ -93,24 +129,42 @@ exports.me = async (req, res, next) => {
     const user = await User.findById(req.user.id).select("-password");
     if (!user) return res.json({ user: null });
 
-    res.json({
-      user: { id: user._id.toString(), email: user.email, name: user.name, role: user.role}
-    });
+    res
+      .cookie("accessToken", token, {
+        ...cookieOptions,
+        maxAge: ms(JWT_EXPIRES_IN),
+      })
+      .cookie("refreshToken", refreshToken, {
+        ...cookieOptions,
+        maxAge: ms(JWT_REFRESH_EXPIRES_IN),
+      })
+      .json({
+        user: {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
+      });
   } catch (err) {
     next(err);
   }
 };
 
-
 exports.refresh = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) return res.status(401).json({ message: "No refresh token provided" });
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken)
+      return res.status(401).json({ message: "No refresh token provided" });
 
     const payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
 
-    const stored = await RefreshToken.findOne({ userId: payload.sub, token: refreshToken });
-    if (!stored) return res.status(403).json({ message: "Invalid refresh token" });
+    const stored = await RefreshToken.findOne({
+      userId: payload.sub,
+      token: refreshToken,
+    });
+    if (!stored)
+      return res.status(403).json({ message: "Invalid refresh token" });
 
     await RefreshToken.deleteOne({ _id: stored._id });
 
@@ -120,15 +174,22 @@ exports.refresh = async (req, res) => {
     const newAccessToken = signToken(user);
     const newRefreshToken = await signRefreshToken(user);
 
-    res.json({
-      token: newAccessToken,
-      refreshToken: newRefreshToken,
-      user: { id: user._id, email: user.email, name: user.name, role: user.role }
-    });
+    res
+      .cookie("accessToken", newAccessToken, {
+        ...cookieOptions,
+        maxAge: ms(JWT_EXPIRES_IN),
+      })
+      .cookie("refreshToken", newRefreshToken, {
+        ...cookieOptions,
+        maxAge: ms(JWT_REFRESH_EXPIRES_IN),
+      })
+      .json({ message: "Token refreshed" });
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       console.warn("Refresh token expired: ", err.expiredAt);
-      return res.status(403).json({ message: "Refresh token expired. Please log in again."});
+      return res
+        .status(403)
+        .json({ message: "Refresh token expired. Please log in again." });
     }
     console.error("Refresh error:", err.message);
     return res.status(401).json({ message: "Invalid refresh token" });
@@ -137,31 +198,20 @@ exports.refresh = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.cookies.refreshToken;
+
     if (refreshToken) {
       await RefreshToken.deleteOne({ token: refreshToken });
     }
-    res.json({ message: "Logged out successfully" });
+
+    res
+      .clearCookie("accessToken", cookieOptions)
+      .clearCookie("refreshToken", cookieOptions)
+      .json({ message: "Logged out successfully" });
   } catch (err) {
     res.status(500).json({ message: "Logout failed" });
   }
 };
-
-exports.verify = async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided" });
-
-    const payload = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(payload.sub).select("name email");
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    res.json({ id: user._id, email: user.email, name: user.name, role: user.role });
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
-  }
-}
 
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -169,8 +219,11 @@ exports.forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
     user.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
 
     await user.save();
@@ -186,11 +239,10 @@ exports.forgotPassword = async (req, res) => {
         <p>Click the link below to reset it:</p>
         <a href="${resetUrl}">${resetUrl}</a>
         <p>This link will expire in 30 minutes.</p>
-      `
+      `,
     });
 
     res.status(200).json({ message: "Reset link sent to your email" });
-
   } catch (err) {
     return res.status(500).json({ message: "Server error" });
   }
@@ -200,20 +252,20 @@ exports.resetPassword = async (req, res) => {
   const token = req.params.token;
   const { password } = req.body;
 
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
   try {
     const user = await User.findOne({
       resetPasswordToken: hashedToken,
-      resetPasswordExpire: { $gt: Date.now() }
+      resetPasswordExpire: { $gt: Date.now() },
     });
 
-    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+    if (!user)
+      return res.status(400).json({ message: "Invalid or expired token" });
 
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
-  
 
     res.status(200).json({ message: "Password reset successful" });
   } catch (err) {

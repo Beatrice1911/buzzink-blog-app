@@ -1,59 +1,42 @@
 import { AUTH_URL } from "./config.js";
-import { normalizeUser, updateUI } from "./auth.js";
+import { updateUI } from "./auth.js";
 
 export async function apiFetch(url, options = {}) {
-  let token = localStorage.getItem("token");
-
-  if (!options.headers) options.headers = {};
-  if (token) {
-    options.headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  const fullUrl = url;
-
-  let res = await fetch(fullUrl, {
+  let res = await fetch(url, {
     credentials: "include",
     ...options,
   });
 
   if (res.status === 401) {
-    token = await refreshToken();
-    if (token) {
-      options.headers["Authorization"] = `Bearer ${token}`;
-      res = await fetch(fullUrl, {
+    const refresh = await refreshSession();
+    if (refresh) {
+      res = await fetch(url, {
         credentials: "include",
         ...options,
       });
+    } else {
+      logout(true);
     }
   }
 
   return res;
 }
 
-async function refreshToken() {
-  const storedRefreshToken = localStorage.getItem("refreshToken");
-  if (!storedRefreshToken) return null;
-
+async function refreshSession() {
   try {
     const res = await fetch(`${AUTH_URL}/refresh`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refreshToken: storedRefreshToken }),
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error("Refresh failed");
+
     const data = await res.json();
-    localStorage.setItem("token", data.token);
-    if (data.refreshToken)
-      localStorage.setItem("refreshToken", data.refreshToken);
+    window.currentUser = data.user;
+    updateUI(data.user);
 
-    const user = normalizeUser(data.user);
-    localStorage.setItem("user", JSON.stringify(user));
-    window.currentUser = user;
-    updateUI(user);
-
-    return data.token;
-  } catch (err) {
-    return null;
+    return true;
+  } catch {
+    return false;
   }
 }

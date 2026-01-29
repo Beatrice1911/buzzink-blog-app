@@ -26,11 +26,25 @@ const router = express.Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-const { getPosts, getPostBySlug, createPost, updatePost, deletePost, likePost, unlikePost, getTrendingPosts, incrementView, getPostsByCategory, savePost, unsavePost, getSavedPosts } = require("../controllers/postController");
+const {
+  getPosts,
+  getPostBySlug,
+  createPost,
+  updatePost,
+  deletePost,
+  likePost,
+  unlikePost,
+  getTrendingPosts,
+  incrementView,
+  getPostsByCategory,
+  savePost,
+  unsavePost,
+  getSavedPosts,
+} = require("../controllers/postController");
 
 router.get("/", optionalAuth, getPosts);
 router.get("/mine", requireAuth, getPosts);
-router.get("/saved/me", requireAuth, getSavedPosts)
+router.get("/saved/me", requireAuth, getSavedPosts);
 router.get("/trending", getTrendingPosts);
 router.get("/slug/:slug/related", optionalAuth, getPostsByCategory);
 router.get("/:slug", optionalAuth, getPostBySlug);
@@ -38,8 +52,8 @@ router.get("/:slug/view", optionalAuth, incrementView);
 router.post("/", requireAuth, upload.single("image"), createPost);
 router.post("/:slug/like", requireAuth, likePost);
 router.post("/:slug/unlike", requireAuth, unlikePost);
-router.post("/:slug/save", requireAuth, savePost)
-router.post("/:slug/unsave", requireAuth, unsavePost)
+router.post("/:slug/save", requireAuth, savePost);
+router.post("/:slug/unsave", requireAuth, unsavePost);
 router.put("/:slug", requireAuth, upload.single("image"), updatePost);
 router.delete("/:slug", requireAuth, deletePost);
 

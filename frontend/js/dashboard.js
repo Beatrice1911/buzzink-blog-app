@@ -60,25 +60,28 @@ async function loadProfile() {
     // Update UI
     document.getElementById("userName").textContent = data.name;
     document.getElementById("userEmail").textContent = data.email;
-    document.getElementById("userBio").textContent = data.bio || "No bio added yet.";
-    document.getElementById("joinedDate").textContent = new Date(data.createdAt).toDateString();
+    document.getElementById("userBio").textContent =
+      data.bio || "No bio added yet.";
+    document.getElementById("joinedDate").textContent = new Date(
+      data.createdAt,
+    ).toDateString();
 
-   const DEFAULT_PROFILE_PHOTO =
-    "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
+    const DEFAULT_PROFILE_PHOTO =
+      "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
 
-   const profileImage = data.profilePhoto && data.profilePhoto.trim() !== ""
-    ? data.profilePhoto
-    : DEFAULT_PROFILE_PHOTO;
+    const profileImage =
+      data.profilePhoto && data.profilePhoto.trim() !== ""
+        ? data.profilePhoto
+        : DEFAULT_PROFILE_PHOTO;
 
-  if (data.profilePhoto) {
-    document.getElementById("removePhotoBtn").style.display = "block";
-  }
+    if (data.profilePhoto) {
+      document.getElementById("removePhotoBtn").style.display = "block";
+    }
 
     document.getElementById("profilePhotoPreview").src = profileImage;
 
     document.getElementById("name").value = data.name;
     document.getElementById("bio").value = data.bio || "";
-
   } catch (err) {
     console.error("Error loading profile:", err);
   }
@@ -120,7 +123,8 @@ saveChangesBtn.addEventListener("click", async (e) => {
       }
 
       document.getElementById("userName").textContent = data.name;
-      document.getElementById("userBio").textContent = data.bio || "No bio added yet.";
+      document.getElementById("userBio").textContent =
+        data.bio || "No bio added yet.";
     } else {
       throw new Error(data.message || "Failed to update profile");
     }
@@ -129,7 +133,6 @@ saveChangesBtn.addEventListener("click", async (e) => {
     showToastUser("Failed to update profile. Please try again.", "error");
   }
 });
-
 
 // Remove photo button logic
 const removePhotoBtn = document.getElementById("removePhotoBtn");
@@ -145,7 +148,6 @@ removePhotoBtn.addEventListener("click", async () => {
       body: formData,
     });
 
-
     if (res.ok) {
       showToastUser("Profile photo removed successfully!", "success");
       loadProfile();
@@ -154,7 +156,8 @@ removePhotoBtn.addEventListener("click", async () => {
       throw new Error(data.message || "Failed to remove profile photo");
     }
 
-    const DEFAULT_PROFILE_PHOTO = "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
+    const DEFAULT_PROFILE_PHOTO =
+      "https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png";
     document.getElementById("profilePhotoPreview").src = DEFAULT_PROFILE_PHOTO;
   } catch (err) {
     console.error("Error removing photo:", err);

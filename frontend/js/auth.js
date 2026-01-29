@@ -73,8 +73,6 @@ function initLogin() {
     }
 
     const user = normalizeUser(data.user);
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("user", JSON.stringify(user));
     window.currentUser = user;
     localStorage.setItem("role", user.role);
@@ -115,8 +113,6 @@ function initRegister() {
     }
 
     const user = normalizeUser(data.user);
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("refreshToken", data.refreshToken);
     localStorage.setItem("user", JSON.stringify(user));
     window.currentUser = user;
     localStorage.setItem("role", user.role);
@@ -139,7 +135,6 @@ function initLogout() {
 }
 
 export async function checkUser() {
-  const token = localStorage.getItem("token");
   if (!token) {
     updateUI(null);
     updateAvatar(null);
@@ -167,8 +162,6 @@ export async function checkUser() {
 }
 
 export function logout(silent = false) {
-  localStorage.removeItem("token");
-  localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
   window.currentUser = null;
   updateUI(null);

@@ -7,7 +7,7 @@ const updateTrendingScore = (post) => {
   const commentCount = post.commentCount || 0;
   const viewsCount = post.views || 0;
 
-  post.trendingScore = (likesCount * 2) + commentCount + (viewsCount / 5);
+  post.trendingScore = likesCount * 2 + commentCount + viewsCount / 5;
 };
 
 const run = async () => {

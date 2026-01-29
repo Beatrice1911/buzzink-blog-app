@@ -3,7 +3,7 @@ const Comment = require("../models/Comment");
 const Post = require("../models/Post");
 
 const createComment = async (req, res) => {
-    try {
+  try {
     const { text } = req.body;
     const { postId } = req.params;
     const newComment = new Comment({
@@ -16,10 +16,10 @@ const createComment = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-}
+};
 
 const getCommentsByPost = async (req, res) => {
-    try {
+  try {
     const { postId } = req.params;
 
     let comments;
@@ -51,7 +51,7 @@ const deleteComment = async (req, res) => {
     if (!comment) return res.status(404).json({ message: "Comment not found" });
 
     if (comment.authorId.toString() !== userId) {
-      return res.status(403).json({ message: "Unauthorized"});
+      return res.status(403).json({ message: "Unauthorized" });
     }
 
     await comment.deleteOne();
@@ -65,7 +65,5 @@ const deleteComment = async (req, res) => {
 module.exports = {
   createComment,
   getCommentsByPost,
-  deleteComment
+  deleteComment,
 };
-
-

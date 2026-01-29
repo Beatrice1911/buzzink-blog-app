@@ -1,14 +1,22 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { verifyToken, isAdmin } = require("../middleware/auth");
-const { getAllUsers, deleteUser, getAllPosts, deleteAnyPost, getAllComments, deleteComment, getAdminStats } = require('../controllers/adminController');
+const { requireAuth, isAdmin } = require("../middleware/auth");
+const {
+  getAllUsers,
+  deleteUser,
+  getAllPosts,
+  deleteAnyPost,
+  getAllComments,
+  deleteComment,
+  getAdminStats,
+} = require("../controllers/adminController");
 
-router.get("/users", verifyToken, isAdmin, getAllUsers);
-router.delete('/users/:id', verifyToken, isAdmin, deleteUser);
-router.get('/posts', verifyToken, isAdmin, getAllPosts);
-router.delete("/posts/:id", verifyToken, isAdmin, deleteAnyPost);
-router.get('/comments', verifyToken, isAdmin, getAllComments);
-router.delete('/comments/:id', verifyToken, isAdmin, deleteComment);
-router.get('/stats', verifyToken, isAdmin, getAdminStats);
+router.get("/users", requireAuth, isAdmin, getAllUsers);
+router.delete("/users/:id", requireAuth, isAdmin, deleteUser);
+router.get("/posts", requireAuth, isAdmin, getAllPosts);
+router.delete("/posts/:id", requireAuth, isAdmin, deleteAnyPost);
+router.get("/comments", requireAuth, isAdmin, getAllComments);
+router.delete("/comments/:id", requireAuth, isAdmin, deleteComment);
+router.get("/stats", requireAuth, isAdmin, getAdminStats);
 
 module.exports = router;

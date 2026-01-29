@@ -1,5 +1,12 @@
 import { setUpPostSEO } from "./seo.js";
-import { fetchPosts, fetchMyPosts, fetchTrendingPosts, loadSavedPosts, loadSinglePost, refreshPage } from "./posts.js";
+import {
+  fetchPosts,
+  fetchMyPosts,
+  fetchTrendingPosts,
+  loadSavedPosts,
+  loadSinglePost,
+  refreshPage,
+} from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
 import { initUI, applyTheme, loadSavedTheme } from "./ui.js";
@@ -9,8 +16,8 @@ document
   .getElementById("canonicalUrl")
   ?.setAttribute("href", window.location.href);
 
-function routeByPage(){
-if (window.location.pathname.endsWith("index.html")) {
+function routeByPage() {
+  if (window.location.pathname.endsWith("index.html")) {
     fetchPosts();
     fetchTrendingPosts();
   } else if (window.location.pathname.endsWith("my-posts.html")) {
@@ -35,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
 
-  const user = await checkUser(); 
+  const user = await checkUser();
   window.currentUser = user;
 
   await updateAvatar(user);
