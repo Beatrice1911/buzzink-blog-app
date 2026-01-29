@@ -184,14 +184,12 @@ export async function postComment(
   commentCountSpan,
 ) {
   try {
-    const token = localStorage.getItem("token");
-
     const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
+      credentials: "include",
       body: JSON.stringify({ text }),
     });
 
@@ -275,7 +273,7 @@ function handleCommentSubmit() {
       commentCountSpan = postElement.querySelector(".comment-count");
     }
 
-    if (!window.currentUser || !localStorage.getItem("token")) {
+    if (!window.currentUser) {
       showToast("Please log in to comment.", "error");
       commentInput.value = "";
       return;

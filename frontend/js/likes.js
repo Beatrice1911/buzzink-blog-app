@@ -10,9 +10,7 @@ export async function handleLike(btn) {
     ?.querySelector(".liked-by");
 
   const alreadyLiked = btn.classList.contains("liked");
-  const token = localStorage.getItem("token");
-  const refresh = localStorage.getItem("refreshToken");
-  if (!token && !refresh) {
+  if (!window.currentUser) {
     showToast("Please log in to like or unlike posts.", "error");
     return;
   }
@@ -20,9 +18,15 @@ export async function handleLike(btn) {
   try {
     let res;
     if (alreadyLiked) {
-      res = await apiFetch(`/api/posts/${postId}/unlike`, { method: "POST" });
+      res = await apiFetch(`/api/posts/${postId}/unlike`, {
+        method: "POST",
+        credentials: "include",
+      });
     } else {
-      res = await apiFetch(`/api/posts/${postId}/like`, { method: "POST" });
+      res = await apiFetch(`/api/posts/${postId}/like`, {
+        method: "POST",
+        credentials: "include",
+      });
     }
 
     const data = await res.json();

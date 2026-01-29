@@ -5,7 +5,7 @@ import { updateCommentCount } from "./comments.js";
 
 const search = document.querySelectorAll(".search");
 
-export let posts = []; 
+export let posts = [];
 export let currentPage = 1;
 export let totalPages = 1;
 
@@ -33,7 +33,9 @@ function renderNoAuthorPost(container) {
 
 export async function fetchPosts(page = 1, limit = 6) {
   try {
-    const res = await apiFetch(`${API_URL}?page=${page}&limit=${limit}`);
+    const res = await apiFetch(`${API_URL}?page=${page}&limit=${limit}`, {
+      credentials: "include",
+    });
     const data = await res.json();
 
     posts = Array.isArray(data.posts) ? data.posts : [];
@@ -51,7 +53,9 @@ export async function fetchPosts(page = 1, limit = 6) {
 // Fetch posts created by the logged-in user
 export async function fetchMyPosts(page = 1, limit = 6) {
   try {
-    const res = await apiFetch(`${API_URL}/mine?page=${page}&limit=${limit}`);
+    const res = await apiFetch(`${API_URL}/mine?page=${page}&limit=${limit}`, {
+      credentials: "include",
+    });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -260,6 +264,7 @@ export async function addPost(title, content, category, imageFile) {
 
   const res = await apiFetch(`${API_URL}`, {
     method: "POST",
+    credentials: "include",
     body: formData,
   });
 
@@ -272,7 +277,10 @@ export async function deletePost(slug) {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
   try {
-    const res = await apiFetch(`${API_URL}/${slug}`, { method: "DELETE" });
+    const res = await apiFetch(`${API_URL}/${slug}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -325,7 +333,9 @@ export function initPostForm() {
     if (editSlug && editSlug !== "null") {
       (async () => {
         try {
-          const res = await apiFetch(`${API_URL}/${editSlug}`);
+          const res = await apiFetch(`${API_URL}/${editSlug}`, {
+            credentials: "include",
+          });
           if (!res.ok) throw new Error("Post not found");
           const post = await res.json();
 
@@ -360,6 +370,7 @@ export function initPostForm() {
           setPostingState(true);
           const res = await apiFetch(`${API_URL}/${editSlug}`, {
             method: "PUT",
+            credentials: "include",
             body: formData,
           });
 
@@ -457,7 +468,9 @@ export async function loadSinglePost() {
   if (!postSlug) return;
 
   try {
-    const res = await apiFetch(`${API_URL}/${postSlug}`);
+    const res = await apiFetch(`${API_URL}/${postSlug}`, {
+      credentials: "include",
+    });
     if (!res.ok) throw new Error("Failed to fetch post");
     const post = await res.json();
 
@@ -593,11 +606,10 @@ export async function loadSinglePost() {
     }
 
     bookmarkIcon.addEventListener("click", async () => {
-      const token = localStorage.getItem("token");
       const slug = bookmarkIcon.dataset.slug;
       const isSaved = bookmarkIcon.dataset.saved === "true";
 
-      if (!token) {
+      if (!window.currentUser) {
         showToast("Please log in to save posts");
         return;
       }
@@ -612,6 +624,7 @@ export async function loadSinglePost() {
       try {
         const res = await apiFetch(url, {
           method: "POST",
+          credentials: "include",
         });
         const data = await res.json();
         setBookmarkState(!isSaved);
@@ -636,7 +649,9 @@ export async function loadSinglePost() {
 }
 
 export const fetchTrendingPosts = async () => {
-  const res = await apiFetch(`${API_URL}/trending?limit=5`);
+  const res = await apiFetch(`${API_URL}/trending?limit=5`, {
+    credentials: "include",
+  });
   const data = await res.json();
 
   const trendingList = document.getElementById("trending-list");
@@ -676,7 +691,9 @@ function renderRelatedPosts(posts) {
 
 export const fetchRelatedPosts = async (slug) => {
   try {
-    const res = await apiFetch(`${API_URL}/slug/${slug}/related`);
+    const res = await apiFetch(`${API_URL}/slug/${slug}/related`, {
+      credentials: "include",
+    });
     const relatedPosts = await res.json();
 
     renderRelatedPosts(relatedPosts);
@@ -689,7 +706,9 @@ const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 export async function loadSavedPosts() {
   try {
-    const res = await apiFetch(`${API_URL}/saved/me`);
+    const res = await apiFetch(`${API_URL}/saved/me`, {
+      credentials: "include",
+    });
 
     if (!res.ok) throw new Error("Failed to fetch");
 
@@ -749,6 +768,7 @@ export async function loadSavedPosts() {
         try {
           await apiFetch(`${API_URL}/${slug}/unsave`, {
             method: "POST",
+            credentials: "include",
           });
 
           btn.closest(".post-card").remove();
