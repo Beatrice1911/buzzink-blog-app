@@ -32,6 +32,11 @@ function routeByPage() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  const user = await checkUser();
+  window.currentUser = user;
+
+  await updateAvatar(user);
+
   setUpPostSEO();
   initEvents();
   initAuth();
@@ -41,11 +46,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
-
-  const user = await checkUser();
-  window.currentUser = user;
-
-  await updateAvatar(user);
 
   routeByPage();
   refreshPage();
