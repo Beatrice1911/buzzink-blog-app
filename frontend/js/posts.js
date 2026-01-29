@@ -1,10 +1,11 @@
 import { apiFetch } from "./api.js";
 import { API_URL } from "./config.js";
 import { showToast } from "./ui.js";
+import { updateCommentCount } from "./comments.js";
 
 const search = document.querySelectorAll(".search");
 
-export let posts = [];
+export let posts = []; 
 export let currentPage = 1;
 export let totalPages = 1;
 
