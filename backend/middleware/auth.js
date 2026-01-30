@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-async function requireAuth(req, res, next) {
+function requireAuth(req, res, next) {
   const token = req.cookies.accessToken;
   if (!token) {
     return res.status(401).json({ message: "Not authenticated" });
@@ -10,11 +10,12 @@ async function requireAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = { id: decoded.sub };
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
-    req.user = user;
+    req.user = {
+      id: decoded.sub,
+      email: decoded.email,
+      role: decoded.role,
+      name: decoded.name,
+    };
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid or expired token" });

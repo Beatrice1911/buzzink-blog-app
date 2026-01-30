@@ -17,6 +17,7 @@ const cookieOptions = {
   httpOnly: true,
   secure: isProd,
   sameSite: isProd ? "None" : "Lax",
+  path: "/",
 };
 
 function signToken(user) {
