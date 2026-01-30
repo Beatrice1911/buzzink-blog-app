@@ -10,7 +10,7 @@ async function requireAuth(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = { id: payload.sub };
+    const user = { id: decoded.sub };
     if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
