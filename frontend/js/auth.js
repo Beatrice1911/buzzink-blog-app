@@ -148,7 +148,7 @@ export async function checkUser() {
     if (!res.ok) throw new Error("Not authenticated");
 
     const data = await res.json();
-    const user = normalizeUser(data.user);
+    const user = normalizeUser(data);
 
     localStorage.setItem("user", JSON.stringify(user));
     window.currentUser = user;
@@ -159,7 +159,6 @@ export async function checkUser() {
   } catch (err) {
     updateUI(null);
     updateAvatar(null);
-    logout(true);
     return null;
   }
 }
