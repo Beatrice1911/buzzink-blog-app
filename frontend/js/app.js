@@ -17,14 +17,16 @@ document
   ?.setAttribute("href", window.location.href);
 
 function routeByPage() {
-  if (window.location.pathname.endsWith("index.html")) {
+  const path = window.location.pathname;
+
+  if (path === "/" || path === "/index.html") {
     fetchPosts();
     fetchTrendingPosts();
-  } else if (window.location.pathname.endsWith("my-posts.html")) {
+  } else if (path === "/my-posts.html") {
     fetchMyPosts();
-  } else if (window.location.pathname.endsWith("post.html")) {
+  } else if (path === "/post.html") {
     loadSinglePost();
-  } else if (window.location.pathname.endsWith("saved.html")) {
+  } else if (path === "/saved.html") {
     loadSavedPosts();
   } else {
     fetchPosts();
