@@ -239,6 +239,7 @@ const likePost = async (req, res) => {
 
     if (!post.likes.some((u) => u.toString() === req.user.id)) {
       post.likes.push(req.user.id);
+      post.lastEngagementAt = new Date();
       updateTrendingScore(post);
       await post.save();
     }
@@ -264,6 +265,7 @@ const unlikePost = async (req, res) => {
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     post.likes = post.likes.filter((u) => u.toString() !== req.user.id);
+    post.lastEngagementAt = new Date();
     updateTrendingScore(post);
     await post.save();
 
@@ -283,12 +285,18 @@ const unlikePost = async (req, res) => {
 };
 
 const getTrendingPosts = async (req, res) => {
-  const posts = await Post.find().sort({ trendingScore: -1 }).limit(5);
+  const since = new Date(Date.now() - 72 * 60 * 60 * 1000);
 
-  res.json(posts);
+  const trendingPosts = await Post.find({
+    lastEngagementAt: { $gte: since },
+  })
+    .sort({ trendingScore: -1 })
+    .limit(5);
+
+  res.json(trendingPosts);
 };
 
-const updateTrendingScore = (post) => {
+export const updateTrendingScore = (post) => {
   const likesCount = post.likes?.length || 0;
   const commentCount = post.commentsCount || post.commentCount || 0;
   const viewsCount = post.views || 0;
@@ -297,11 +305,12 @@ const updateTrendingScore = (post) => {
 
   const ageInHours = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
 
-  const engagementScore = likesCount * 3 + commentCount * 2 + viewsCount * 0.5;
+  const engagementScore =
+    likesCount * 5 + commentCount * 4 + Math.log10(viewsCount + 1) * 2;
 
-  const decay = Math.max(1, ageInHours / 18);
+  const decay = Math.pow(ageInHours + 2, 1.5);
 
-  post.trendingScore = (engagementScore + 1) / decay;
+  post.trendingScore = engagementScore / decay;
 };
 
 const incrementView = async (req, res) => {
@@ -321,6 +330,7 @@ const incrementView = async (req, res) => {
 
   if (shouldIncrement) {
     post.views += 1;
+    post.lastEngagementAt = new Date();
     updateTrendingScore(post);
     await post.save();
   }

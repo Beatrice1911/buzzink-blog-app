@@ -1,6 +1,6 @@
-const express = require("express");
 const Comment = require("../models/Comment");
 const Post = require("../models/Post");
+const { updateTrendingScore } = require("./postController");
 
 const createComment = async (req, res) => {
   try {
@@ -12,7 +12,18 @@ const createComment = async (req, res) => {
       text,
     });
     await newComment.save();
-    res.status(201).json(newComment);
+
+    const post = await Post.findById(postId);
+    if (post) {
+      post.commentsCount = (post.commentsCount || 0) + 1;
+      post.lastEngagementAt = new Date();
+      updateTrendingScore(post);
+      await post.save();
+    }
+    res.status(201).json({
+      comment: newComment,
+      updatedPost: post,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -54,7 +65,17 @@ const deleteComment = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
 
+    const post = await Post.findById(comment.postId);
+
     await comment.deleteOne();
+
+    if (post) {
+      post.commentsCount = Math.max((post.commentsCount || 1) - 1, 0);
+      post.lastEngagementAt = new Date();
+      updateTrendingScore(post);
+      await post.save();
+    }
+
     res.status(200).json({ message: "Comment deleted successfully" });
   } catch (err) {
     console.error("Delete comment error:", err);
