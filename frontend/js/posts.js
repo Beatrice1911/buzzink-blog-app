@@ -1,7 +1,7 @@
 import { apiFetch } from "./api.js";
 import { API_URL } from "./config.js";
 import { showToast } from "./ui.js";
-import { updateCommentCount } from "./comments.js";
+import { fetchComments, updateCommentCount } from "./comments.js";
 
 const search = document.querySelectorAll(".search");
 
@@ -81,7 +81,7 @@ export async function fetchMyPosts(page = 1, limit = 6) {
   }
 }
 
-function formatText(text) {
+export function formatText(text) {
   return text.replace(/\n/g, "<br>");
 }
 
@@ -673,7 +673,8 @@ export const fetchTrendingPosts = async () => {
 function renderRelatedPosts(posts) {
   const container = document.getElementById("related-posts-container");
   if (!posts.length) {
-    container.innerHTML = "<p>No related posts found.</p>";
+    container.innerHTML =
+      "<p style='margin: 0 5px;'>No related posts found.</p>";
     return;
   }
 

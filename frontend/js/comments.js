@@ -1,6 +1,7 @@
 import { apiFetch } from "./api.js";
 import { COMMENTS_URL } from "./config.js";
 import { showToast } from "./ui.js";
+import { formatText } from "./posts.js";
 
 export async function toggleComments(commentBtn) {
   const postId = commentBtn.dataset.postId;

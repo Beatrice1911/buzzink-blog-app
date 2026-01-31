@@ -1,6 +1,6 @@
 import { handleLike } from "./likes.js";
 import { toggleComments, handleDeleteComment } from "./comments.js";
-import { deletePost } from "./posts.js";
+import { editPost, deletePost } from "./posts.js";
 import { userMenuDetails, userIcon } from "./ui.js";
 
 let isLikesModalOpen = false;
@@ -105,11 +105,11 @@ export function initEvents() {
     }
 
     // Delete comment handling
-    const deleteBtn = e.target.closest(".delete-comment-btn");
-    if (deleteBtn) {
+    const deleteCommentBtn = e.target.closest(".delete-comment-btn");
+    if (deleteCommentBtn) {
       e.preventDefault();
       e.stopPropagation();
-      handleDeleteComment(deleteBtn);
+      handleDeleteComment(deleteCommentBtn);
     }
 
     // Menu button handling
@@ -121,7 +121,6 @@ export function initEvents() {
       document
         .querySelectorAll(".menu-options")
         .forEach((opt) => opt.classList.add("hidden"));
-      return;
     }
 
     if (menuBtn) {
