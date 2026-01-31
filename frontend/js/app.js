@@ -9,7 +9,7 @@ import {
   initPostForm,
 } from "./posts.js";
 import { initEvents } from "./events.js";
-import { initAuth, checkUser, updateAvatar } from "./auth.js";
+import { initAuth, checkUser } from "./auth.js";
 import { initUI, applyTheme, loadSavedTheme } from "./ui.js";
 import { initComments } from "./comments.js";
 
@@ -40,8 +40,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   initAuth();
   initUI();
-  await updateAvatar(user);
-
   initEvents();
   initComments();
   loadSavedTheme();
