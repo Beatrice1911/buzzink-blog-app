@@ -1,4 +1,3 @@
-const sharp = require("sharp");
 const mongoose = require("mongoose");
 const Post = require("../models/Post");
 const cloudinary = require("../config/cloudinary");

@@ -113,18 +113,18 @@ export function initEvents() {
     }
 
     // Menu button handling
-    const menuBtn = e.target.closest(".menu-btn");
-    const options = e.target.closest(".menu-options");
+    const comentMenuBtn = e.target.closest(".menu-btn");
+    const commentOptions = e.target.closest(".menu-options");
 
     // Close all menus if clicking elsewhere
-    if (!menuBtn && !options) {
+    if (!comentMenuBtn && !commentOptions) {
       document
         .querySelectorAll(".menu-options")
         .forEach((opt) => opt.classList.add("hidden"));
     }
 
-    if (menuBtn) {
-      const menu = menuBtn.nextElementSibling;
+    if (comentMenuBtn) {
+      const menu = comentMenuBtn.nextElementSibling;
       menu.classList.toggle("hidden");
     }
 

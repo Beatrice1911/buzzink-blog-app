@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await routeByPage();
 
-  refreshPage();
   setUpPostSEO();
 
   if (
@@ -59,6 +58,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     !localStorage.getItem("editSlug")
   ) {
     localStorage.removeItem("editSlug");
+  }
+
+  if (!window.location.pathname.endsWith("post.html")) {
+    refreshPage();
   }
 
   initPostForm();
