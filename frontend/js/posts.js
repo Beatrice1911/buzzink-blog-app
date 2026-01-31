@@ -5,26 +5,16 @@ import { fetchComments, updateCommentCount } from "./comments.js";
 
 const search = document.querySelectorAll(".search");
 
-export let posts = [];
-export let currentPage = 1;
-export let totalPages = 1;
+let state = {
+  all: [],
+  mine: [],
+  saved: [],
+};
+let currentPage = 1;
+let totalPages = 1;
 
 function getImageUrl(image) {
-  if (!image) return "/Images/fallback.jpg";
-
-  if (image.startsWith("http")) {
-    return image;
-  }
-
-  if (image.startsWith("/uploads")) {
-    return "/Images/fallback.jpg";
-  }
-
-  return "/Images/fallback.jpg";
-}
-
-function renderNoResults(container) {
-  container.innerHTML = `<p style="text-align:center; color:gray; font-size: 20px; font-weight: bold;">No results found...</p>`;
+  return image && image.startsWith("http") ? image : "/Images/fallback.jpg";
 }
 
 function renderNoAuthorPost(container) {
@@ -33,17 +23,27 @@ function renderNoAuthorPost(container) {
 
 export async function fetchPosts(page = 1, limit = 6) {
   try {
-    const res = await apiFetch(`${API_URL}?page=${page}&limit=${limit}`, {
+    const categoryFilter = document.getElementById("categoryFilter")?.value;
+    const searchInput = document.querySelector(".search")?.value;
+
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page);
+    queryParams.append("limit", limit);
+    if (categoryFilter && categoryFilter !== "all")
+      queryParams.append("category", categoryFilter);
+    if (searchInput) queryParams.append("search", searchInput);
+
+    const res = await apiFetch(`${API_URL}?${queryParams.toString()}`, {
       credentials: "include",
     });
     const data = await res.json();
 
-    posts = Array.isArray(data.posts) ? data.posts : [];
+    state.all = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage ?? 1;
     totalPages = data.totalPages ?? 1;
 
     refreshPage();
-    renderPagination();
+    renderPagination("allPostsContainer", currentPage, totalPages);
   } catch (err) {
     console.error("Error fetching posts:", err);
     showToast("Something went wrong while displaying posts!", "error");
@@ -53,7 +53,13 @@ export async function fetchPosts(page = 1, limit = 6) {
 // Fetch posts created by the logged-in user
 export async function fetchMyPosts(page = 1, limit = 6) {
   try {
-    const res = await apiFetch(`${API_URL}/mine?page=${page}&limit=${limit}`, {
+    const searchInput = document.querySelector(".search")?.value;
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page);
+    queryParams.append("limit", limit);
+    if (searchInput) queryParams.append("search", searchInput);
+
+    const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`, {
       credentials: "include",
     });
 
@@ -64,14 +70,14 @@ export async function fetchMyPosts(page = 1, limit = 6) {
 
     const data = await res.json();
 
-    posts = Array.isArray(data.posts) ? data.posts : [];
+    state.mine = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
 
     const containerId = "myPostsContainer";
-    displayPosts(containerId);
-    renderPagination();
-    if (posts.length === 0) {
+    refreshPage();
+    renderPagination(containerId, currentPage, totalPages);
+    if (state.mine.length === 0) {
       const container = document.getElementById("myPostsContainer");
       if (container) renderNoAuthorPost(container);
     }
@@ -86,7 +92,7 @@ export function formatText(text) {
 }
 
 // Display posts in specified container
-export function displayPosts(containerId, limit = null) {
+export function displayPosts(containerId, limit = null, emptyMessage = null) {
   const userId = window.currentUser?._id || window.currentUser?.id;
 
   const container = document.getElementById(containerId);
@@ -94,35 +100,25 @@ export function displayPosts(containerId, limit = null) {
 
   container.innerHTML = "";
 
-  let displayList = [...posts];
+  let displayList = [];
 
-  if (containerId === "allPostsContainer") {
-    const categoryFilter = document.getElementById("categoryFilter");
-    if (categoryFilter) {
-      const selectedCategory = categoryFilter?.value;
-      if (selectedCategory !== "all") {
-        displayList = displayList.filter(
-          (post) => post.category === selectedCategory,
-        );
-      }
-    }
-  }
-
-  if (containerId === "myPostsContainer" && userId) {
-    displayList = displayList.filter((post) => {
-      const postAuthorId =
-        typeof post.authorId === "object" && post.authorId !== null
-          ? post.authorId._id
-          : post.authorId;
-
-      return String(postAuthorId) === String(userId);
-    });
+  if (
+    containerId === "allPostsContainer" ||
+    containerId === "featuredPostsContainer"
+  ) {
+    displayList = [...state.all];
+  } else if (containerId === "myPostsContainer") {
+    displayList = [...state.mine];
+  } else if (containerId === "savedPostsContainer") {
+    displayList = [...state.saved];
   }
 
   if (limit) displayList = displayList.slice(0, limit);
 
   if (displayList.length === 0) {
-    renderNoResults(container);
+    container.innerHTML =
+      emptyMessage ??
+      `<p style="text-align:center; color:gray; font-size:20px;">No results found...</p>`;
     return;
   }
 
@@ -618,6 +614,8 @@ export async function loadSinglePost() {
           credentials: "include",
         });
         const data = await res.json();
+        if (!res.ok)
+          throw new Error(data.message || "Failed to toggle bookmark");
         setBookmarkState(!isSaved);
         showToast(
           !isSaved ? "Post saved" : "Removed from saved posts",
@@ -696,22 +694,38 @@ export const fetchRelatedPosts = async (slug) => {
 
 const savedPostsContainer = document.getElementById("savedPostsContainer");
 
-export async function loadSavedPosts() {
+export async function loadSavedPosts(page = 1, limit = 6) {
   try {
-    const res = await apiFetch(`${API_URL}/saved/me`, {
-      credentials: "include",
-    });
+    const searchInput = document.querySelector(".search")?.value;
+    const queryParams = new URLSearchParams();
+    queryParams.append("page", page);
+    queryParams.append("limit", limit);
+    if (searchInput) queryParams.append("search", searchInput);
+
+    const res = await apiFetch(
+      `${API_URL}/saved/me?${queryParams.toString()}`,
+      {
+        credentials: "include",
+      },
+    );
 
     if (!res.ok) throw new Error("Failed to fetch");
 
-    const posts = await res.json();
+    const data = await res.json();
 
-    if (posts.length === 0) {
-      savedPostsContainer.innerHTML = "<p>You have no saved posts yet.</p>";
+    state.saved = Array.isArray(data.posts) ? data.posts : [];
+    currentPage = data.currentPage || 1;
+    totalPages = data.totalPages || 1;
+
+    const container = savedPostsContainer;
+    if (!container) return;
+
+    if (state.saved.length === 0) {
+      container.innerHTML = "<p>You have no saved posts yet.</p>";
       return;
     }
 
-    savedPostsContainer.innerHTML = posts
+    container.innerHTML = state.saved
       .map(
         (post) => `
       <article class="post-card">
@@ -771,9 +785,11 @@ export async function loadSavedPosts() {
         }
       });
     });
+
+    renderPagination("savedPostsContainer", currentPage, totalPages);
   } catch (err) {
     console.error(err);
-    savedPostsContainer.innerHTML = "<p>Error loading saved posts.</p>";
+    container.innerHTML = "<p>Error loading saved posts.</p>";
   }
 }
 
@@ -785,84 +801,34 @@ export function refreshPage() {
     displayPosts("featuredPostsContainer", 3);
   }
   if (document.getElementById("myPostsContainer")) {
-    displayPosts("myPostsContainer");
+    displayPosts("myPostsContainer", null, "You haven't made any posts yet...");
   }
 }
 
-document.getElementById("categoryFilter")?.addEventListener("change", () => {
-  displayPosts("allPostsContainer");
-});
+document
+  .getElementById("categoryFilter")
+  ?.addEventListener("change", () => fetchPosts(1));
 
-function searchPosts(e) {
-  const searchValue = e.target.value.toLowerCase() || "";
-  const containerId = document.getElementById("allPostsContainer")
-    ? "allPostsContainer"
-    : "featuredPostsContainer";
-  const container = document.getElementById(containerId);
-  if (!container) return;
+search.forEach((input) => input.addEventListener("keyup", () => fetchPosts(1)));
 
-  const filteredPosts = posts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(searchValue) ||
-      post.content.toLowerCase().includes(searchValue) ||
-      post.category.toLowerCase().includes(searchValue),
-  );
-
-  container.innerHTML = "";
-
-  if (filteredPosts.length === 0) {
-    renderNoResults(container);
-    return;
-  }
-
-  filteredPosts.forEach((post) => {
-    const div = document.createElement("div");
-    div.classList.add("post");
-    div.innerHTML = `
-      ${
-        post.image
-          ? `<img src="${getImageUrl(post.image)}" alt="${post.title}" class="post-image" loading="lazy">`
-          : ""
-      }
-      <div class="post-content">
-        <p class="tag">${post.category}</p>
-        <h2>${post.title}</h2>
-        <p>${post.content}</p>
-        <p><em>By ${post.authorName || "Unknown"}</em></p>
-        <small>${new Date(post.date).toLocaleString()}</small>
-      </div>
-    `;
-    container.appendChild(div);
-
-    const img = div.querySelector(".post-image");
-    if (img) {
-      img.onerror = function () {
-        this.onerror = null;
-        this.src = "/Images/fallback.jpg";
-      };
-    }
-    div.addEventListener("click", () => {
-      window.location.href = `post.html?slug=${post.slug}`;
-    });
-  });
-
-  if (searchValue === "") {
-    refreshPage();
-  }
-}
-
-search.forEach((input) => input.addEventListener("keyup", searchPosts));
-
-function renderPagination() {
+function renderPagination(containerId, page, total) {
   const container = document.getElementById("pagination");
   if (!container) return;
   container.innerHTML = "";
 
-  for (let i = 1; i <= totalPages; i++) {
+  for (let i = 1; i <= total; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
-    btn.className = i === currentPage ? "pg-active" : "";
-    btn?.addEventListener("click", () => fetchPosts(i));
+    btn.className = i === page ? "pg-active" : "";
+    btn.addEventListener("click", () => {
+      if (containerId === "myPostsContainer") {
+        fetchMyPosts(i);
+      } else if (containerId === "savedPostsContainer") {
+        loadSavedPosts(i);
+      } else {
+        fetchPosts(i);
+      }
+    });
     container.appendChild(btn);
   }
 }

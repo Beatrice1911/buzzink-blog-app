@@ -7,16 +7,24 @@ const path = require("path");
 
 const getPosts = async (req, res) => {
   try {
-    const { page = 1, limit = 6 } = req.query;
+    const { page = 1, limit = 6, category, search } = req.query;
     const userId = req.user?.id || null;
 
     let filter = {};
-    if (req.path.includes("/mine")) {
-      filter = { authorId: userId };
-    }
+
+    if (category && category !== "all") filter.category = category;
+
+    // if (req.path.includes("/mine")) {
+    //   filter = { authorId: userId };
+    // }
 
     if (req.query.authorId) {
       filter.authorId = new mongoose.Types.ObjectId(req.query.authorId);
+    }
+
+    if (search) {
+      const regex = new RegExp(search, "i");
+      filter.$or = [{ title: regex }, { content: regex }, { category: regex }];
     }
 
     const total = await Post.countDocuments(filter);
@@ -51,6 +59,11 @@ const getPosts = async (req, res) => {
     console.error("Get posts error:", err);
     res.status(500).json({ message: "Failed to fetch posts" });
   }
+};
+
+const getMyPosts = async (req, res) => {
+  req.query.authorId = req.user.id;
+  return getPosts(req, res);
 };
 
 const getPostBySlug = async (req, res) => {
@@ -226,7 +239,7 @@ const deletePost = async (req, res) => {
 
 const likePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.slug);
+    const post = await Post.findOne({ slug: req.params.slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (!post.likes.some((u) => u.toString() === req.user.id)) {
@@ -235,7 +248,7 @@ const likePost = async (req, res) => {
       await post.save();
     }
 
-    const updatedPost = await Post.findById(req.params.slug).populate(
+    const updatedPost = await Post.findOne({ slug: req.params.slug }).populate(
       "likes",
       "name",
     );
@@ -252,14 +265,14 @@ const likePost = async (req, res) => {
 
 const unlikePost = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.slug);
+    const post = await Post.findOne({ slug: req.params.slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     post.likes = post.likes.filter((u) => u.toString() !== req.user.id);
     updateTrendingScore(post);
     await post.save();
 
-    const updatedPost = await Post.findById(req.params.slug).populate(
+    const updatedPost = await Post.findOne({ slug: req.params.slug }).populate(
       "likes",
       "name",
     );
@@ -275,18 +288,9 @@ const unlikePost = async (req, res) => {
 };
 
 const getTrendingPosts = async (req, res) => {
-  const posts = await Post.find();
+  const posts = await Post.find().sort({ trendingScore: -1 }).limit(5);
 
-  const trendingPosts = posts
-    .map((post) => ({
-      ...post.toObject(),
-      trendingScore: updateTrendingScore(post),
-    }))
-    .filter((post) => post.trendingScore > 0)
-    .sort((a, b) => b.trendingScore - a.trendingScore)
-    .slice(0, 5);
-
-  res.json(trendingPosts);
+  res.json(posts);
 };
 
 const updateTrendingScore = (post) => {
@@ -302,11 +306,11 @@ const updateTrendingScore = (post) => {
 
   const decay = Math.max(1, ageInHours / 18);
 
-  return (engagementScore + 1) / decay;
+  post.trendingScore = (engagementScore + 1) / decay;
 };
 
 const incrementView = async (req, res) => {
-  const post = await Post.findById(req.params.id);
+  const post = await Post.findOne({ slug: req.params.slug });
 
   if (!post) return res.status(404).json({ message: "Post not found" });
 
@@ -322,6 +326,7 @@ const incrementView = async (req, res) => {
 
   if (shouldIncrement) {
     post.views += 1;
+    updateTrendingScore(post);
     await post.save();
   }
 
@@ -404,7 +409,7 @@ const unsavePost = async (req, res) => {
     user.savedPosts = user.savedPosts.filter(
       (id) => id.toString() !== post._id.toString(),
     );
-    
+
     await user.save();
 
     res.status(200).json({ message: "Post removed from saved posts" });
@@ -421,6 +426,7 @@ const getSavedPosts = async (req, res) => {
     }
 
     const userId = req.user.id;
+    const { page = 1, limit = 6, search } = req.query;
 
     const user = await User.findById(userId).populate({
       path: "savedPosts",
@@ -434,7 +440,30 @@ const getSavedPosts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(user.savedPosts || []);
+    let savedPosts = user.savedPosts;
+
+    if (search) {
+      const regex = new RegExp(search, "i");
+      savedPosts = savedPosts.filter(
+        (post) =>
+          regex.test(post.title) ||
+          regex.test(post.content) ||
+          regex.test(post.category),
+      );
+    }
+
+    const totalPosts = savedPosts.length;
+    const totalPages = Math.ceil(totalPosts / limit);
+    const startIndex = (page - 1) * limit;
+
+    const paginatedPosts = savedPosts.slice(startIndex, startIndex + limit);
+
+    res.json({
+      posts: paginatedPosts,
+      currentPage: page,
+      totalPages,
+      totalPosts,
+    });
   } catch (err) {
     console.error("Get saved posts error:", err);
     res.status(500).json({ message: "Server error" });
@@ -443,6 +472,7 @@ const getSavedPosts = async (req, res) => {
 
 module.exports = {
   getPosts,
+  getMyPosts,
   getPostBySlug,
   createPost,
   updatePost,
