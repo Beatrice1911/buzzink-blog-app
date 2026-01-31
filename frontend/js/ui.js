@@ -17,6 +17,7 @@ const allPostsBtn = document.querySelector(".all-posts-btn");
 const myPosts = document.getElementById("myPosts");
 const savedPosts = document.getElementById("savedPosts");
 const profileEdit = document.getElementById("profile-edit");
+const settings = document.getElementById("settings");
 const themeToggle = document.getElementById("themeToggle");
 
 export function showToast(message, type = "info", duration = 5000) {
@@ -55,31 +56,22 @@ function initMenus() {
   });
 }
 
+export function navigate(path) {
+  history.pushState({}, "", path);
+}
+
 function initNavigation() {
-  logo?.addEventListener("click", () => {
-    window.location.href = "index.html";
-  });
+  logo?.addEventListener("click", () => navigate("/"));
 
-  allPostsBtn?.addEventListener("click", () => {
-    window.location.href = "all-posts.html";
-  });
+  allPostsBtn?.addEventListener("click", () => navigate("/all-posts"));
 
-  myPosts?.addEventListener("click", () => {
-    window.location.href = "my-posts.html";
-  });
+  myPosts?.addEventListener("click", () => navigate("/my-posts"));
 
-  profileEdit?.addEventListener("click", () => {
-    window.location.href = "dashboard.html";
-  });
+  profileEdit?.addEventListener("click", () => navigate("/dashboard"));
 
-  savedPosts?.addEventListener("click", () => {
-    window.location.href = "saved.html";
-  });
+  savedPosts?.addEventListener("click", () => navigate("/saved"));
 
-  const settings = document.getElementById("settings");
-  settings?.addEventListener("click", () => {
-    window.location.href = "settings.html";
-  });
+  settings?.addEventListener("click", () => navigate("/settings"));
 }
 
 function initAuthModal() {

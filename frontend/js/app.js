@@ -9,7 +9,7 @@ import {
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser, updateAvatar } from "./auth.js";
-import { initUI, applyTheme, loadSavedTheme } from "./ui.js";
+import { initUI, applyTheme, loadSavedTheme, navigate } from "./ui.js";
 import { initComments } from "./comments.js";
 
 document
@@ -33,6 +33,14 @@ function routeByPage() {
   }
 }
 
+document?.addEventListener("click", (e) => {
+  const link = e.target.closest("a[data-link]");
+  if (!link) return;
+
+  e.preventDefault();
+  navigate(link.getAttribute("href"));
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
   window.currentUser = user;
@@ -52,3 +60,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   routeByPage();
   refreshPage();
 });
+
+window.addEventListener("popstate", routeByPage);

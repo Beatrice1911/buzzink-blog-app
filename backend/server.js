@@ -65,9 +65,9 @@ app.use((err, req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-// app.get(/^\/(?!api).*/, (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
-// });
+app.get(/^\/(?!api).*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
+});
 
 app.use(
   helmet({
