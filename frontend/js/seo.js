@@ -10,7 +10,7 @@ export function setUpPostSEO() {
       const res = await apiFetch(`/api/posts/${slug}`);
       const post = await res.json();
 
-      document.title = `${post.title} | BuzzInk`;
+      document.title = `${post.title} - BuzzInk`;
 
       const desc = post.content.slice(0, 160);
 

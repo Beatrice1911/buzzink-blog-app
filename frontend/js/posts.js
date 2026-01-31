@@ -299,15 +299,15 @@ export async function deletePost(slug) {
   }
 }
 
-if (
-  window.location.pathname.endsWith("write.html") &&
-  !localStorage.getItem("editSlug")
-) {
-  localStorage.removeItem("editSlug");
-}
+// if (
+//   window.location.pathname.endsWith("write.html") &&
+//   !localStorage.getItem("editSlug")
+// ) {
+//   localStorage.removeItem("editSlug");
+// }
 
 export function editPost(slug) {
-  localStorage.removeItem("editSlug");
+  if (!slug) return;
   localStorage.setItem("editSlug", slug);
   window.location.href = "write.html";
 }

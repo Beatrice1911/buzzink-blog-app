@@ -247,8 +247,7 @@ export async function updateCommentCount(postId, commentCountSpan) {
   }
 }
 
-function handleCommentSubmit() {
-  document.addEventListener("submit", async (e) => {
+async function handleCommentSubmit(e) {
     const commentForm = e.target.closest(".comment-form");
     if (!commentForm) return;
     e.preventDefault();
@@ -282,7 +281,6 @@ function handleCommentSubmit() {
 
     await postComment(postId, commentText, commentsList, commentCountSpan);
     commentInput.value = "";
-  });
 }
 
 export function initComments() {
