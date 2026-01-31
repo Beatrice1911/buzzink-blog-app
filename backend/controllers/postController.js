@@ -296,7 +296,7 @@ const getTrendingPosts = async (req, res) => {
   res.json(trendingPosts);
 };
 
-export const updateTrendingScore = (post) => {
+const updateTrendingScore = (post) => {
   const likesCount = post.likes?.length || 0;
   const commentCount = post.commentsCount || post.commentCount || 0;
   const viewsCount = post.views || 0;
@@ -489,4 +489,5 @@ module.exports = {
   savePost,
   unsavePost,
   getSavedPosts,
+  updateTrendingScore,
 };
