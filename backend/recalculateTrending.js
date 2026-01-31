@@ -1,34 +1,30 @@
-require("dotenv").config();
 const mongoose = require("mongoose");
-const Post = require("./models/Post");
+require("dotenv").config();
+const Post = require("./models/Post")
+const { updateTrendingScore } = require("./controllers/postController");
 
-const updateTrendingScore = (post) => {
-  const likesCount = post.likes?.length || 0;
-  const commentCount = post.commentCount || 0;
-  const viewsCount = post.views || 0;
-
-  post.trendingScore = likesCount * 2 + commentCount + viewsCount / 5;
-};
-
-const run = async () => {
+const recalcTrendingScores = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to DB");
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
     const posts = await Post.find();
-    console.log(`Recalculating ${posts.length} posts...`);
+    console.log(`Recalculating trending scores for ${posts.length} posts...`);
 
     for (const post of posts) {
       updateTrendingScore(post);
       await post.save();
+      console.log(`Updated: ${post.title} → trendingScore: ${post.trendingScore}`);
     }
 
-    console.log("✅ Trending scores recalculated");
-    process.exit(0);
+    console.log("✅ All trending scores updated!");
+    mongoose.disconnect();
   } catch (err) {
-    console.error("❌ Error:", err);
-    process.exit(1);
+    console.error("Error recalculating trending scores:", err);
+    mongoose.disconnect();
   }
 };
 
-run();
+recalcTrendingScores();

@@ -15,7 +15,7 @@ const createComment = async (req, res) => {
 
     const post = await Post.findById(postId);
     if (post) {
-      post.commentsCount = (post.commentsCount || 0) + 1;
+      post.commentCount = (post.commentCount || 0) + 1;
       post.lastEngagementAt = new Date();
       updateTrendingScore(post);
       await post.save();
