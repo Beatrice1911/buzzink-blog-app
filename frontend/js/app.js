@@ -19,14 +19,14 @@ document
 function routeByPage() {
   const path = window.location.pathname;
 
-  if (path === "/" || path === "/index.html") {
+  if (path === "/" || path === "/index") {
     fetchPosts();
     fetchTrendingPosts();
-  } else if (path === "/my-posts.html") {
+  } else if (path === "/my-posts") {
     fetchMyPosts();
-  } else if (path === "/post.html") {
+  } else if (path === "/post") {
     loadSinglePost();
-  } else if (path === "/saved.html") {
+  } else if (path === "/saved") {
     loadSavedPosts();
   } else {
     fetchPosts();
