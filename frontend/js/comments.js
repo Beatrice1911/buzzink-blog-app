@@ -197,7 +197,8 @@ export async function postComment(
     });
 
     if (res.ok) {
-      const newComment = await res.json();
+      const data = await res.json();
+      const newComment = data.comment;
       const div = document.createElement("div");
       div.classList.add("comment");
       div.innerHTML = `
