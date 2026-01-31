@@ -28,7 +28,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const {
   getPosts,
-  getMyPosts,
   getPostBySlug,
   createPost,
   updatePost,
@@ -44,7 +43,7 @@ const {
 } = require("../controllers/postController");
 
 router.get("/", optionalAuth, getPosts);
-router.get("/mine", requireAuth, getMyPosts);
+router.get("/mine", requireAuth, getPosts);
 router.get("/saved/me", requireAuth, getSavedPosts);
 router.get("/trending", getTrendingPosts);
 router.get("/slug/:slug/related", optionalAuth, getPostsByCategory);

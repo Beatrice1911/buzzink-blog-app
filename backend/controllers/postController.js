@@ -14,9 +14,9 @@ const getPosts = async (req, res) => {
 
     if (category && category !== "all") filter.category = category;
 
-    // if (req.path.includes("/mine")) {
-    //   filter = { authorId: userId };
-    // }
+    if (req.path.includes("/mine")) {
+      filter = { authorId: userId };
+    }
 
     if (req.query.authorId) {
       filter.authorId = new mongoose.Types.ObjectId(req.query.authorId);
@@ -59,11 +59,6 @@ const getPosts = async (req, res) => {
     console.error("Get posts error:", err);
     res.status(500).json({ message: "Failed to fetch posts" });
   }
-};
-
-const getMyPosts = async (req, res) => {
-  req.query.authorId = req.user.id;
-  return getPosts(req, res);
 };
 
 const getPostBySlug = async (req, res) => {
@@ -472,7 +467,6 @@ const getSavedPosts = async (req, res) => {
 
 module.exports = {
   getPosts,
-  getMyPosts,
   getPostBySlug,
   createPost,
   updatePost,
