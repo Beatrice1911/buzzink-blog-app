@@ -17,7 +17,7 @@ document
   .getElementById("canonicalUrl")
   ?.setAttribute("href", window.location.href);
 
-function routeByPage() {
+async function routeByPage() {
   const path = window.location.pathname;
 
   if (path === "/" || path.endsWith("index.html")) {
@@ -38,20 +38,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
   window.currentUser = user;
 
-  await updateAvatar(user);
-
-  setUpPostSEO();
-  initEvents();
   initAuth();
   initUI();
+  await updateAvatar(user);
+
+  initEvents();
   initComments();
   loadSavedTheme();
 
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
 
-  routeByPage();
+  await routeByPage();
+
   refreshPage();
+  setUpPostSEO();
 
   if (
     window.location.pathname.endsWith("write.html") &&

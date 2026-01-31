@@ -54,12 +54,15 @@ export async function handleDeleteComment(deleteBtn) {
       if (commentEl) commentEl.remove();
 
       let commentCountSpan;
+      let postId;
 
       if (window.location.pathname.endsWith("post.html")) {
         const postElement = document.getElementById("singlePostContainer");
+        postId = postElement?.querySelector(".comment-btn")?.dataset?.postId;
         commentCountSpan = postElement?.querySelector(".comment-count");
       } else {
         const postElement = deleteBtn.closest(".post");
+        postId = postElement?.querySelector(".comment-btn")?.dataset?.postId;
         commentCountSpan = postElement?.querySelector(".comment-count");
       }
 
