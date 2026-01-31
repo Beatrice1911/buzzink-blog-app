@@ -19,6 +19,7 @@ const savedPosts = document.getElementById("savedPosts");
 const profileEdit = document.getElementById("profile-edit");
 const settings = document.getElementById("settings");
 const themeToggle = document.getElementById("themeToggle");
+const root = document.documentElement;
 
 export function showToast(message, type = "info", duration = 5000) {
   const container = document.getElementById("toast-container");
@@ -54,10 +55,6 @@ function initMenus() {
     }
     mobileMenu.classList.toggle("active");
   });
-}
-
-function navigate(path) {
-  history.pushState({}, "", path);
 }
 
 function initNavigation() {
@@ -172,8 +169,6 @@ function initTheme() {
 }
 
 export function loadSavedTheme() {
-  const root = document.documentElement;
-
   const savedTheme = localStorage.getItem("theme");
 
   if (savedTheme === "dark") {
