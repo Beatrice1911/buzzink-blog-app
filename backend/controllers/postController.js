@@ -355,9 +355,12 @@ const savePost = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const user = req.user;
-    const post = await Post.findOne({ slug: req.params.slug });
+    const user = await User.findById(req.user.id || req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    const post = await Post.findOne({ slug: req.params.slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (!Array.isArray(user.savedPosts)) {
@@ -386,9 +389,12 @@ const unsavePost = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const user = req.user;
-    const post = await Post.findOne({ slug: req.params.slug });
+    const user = await User.findById(req.user.id || req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    const post = await Post.findOne({ slug: req.params.slug });
     if (!post) return res.status(404).json({ message: "Post not found" });
 
     if (!Array.isArray(user.savedPosts)) {
@@ -398,6 +404,7 @@ const unsavePost = async (req, res) => {
     user.savedPosts = user.savedPosts.filter(
       (id) => id.toString() !== post._id.toString(),
     );
+    
     await user.save();
 
     res.status(200).json({ message: "Post removed from saved posts" });
