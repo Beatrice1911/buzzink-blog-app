@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
     />
     <link
       rel="stylesheet"
@@ -19,14 +23,12 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
     />
-    <title>Homepage - BuzzInk</title>
-    <meta
-      name="description"
-      content="Latest tech news, fashion trends, travel guides, and lifestyle tips. Join our community of passionate bloggers and readers."
-    />
+    <title>All Posts - BuzzInk</title>
+    <title id="postTitle"></title>
+    <meta name="description" content="" id="postDescription" />
     <meta property="og:title" content="" id="ogTitle" />
     <meta property="og:description" content="" id="ogDescription" />
-    <meta property="og:image" content="/Images/logo_optimized" />
+    <meta property="og:image" content="" id="ogImage" />
     <meta property="og:url" content="" id="ogUrl" />
 
     <meta name="twitter:title" content="" id="twitterTitle" />
@@ -49,7 +51,6 @@
 
       <div class="icons">
         <i class="fas fa-search search-icon"></i>
-        <!-- <i class="fas fa-user-circle user-icon"></i> -->
         <img
           id="navUserAvatar"
           src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png"
@@ -65,11 +66,10 @@
       </div>
 
       <nav>
-        <a href="index.html" class="active">Home</a>
-        <a href="all-posts.html">Posts</a>
+        <a href="index.html">Home</a>
+        <a href="all-posts.html" class="active">Posts</a>
         <!-- <a href="#">Categories</a> -->
         <a href="about.html">About</a>
-        <!-- <i class="fas fa-user-circle user-icon"></i> -->
         <img
           id="navUserAvatar"
           src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png"
@@ -83,50 +83,47 @@
         />
       </nav>
     </div>
-
     <div class="mobile-nav" id="mobileMenu">
       <a href="index.html">Home</a>
       <a href="all-posts.html">Posts</a>
       <!-- <a href="#">Categories</a> -->
       <a href="about.html">About</a>
     </div>
+    <div class="mobile-search" id="mobileSearch">
+      <input type="text" placeholder="Search posts..." class="search" />
+    </div>
+
     <div class="user-menu-details" id="userMenuDetails">
       <p id="profile-edit">Profile</p>
       <p id="myPosts">My Posts</p>
       <p id="savedPosts">Saved Posts</p>
       <p id="settings">Settings</p>
-      <button id="logoutBtn">Logout</button>
+      <button id="logoutBtn" class="hidden">Logout</button>
     </div>
 
-    <section class="hero">
-      <div class="mobile-search" id="mobileSearch">
-        <input type="text" class="search" placeholder="Search posts..." />
-      </div>
+    <div class="all-posts-heading">
+      <h2 class="all-posts-h2">All Posts</h2>
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="Food">Food</option>
+        <option value="Travel">Travel</option>
+        <option value="Tech">Tech</option>
+        <option value="Lifestyle">Lifestyle</option>
+        <option value="Fashion">Fashion</option>
+        <option value="Education">Education</option>
+        <option value="News">News</option>
+        <option value="Health">Health</option>
+        <option value="Finance">Finance</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Business">Business</option>
+        <option value="Sports">Sports</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
 
-      <div class="hero-content">
-        <h1>Welcome to BuzzInk</h1>
-        <p>
-          Your space to share, connect, and explore. Whether it’s fashion, food,
-          travel, or anything you’re passionate about, this is where your voice
-          finds its audience. Start writing, start inspiring!
-        </p>
-        <button class="write-post-btn write-post" id="write-post-btn">
-          Write a Post
-        </button>
-      </div>
-    </section>
+    <div class="posts-container" id="allPostsContainer"></div>
 
-    <section class="featured-posts" id="featured">
-      <h2>Featured Posts</h2>
-      <div id="featuredPostsContainer" class="posts-container"></div>
-      <button class="all-posts-btn btn">See all Posts</button>
-    </section>
-
-    <section class="trending-posts">
-      <h2><i class="fa-solid fa-fire-flame-curved"></i> Trending Posts</h2>
-      <ul id="trending-list"></ul>
-    </section>
-
+    <div id="pagination"></div>
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-about">
@@ -150,11 +147,6 @@
             <input type="email" placeholder="Your email" required />
             <button type="submit">Subscribe</button>
           </form>
-          <div class="social-media-icons">
-            <a href="#"><i class="fa-brands fa-instagram"></i></a>
-            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-          </div>
         </div>
       </div>
 
@@ -168,7 +160,7 @@
         <span id="closeModal" class="close">&times;</span>
 
         <div class="auth-tabs">
-          <button id="loginTab">Login</button>
+          <button id="loginTab" class="active">Login</button>
           <button id="registerTab">Register</button>
         </div>
 
@@ -186,7 +178,7 @@
           <button type="submit">Login</button>
         </form>
 
-        <form id="registerForm" class="auth-form">
+        <form id="registerForm" class="auth-form hidden">
           <input type="text" id="registerName" placeholder="Name" required />
           <input type="email" id="registerEmail" placeholder="Email" required />
           <input
@@ -199,6 +191,7 @@
         </form>
       </div>
     </div>
+
     <div id="forgotPasswordModal" class="auth-modal hidden">
       <div class="auth-modal-content">
         <span id="closeForgotModal" class="close">&times;</span>

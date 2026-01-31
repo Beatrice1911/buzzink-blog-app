@@ -56,22 +56,34 @@ function initMenus() {
   });
 }
 
-export function navigate(path) {
+function navigate(path) {
   history.pushState({}, "", path);
 }
 
 function initNavigation() {
-  logo?.addEventListener("click", () => navigate("/"));
+  logo?.addEventListener("click", () => {
+    window.location.href = "index.html";
+  });
 
-  allPostsBtn?.addEventListener("click", () => navigate("/all-posts"));
+  allPostsBtn?.addEventListener("click", () => {
+    window.location.href = "all-posts.html";
+  });
 
-  myPosts?.addEventListener("click", () => navigate("/my-posts"));
+  myPosts?.addEventListener("click", () => {
+    window.location.href = "my-posts.html";
+  });
 
-  profileEdit?.addEventListener("click", () => navigate("/dashboard"));
+  profileEdit?.addEventListener("click", () => {
+    window.location.href = "dashboard.html";
+  });
 
-  savedPosts?.addEventListener("click", () => navigate("/saved"));
+  savedPosts?.addEventListener("click", () => {
+    window.location.href = "saved.html";
+  });
 
-  settings?.addEventListener("click", () => navigate("/settings"));
+  settings?.addEventListener("click", () => {
+    window.location.href = "settings.html";
+  });
 }
 
 function initAuthModal() {

@@ -9,7 +9,7 @@ import {
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser, updateAvatar } from "./auth.js";
-import { initUI, applyTheme, loadSavedTheme, navigate } from "./ui.js";
+import { initUI, applyTheme, loadSavedTheme } from "./ui.js";
 import { initComments } from "./comments.js";
 
 document
@@ -19,27 +19,19 @@ document
 function routeByPage() {
   const path = window.location.pathname;
 
-  if (path === "/" || path === "/index") {
+  if (path === "/" || path.endsWith("index.html")) {
     fetchPosts();
     fetchTrendingPosts();
-  } else if (path === "/my-posts") {
+  } else if (path.endsWith("my-posts.html")) {
     fetchMyPosts();
-  } else if (path === "/post") {
+  } else if (path.endsWith("post.html")) {
     loadSinglePost();
-  } else if (path === "/saved") {
+  } else if (path.endsWith("saved.html")) {
     loadSavedPosts();
   } else {
     fetchPosts();
   }
 }
-
-document?.addEventListener("click", (e) => {
-  const link = e.target.closest("a[data-link]");
-  if (!link) return;
-
-  e.preventDefault();
-  navigate(link.getAttribute("href"));
-});
 
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
@@ -60,5 +52,3 @@ document.addEventListener("DOMContentLoaded", async () => {
   routeByPage();
   refreshPage();
 });
-
-window.addEventListener("popstate", routeByPage);
