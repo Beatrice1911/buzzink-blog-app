@@ -6,6 +6,7 @@ import {
   loadSavedPosts,
   loadSinglePost,
   refreshPage,
+  initPostForm,
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser, updateAvatar } from "./auth.js";
@@ -51,4 +52,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   routeByPage();
   refreshPage();
+
+  if (
+    window.location.pathname.endsWith("write.html") &&
+    !localStorage.getItem("editSlug")
+  ) {
+    localStorage.removeItem("editSlug");
+  }
+
+  initPostForm();
 });

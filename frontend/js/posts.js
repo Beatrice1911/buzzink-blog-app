@@ -299,13 +299,6 @@ export async function deletePost(slug) {
   }
 }
 
-// if (
-//   window.location.pathname.endsWith("write.html") &&
-//   !localStorage.getItem("editSlug")
-// ) {
-//   localStorage.removeItem("editSlug");
-// }
-
 export function editPost(slug) {
   if (!slug) return;
   localStorage.setItem("editSlug", slug);
@@ -313,113 +306,111 @@ export function editPost(slug) {
 }
 
 export function initPostForm() {
+  const postForm = document.getElementById("postForm");
   const addPostBtn = document.querySelector(".add-post-btn");
 
+  if (!postForm) return;
+
+  const editSlug = localStorage.getItem("editSlug");
+
   const setPostingState = (isPosting) => {
-    if (isPosting) {
-      addPostBtn.disabled = true;
-      addPostBtn.innerHTML = `
-      <i class="fa-solid fa-spinner fa-spin"></i> Posting...
-    `;
-    } else {
-      addPostBtn.disabled = false;
-      addPostBtn.innerHTML = "Add Post";
-    }
+    addPostBtn.disabled = isPosting;
+    addPostBtn.innerHTML = isPosting
+      ? `<i class="fa-solid fa-spinner fa-spin"></i> Posting...`
+      : editSlug
+        ? "Update Post"
+        : "Add Post";
   };
-  const postForm = document.getElementById("postForm");
-  if (postForm) {
-    const editSlug = localStorage.getItem("editSlug");
 
-    if (editSlug && editSlug !== "null") {
-      (async () => {
-        try {
-          const res = await apiFetch(`${API_URL}/${editSlug}`, {
-            credentials: "include",
-          });
-          if (!res.ok) throw new Error("Post not found");
-          const post = await res.json();
+  if (editSlug && editSlug !== "null") {
+    (async () => {
+      try {
+        const res = await apiFetch(`${API_URL}/${editSlug}`, {
+          credentials: "include",
+        });
+        if (!res.ok) throw new Error("Post not found");
+        const post = await res.json();
 
-          document.getElementById("title").value = post.title || "";
-          document.getElementById("content").value = post.content || "";
-          document.getElementById("category").value = post.category || "";
+        document.getElementById("title").value = post.title || "";
+        document.getElementById("content").value = post.content || "";
+        document.getElementById("category").value = post.category || "";
 
-          if (post.image) {
-            const imgPreview = document.getElementById("imagePreview");
-            imgPreview.src = post.image;
-            imgPreview.style.display = "block";
-          }
-        } catch (err) {
-          console.error("Error loading post:", err);
+        if (post.image) {
+          const imgPreview = document.getElementById("imagePreview");
+          imgPreview.src = post.image;
+          imgPreview.style.display = "block";
         }
-      })();
+      } catch (err) {
+        console.error("Error loading post:", err);
+      }
+    })();
 
-      postForm.onsubmit = async function (e) {
-        e.preventDefault();
+    postForm.onsubmit = async function (e) {
+      e.preventDefault();
 
-        const formData = new FormData();
-        formData.append("title", document.getElementById("title").value);
-        formData.append("content", document.getElementById("content").value);
-        formData.append("category", document.getElementById("category").value);
+      const formData = new FormData();
+      formData.append("title", document.getElementById("title").value);
+      formData.append("content", document.getElementById("content").value);
+      formData.append("category", document.getElementById("category").value);
 
-        const imageFile = document.getElementById("image").files[0];
-        if (imageFile) {
-          formData.append("image", imageFile);
-        }
+      const imageFile = document.getElementById("image").files[0];
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
 
-        try {
-          setPostingState(true);
-          const res = await apiFetch(`${API_URL}/${editSlug}`, {
-            method: "PUT",
-            credentials: "include",
-            body: formData,
-          });
-
-          if (res.ok) {
-            showToast("Post updated successfully!", "success");
-            localStorage.removeItem("editSlug");
-            window.location.href = "all-posts.html";
-          } else {
-            console.error("Update failed:", await res.text());
-          }
-        } catch (err) {
-          console.error("Error updating post:", err);
-          showToast("Failed to update post!", "error");
-        } finally {
-          setPostingState(false);
-        }
-      };
-    } else {
-      localStorage.removeItem("editSlug");
-      postForm?.addEventListener("submit", async function (e) {
-        e.preventDefault();
-        const title = document.getElementById("title").value;
-        const content = document.getElementById("content").value;
-        const category = document.getElementById("category").value;
-        const imageFile = document.getElementById("image").files[0];
-
-        console.log("Submitting new post:", {
-          title,
-          content,
-          category,
-          imageFile,
+      try {
+        setPostingState(true);
+        const res = await apiFetch(`${API_URL}/${editSlug}`, {
+          method: "PUT",
+          credentials: "include",
+          body: formData,
         });
 
-        try {
-          setPostingState(true);
-          const newPost = await addPost(title, content, category, imageFile);
-          console.log("Post created successfully!", newPost);
-          showToast("Post created successfully!", "success");
-          postForm.reset();
-          window.location.href = "all-posts.html";
+        if (res.ok) {
+          showToast("Post updated successfully!", "success");
           localStorage.removeItem("editSlug");
-        } catch (err) {
-          console.error("Error adding post:", err);
-          showToast("Failed to add post!", "error");
-        } finally {
-          setPostingState(false);
+          window.location.href = "all-posts.html";
+        } else {
+          console.error("Update failed:", await res.text());
         }
+      } catch (err) {
+        console.error("Error updating post:", err);
+        showToast("Failed to update post!", "error");
+      } finally {
+        setPostingState(false);
+      }
+    };
+  } else {
+    localStorage.removeItem("editSlug");
+    postForm?.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      const category = document.getElementById("category").value;
+      const imageFile = document.getElementById("image").files[0];
+
+      console.log("Submitting new post:", {
+        title,
+        content,
+        category,
+        imageFile,
       });
-    }
+
+      try {
+        setPostingState(true);
+        const newPost = await addPost(title, content, category, imageFile);
+        console.log("Post created successfully!", newPost);
+        showToast("Post created successfully!", "success");
+        postForm.reset();
+        window.location.href = "all-posts.html";
+        localStorage.removeItem("editSlug");
+      } catch (err) {
+        console.error("Error adding post:", err);
+        showToast("Failed to add post!", "error");
+      } finally {
+        setPostingState(false);
+      }
+    });
   }
 }
 

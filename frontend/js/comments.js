@@ -64,8 +64,7 @@ export async function handleDeleteComment(deleteBtn) {
       }
 
       if (commentCountSpan) {
-        const currentCount = parseInt(commentCountSpan.textContent) || 0;
-        commentCountSpan.textContent = Math.max(0, currentCount - 1);
+        await updateCommentCount(postId, commentCountSpan);
       }
       showToast("Comment deleted successfully!", "success");
     } else {
