@@ -360,7 +360,15 @@ const savePost = async (req, res) => {
 
     if (!post) return res.status(404).json({ message: "Post not found" });
 
-    if (!user.savedPosts.includes(post._id)) {
+    if (!Array.isArray(user.savedPosts)) {
+      user.savedPosts = [];
+    }
+
+    const alreadySaved = user.savedPosts.some(
+      (id) => id.toString() === post._id.toString(),
+    );
+
+    if (!alreadySaved) {
       user.savedPosts.push(post._id);
       await user.save();
     }
@@ -383,6 +391,10 @@ const unsavePost = async (req, res) => {
 
     if (!post) return res.status(404).json({ message: "Post not found" });
 
+    if (!Array.isArray(user.savedPosts)) {
+      user.savedPosts = [];
+    }
+
     user.savedPosts = user.savedPosts.filter(
       (id) => id.toString() !== post._id.toString(),
     );
@@ -397,6 +409,10 @@ const unsavePost = async (req, res) => {
 
 const getSavedPosts = async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const userId = req.user.id;
 
     const user = await User.findById(userId).populate({
@@ -411,7 +427,7 @@ const getSavedPosts = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(user.savedPosts);
+    res.json(user.savedPosts || []);
   } catch (err) {
     console.error("Get saved posts error:", err);
     res.status(500).json({ message: "Server error" });
