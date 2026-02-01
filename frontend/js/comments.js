@@ -53,21 +53,17 @@ export async function handleDeleteComment(deleteBtn) {
       const commentEl = deleteBtn.closest(".comment");
       if (commentEl) commentEl.remove();
 
-      let commentCountSpan;
-      let postId;
+      const postElement = window.location.pathname.endsWith("post.html")
+        ? document.getElementById("singlePostContainer")
+        : deleteBtn.closest(".post");
 
-      if (window.location.pathname.endsWith("post.html")) {
-        const postElement = document.getElementById("singlePostContainer");
-        postId = postElement?.querySelector(".comment-btn")?.dataset?.postId;
-        commentCountSpan = postElement?.querySelector(".comment-count");
-      } else {
-        const postElement = deleteBtn.closest(".post");
-        postId = postElement?.querySelector(".comment-btn")?.dataset?.postId;
-        commentCountSpan = postElement?.querySelector(".comment-count");
-      }
+      const commentCountSpan = postElement?.querySelector(".comment-count");
 
       if (commentCountSpan) {
-        await updateCommentCount(postId, commentCountSpan);
+        let count = parseInt(commentCountSpan.textContent) || 0;
+        count = Math.max(count - 1, 0);
+        commentCountSpan.textContent = count;
+        commentCountSpan.title = `${count} comment${count !== 1 ? "s" : ""}`;
       }
       showToast("Comment deleted successfully!", "success");
     } else {
@@ -251,39 +247,39 @@ export async function updateCommentCount(postId, commentCountSpan) {
 }
 
 async function handleCommentSubmit(e) {
-    const commentForm = e.target.closest(".comment-form");
-    if (!commentForm) return;
-    e.preventDefault();
+  const commentForm = e.target.closest(".comment-form");
+  if (!commentForm) return;
+  e.preventDefault();
 
-    const commentInput = commentForm.querySelector(".comment-input");
-    const commentText = commentInput.value.trim();
-    if (!commentText) return;
+  const commentInput = commentForm.querySelector(".comment-input");
+  const commentText = commentInput.value.trim();
+  if (!commentText) return;
 
-    let postElement;
-    let commentsList;
-    let postId;
-    let commentCountSpan;
+  let postElement;
+  let commentsList;
+  let postId;
+  let commentCountSpan;
 
-    if (window.location.pathname.endsWith("post.html")) {
-      postElement = document.getElementById("singlePostContainer");
-      commentsList = postElement.querySelector(".comments-list");
-      postId = postElement.querySelector(".comment-btn").dataset.postId;
-      commentCountSpan = postElement.querySelector(".comment-count");
-    } else {
-      postElement = commentForm.closest(".post");
-      commentsList = postElement.querySelector(".comments-list");
-      postId = postElement.querySelector(".like-btn").dataset.postId;
-      commentCountSpan = postElement.querySelector(".comment-count");
-    }
+  if (window.location.pathname.endsWith("post.html")) {
+    postElement = document.getElementById("singlePostContainer");
+    commentsList = postElement.querySelector(".comments-list");
+    postId = postElement.querySelector(".comment-btn").dataset.postId;
+    commentCountSpan = postElement.querySelector(".comment-count");
+  } else {
+    postElement = commentForm.closest(".post");
+    commentsList = postElement.querySelector(".comments-list");
+    postId = postElement.querySelector(".like-btn").dataset.postId;
+    commentCountSpan = postElement.querySelector(".comment-count");
+  }
 
-    if (!window.currentUser) {
-      showToast("Please log in to comment.", "error");
-      commentInput.value = "";
-      return;
-    }
-
-    await postComment(postId, commentText, commentsList, commentCountSpan);
+  if (!window.currentUser) {
+    showToast("Please log in to comment.", "error");
     commentInput.value = "";
+    return;
+  }
+
+  await postComment(postId, commentText, commentsList, commentCountSpan);
+  commentInput.value = "";
 }
 
 export function initComments() {

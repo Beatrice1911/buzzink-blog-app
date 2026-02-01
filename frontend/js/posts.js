@@ -24,14 +24,18 @@ function renderNoAuthorPost(container) {
 export async function fetchPosts(page = 1, limit = 6) {
   try {
     const categoryFilter = document.getElementById("categoryFilter")?.value;
-    const searchInput = document.querySelector(".search")?.value;
+    const searchInput = document.querySelectorAll(".search");
 
     const queryParams = new URLSearchParams();
     queryParams.append("page", page);
     queryParams.append("limit", limit);
     if (categoryFilter && categoryFilter !== "all")
       queryParams.append("category", categoryFilter);
-    if (searchInput) queryParams.append("search", searchInput);
+
+    searchInput.forEach((input) => {
+      if (input) searchInput = input.value;
+      if (searchInput) queryParams.append("search", searchInput);
+    });
 
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`, {
       credentials: "include",
@@ -53,11 +57,14 @@ export async function fetchPosts(page = 1, limit = 6) {
 // Fetch posts created by the logged-in user
 export async function fetchMyPosts(page = 1, limit = 6) {
   try {
-    const searchInput = document.querySelector(".search")?.value;
+    const searchInput = document.querySelectorAll(".search");
     const queryParams = new URLSearchParams();
     queryParams.append("page", page);
     queryParams.append("limit", limit);
-    if (searchInput) queryParams.append("search", searchInput);
+    searchInput.forEach((input) => {
+      if (input) searchInput = input.value;
+      if (searchInput) queryParams.append("search", searchInput);
+    });
 
     const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`, {
       credentials: "include",
@@ -696,11 +703,14 @@ const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 export async function loadSavedPosts(page = 1, limit = 6) {
   try {
-    const searchInput = document.querySelector(".search")?.value;
+    const searchInput = document.querySelector(".search");
     const queryParams = new URLSearchParams();
     queryParams.append("page", page);
     queryParams.append("limit", limit);
-    if (searchInput) queryParams.append("search", searchInput);
+    searchInput.forEach((input) => {
+      if (input) searchInput = input.value;
+      if (searchInput) queryParams.append("search", searchInput);
+    });
 
     const res = await apiFetch(
       `${API_URL}/saved/me?${queryParams.toString()}`,

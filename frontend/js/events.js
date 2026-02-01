@@ -1,7 +1,7 @@
 import { handleLike } from "./likes.js";
 import { toggleComments, handleDeleteComment } from "./comments.js";
 import { editPost, deletePost } from "./posts.js";
-import { userMenuDetails, userIcon } from "./ui.js";
+import { userMenuDetails, userIcon, mobileMenu } from "./ui.js";
 
 let isLikesModalOpen = false;
 
