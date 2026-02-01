@@ -6,11 +6,13 @@ import { userMenuDetails, userIcon, mobileMenu, menuToggle } from "./ui.js";
 let isLikesModalOpen = false;
 
 function openLikesModal(postId, users) {
+  if (isLikesModalOpen) return;
   const modal = document.getElementById(`likesModal-${postId}`);
   const list = document.getElementById(`likesList-${postId}`);
   if (!modal || !list) return;
 
   list.innerHTML = "";
+  if (!Array.isArray(users) || users.length === 0) return;
   users.forEach((user) => {
     const li = document.createElement("li");
     li.textContent = user;
@@ -21,10 +23,12 @@ function openLikesModal(postId, users) {
   requestAnimationFrame(() => modal.classList.add("active"));
   isLikesModalOpen = true;
 
-  modal
-    .querySelector(".likes-modal-content")
-    .addEventListener("click", (e) => e.stopPropagation());
+  const content = modal.querySelector(".likes-modal-content");
 
+  if (!content.dataset.bound) {
+    content.addEventListener("click", (e) => e.stopPropagation());
+    content.dataset.bound = "true";
+  }
   const closeBtn = document.getElementById(`closeLikesModal-${postId}`);
   closeBtn?.addEventListener(
     "click",
