@@ -180,20 +180,20 @@ function initForgotPassword() {
   const forgotPasswordForm = document.getElementById("forgotPasswordForm");
 
   if (forgotPasswordLink) {
-    forgotPasswordLink.addEventListener("click", (e) => {
+    forgotPasswordLink?.addEventListener("click", (e) => {
       e.preventDefault();
       forgotPasswordModal.classList.remove("hidden");
     });
   }
 
   if (closeForgotModal) {
-    closeForgotModal.addEventListener("click", () => {
+    closeForgotModal?.addEventListener("click", () => {
       forgotPasswordModal.classList.add("hidden");
     });
   }
 
   if (forgotPasswordForm) {
-    forgotPasswordForm.addEventListener("submit", async (e) => {
+    forgotPasswordForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("forgotEmail").value.trim();
       try {

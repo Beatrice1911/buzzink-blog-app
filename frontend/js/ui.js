@@ -43,7 +43,7 @@ export function showToast(message, type = "info", duration = 5000) {
 
   setTimeout(() => {
     toast.style.animation = "slideOut 0.5s forwards";
-    toast.addEventListener("animationend", () => toast.remove());
+    toast?.addEventListener("animationend", () => toast.remove());
   }, duration);
 }
 
@@ -135,7 +135,7 @@ function initSearchToggle() {
 
 function initWritePostButtons() {
   writePostBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn?.addEventListener("click", (e) => {
       const storedUser = localStorage.getItem("user");
       const user = storedUser ? JSON.parse(storedUser) : null;
 

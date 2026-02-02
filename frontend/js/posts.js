@@ -608,7 +608,7 @@ export async function loadSinglePost() {
       icon.classList.toggle("fa-regular", !isSaved);
     }
 
-    bookmarkIcon.addEventListener("click", async () => {
+    bookmarkIcon?.addEventListener("click", async () => {
       const slug = bookmarkIcon.dataset.slug;
       const isSaved = bookmarkIcon.dataset.saved === "true";
 
@@ -780,7 +780,7 @@ export async function loadSavedPosts(page = 1, limit = 6) {
       .join("");
 
     document.querySelectorAll(".bookmark").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
+      btn?.addEventListener("click", async (e) => {
         e.stopPropagation();
 
         const slug = btn.dataset.slug;
@@ -822,7 +822,7 @@ document
   .getElementById("categoryFilter")
   ?.addEventListener("change", () => fetchPosts(1));
 
-search.forEach((input) => input.addEventListener("keyup", () => fetchPosts(1)));
+search.forEach((input) => input?.addEventListener("keyup", () => fetchPosts(1)));
 
 function renderPagination(containerId, page, total) {
   const container = document.getElementById("pagination");
@@ -833,7 +833,7 @@ function renderPagination(containerId, page, total) {
     const btn = document.createElement("button");
     btn.textContent = i;
     btn.className = i === page ? "pg-active" : "";
-    btn.addEventListener("click", () => {
+    btn?.addEventListener("click", () => {
       if (containerId === "myPostsContainer") {
         fetchMyPosts(i);
       } else if (containerId === "savedPostsContainer") {

@@ -47,7 +47,7 @@ async function loadProfile() {
 }
 
 const saveChangesBtn = document.getElementById("saveChangesBtn");
-saveChangesBtn.addEventListener("click", async (e) => {
+saveChangesBtn?.addEventListener("click", async (e) => {
   e.preventDefault();
 
   const name = document.getElementById("name").value.trim();
@@ -93,7 +93,7 @@ saveChangesBtn.addEventListener("click", async (e) => {
 
 // Remove photo button logic
 const removePhotoBtn = document.getElementById("removePhotoBtn");
-removePhotoBtn.addEventListener("click", async () => {
+removePhotoBtn?.addEventListener("click", async () => {
   try {
     const formData = new FormData();
     formData.append("removePhoto", "true");
@@ -145,6 +145,6 @@ function showToastUser(message, type = "info", duration = 5000) {
 
   setTimeout(() => {
     toast.style.animation = "slideOut 0.5s forwards";
-    toast.addEventListener("animationend", () => toast.remove());
+    toast?.addEventListener("animationend", () => toast.remove());
   }, duration);
 }

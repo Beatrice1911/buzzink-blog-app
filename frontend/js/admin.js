@@ -25,7 +25,7 @@ const LIMIT = 10;
 
 
 // Select sidebar links and sections
-const sidebarLinks = document.querySelectorAll('.sidebar .nav-links a');
+const sidebarLinks = document.querySelectorAll('.sidebar .admin-nav-links a');
 const sections = {
   overview: document.querySelector('.overview-cards'),
   users: document.getElementById('users-section'),

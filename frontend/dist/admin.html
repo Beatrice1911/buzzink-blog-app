@@ -9,17 +9,17 @@
       type="image/png"
     />
     <title>BuzzInk Admin Dashboard</title>
-    <script type="module" crossorigin src="/assets/admin-Cg08AlqL.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/api-BFm1pjAz.js">
+    <script type="module" crossorigin src="/assets/admin-DdJEDfph.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/app-CxC7aHN1.js">
     <link rel="stylesheet" crossorigin href="/assets/admin-B3_nWra4.css">
   </head>
   <body>
     <div class="dashboard">
       <!-- Sidebar -->
       <aside class="sidebar">
-        <h2 class="logo">BuzzInk Admin</h2>
+        <h2 class="admin-logo">BuzzInk Admin</h2>
         <nav>
-          <ul class="nav-links">
+          <ul class="admin-nav-links">
             <li>
               <a href="#overview" data-section="overview" class="active"
                 >📊 Overview</a
@@ -43,9 +43,11 @@
               src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png"
               alt="Admin Avatar"
               class="avatar"
+              id="navUserAvatar"
             />
           </div>
-          <button class="logout-btn">Logout</button>
+          <a href="index.html">Home</a>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
         </header>
 
         <!-- Overview Section -->
@@ -137,6 +139,6 @@
         </section>
       </main>
     </div>
-
+
   </body>
 </html>

@@ -48,7 +48,7 @@ async function fetchUserProfile(userId) {
 
     const postCard = document.querySelectorAll(".post-card");
     postCard.forEach((card) => {
-      card.addEventListener("click", () => {
+      card?.addEventListener("click", () => {
         const slug = card.dataset.slug;
         window.location.href = `post.html?slug=${slug}`;
       });

@@ -26,7 +26,7 @@ function openLikesModal(postId, users) {
   const content = modal.querySelector(".likes-modal-content");
 
   if (!content.dataset.bound) {
-    content.addEventListener("click", (e) => e.stopPropagation());
+    content?.addEventListener("click", (e) => e.stopPropagation());
     content.dataset.bound = "true";
   }
   const closeBtn = document.getElementById(`closeLikesModal-${postId}`);

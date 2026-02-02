@@ -111,7 +111,7 @@ export async function fetchComments(postId, commentsList, limit = 3) {
 
       let expanded = false;
 
-      toggleBtn.addEventListener("click", () => {
+      toggleBtn?.addEventListener("click", () => {
         expanded = !expanded;
         if (expanded) {
           commentsList.innerHTML = "";
