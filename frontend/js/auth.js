@@ -9,8 +9,7 @@ export const registerForm = document.getElementById("registerForm");
 const logoutBtn = document.getElementById("logoutBtn");
 
 export function normalizeUser(user) {
-  if (!user || typeof user !== "object") return null;
-
+  if (!user) return null;
   return {
     ...user,
     id: user.id || user._id,
@@ -19,18 +18,7 @@ export function normalizeUser(user) {
 
 window.currentUser = (() => {
   const stored = localStorage.getItem("user");
-
-  if (!stored || stored === "undefined") {
-    localStorage.removeItem("user");
-    return null;
-  }
-
-  try {
-    return normalizeUser(JSON.parse(stored));
-  } catch {
-    localStorage.removeItem("user");
-    return null;
-  }
+  return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
 export function updateUI(user) {
@@ -148,22 +136,24 @@ function initLogout() {
 }
 
 export async function checkUser() {
-  const refreshed = await refreshSession();
+  try {
+    const res = await apiFetch(`${AUTH_URL}/me`);
 
-  if (!refreshed || !window.currentUser) {
-    localStorage.removeItem("user");
+    if (!res.ok) throw new Error("Not authenticated");
+
+    const data = await res.json();
+    const user = normalizeUser(data);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    window.currentUser = user;
+    updateUI(user);
+    updateAvatar(user);
+    return user;
+  } catch (err) {
     updateUI(null);
     updateAvatar(null);
     return null;
   }
-
-  const user = window.currentUser;
-
-  localStorage.setItem("user", JSON.stringify(user));
-  updateUI(user);
-  updateAvatar(user);
-
-  return user;
 }
 
 export async function logout(silent = false) {

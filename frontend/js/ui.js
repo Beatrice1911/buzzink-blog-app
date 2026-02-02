@@ -104,7 +104,8 @@ function initAuthModal() {
 function initUserMenu() {
   userIcon.forEach((icon) =>
     icon?.addEventListener("click", () => {
-      const user = window.currentUser;
+      const storedUser = localStorage.getItem("user");
+      const user = storedUser ? JSON.parse(storedUser) : null;
 
       if (user && user.id) {
         userMenuDetails.classList.toggle("show");

@@ -29,7 +29,7 @@ export async function refreshSession() {
       credentials: "include",
     });
 
-    if (!res.ok) return false;
+    if (!res.ok) throw new Error("Refresh failed");
 
     const data = await res.json();
     window.currentUser = data.user;
