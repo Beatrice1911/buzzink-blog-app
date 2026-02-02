@@ -1,5 +1,7 @@
 import { apiFetch } from './api.js';
 import { showToast } from './ui.js';
+import { logout } from './auth.js';
+const logoutBtn = document.getElementById("logoutBtn");
 
 async function checkAdmin() {
   try {
@@ -15,6 +17,29 @@ async function checkAdmin() {
 function redirectHome() {
   alert('Access denied. Admins only.');
   window.location.href = '/index.html';
+}
+
+async function updateAvatar(user) {
+  try {
+    const res = await apiFetch("/api/users/me");
+
+    if (!res.ok) return;
+
+    user = await res.json();
+
+    const adminAvatars = document.querySelectorAll(".avatar");
+    if (adminAvatars) {
+      adminAvatars.forEach((avatar) => {
+        avatar.src = user.profilePhoto?.trim()
+          ? user.profilePhoto
+          : DEFAULT_AVATAR;
+      });
+    }
+
+    window.currentUser = user;
+  } catch (err) {
+    console.warn("Failed to load auth user:", err);
+  }
 }
 
 let usersPage = 1;
@@ -241,10 +266,19 @@ function initNavigation() {
   showSection(sectionFromHash);
 }
 
+function initLogout() {
+  logoutBtn?.addEventListener("click", () => {
+    logout();
+    window.location.href = "index.html";
+  });
+}
+
 window.addEventListener('hashchange', initNavigation);
 
 document.addEventListener("DOMContentLoaded", async () => {
   await checkAdmin();
+  updateAvatar(window.currentUser);
+  initLogout();
   loadOverviewStats();
   loadUsers(usersPage);
   loadPosts(postsPage);
