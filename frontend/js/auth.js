@@ -138,7 +138,8 @@ function initLogout() {
 export async function checkUser() {
   const refreshed = await refreshSession();
 
-  if (!refreshed) {
+  if (!refreshed || !window.currentUser) {
+    localStorage.removeItem("user");
     updateUI(null);
     updateAvatar(null);
     return null;

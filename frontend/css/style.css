@@ -283,7 +283,7 @@ nav a.active::after {
   transition: all 0.3s ease;
   z-index: 999;
   background-color: var(--surface-card);
-  border-radius: 5px;
+  border-radius: 0 0 5px 5px;
   border: 1px solid #ccc;
 }
 
