@@ -9,7 +9,8 @@ export const registerForm = document.getElementById("registerForm");
 const logoutBtn = document.getElementById("logoutBtn");
 
 export function normalizeUser(user) {
-  if (!user) return null;
+  if (!user || typeof user !== "object") return null;
+
   return {
     ...user,
     id: user.id || user._id,
@@ -18,7 +19,18 @@ export function normalizeUser(user) {
 
 window.currentUser = (() => {
   const stored = localStorage.getItem("user");
-  return stored ? normalizeUser(JSON.parse(stored)) : null;
+
+  if (!stored || stored === "undefined") {
+    localStorage.removeItem("user");
+    return null;
+  }
+
+  try {
+    return normalizeUser(JSON.parse(stored));
+  } catch {
+    localStorage.removeItem("user");
+    return null;
+  }
 })();
 
 export function updateUI(user) {
