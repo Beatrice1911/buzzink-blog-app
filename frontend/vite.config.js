@@ -17,6 +17,7 @@ export default defineConfig({
         myPosts: path.resolve(__dirname, "my-posts.html"),
         write: path.resolve(__dirname, "write.html"),
         profile: path.resolve(__dirname, "profile.html"),
+        admin: path.resolve(__dirname, "admin.html"),
       },
     },
   }

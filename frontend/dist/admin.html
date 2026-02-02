@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      href="/Images/title-logo_optimized_.png"
+      type="image/png"
+    />
+    <title>BuzzInk Admin Dashboard</title>
+    <script type="module" crossorigin src="/assets/admin-Cg08AlqL.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/api-BFm1pjAz.js">
+    <link rel="stylesheet" crossorigin href="/assets/admin-B3_nWra4.css">
+  </head>
+  <body>
+    <div class="dashboard">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <h2 class="logo">BuzzInk Admin</h2>
+        <nav>
+          <ul class="nav-links">
+            <li>
+              <a href="#overview" data-section="overview" class="active"
+                >📊 Overview</a
+              >
+            </li>
+            <li><a href="#users-section" data-section="users">👤 Users</a></li>
+            <li><a href="#posts-section" data-section="posts">📝 Posts</a></li>
+            <li><a href="#comments-section" data-section="comments">💬 Comments</a></li>
+            <li><a href="#settings-section" data-section="settings">⚙️ Settings</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+          <div class="admin-info">
+            <span id="adminName">Admin Dashboard</span>
+            <img
+              src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png"
+              alt="Admin Avatar"
+              class="avatar"
+            />
+          </div>
+          <button class="logout-btn">Logout</button>
+        </header>
+
+        <!-- Overview Section -->
+        <section id="overview" class="overview-cards">
+          <div class="card">
+            <h3>Total Users</h3>
+            <p id="total-users">0</p>
+          </div>
+          <div class="card">
+            <h3>Total Posts</h3>
+            <p id="total-posts">0</p>
+          </div>
+          <div class="card">
+            <h3>Total Comments</h3>
+            <p id="total-comments">0</p>
+          </div>
+        </section>
+
+        <!-- Users Section -->
+        <section id="users-section" class="content-tables">
+          <h2>Users</h2>
+          <input type="text" id="user-search" placeholder="Search users..." />
+          <table class="data-table" id="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="pagination" id="users-pagination"></div>
+        </section>
+
+        <!-- Posts Section -->
+        <section
+          id="posts-section"
+          class="content-tables"
+          style="display: none"
+        >
+          <h2>Posts</h2>
+          <input type="text" id="post-search" placeholder="Search posts..." />
+          <table class="data-table" id="posts-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="pagination" id="posts-pagination"></div>
+        </section>
+
+        <!-- Comments Section -->
+        <section
+          id="comments-section"
+          class="content-tables"
+          style="display: none"
+        >
+          <h2>Comments</h2>
+          <input
+            type="text"
+            id="comment-search"
+            placeholder="Search comments..."
+          />
+          <table class="data-table" id="comments-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Post</th>
+                <th>Comment</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="pagination" id="comments-pagination"></div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings-section" class="section" style="display: none">
+          <h2>Admin Settings</h2>
+          <p>More controls coming soon…</p>
+        </section>
+      </main>
+    </div>
+
+  </body>
+</html>

@@ -1,5 +1,5 @@
-import { apiFetch } from './app.js';
-import { showToast } from './app.js';
+import { apiFetch } from './api.js';
+import { showToast } from './ui.js';
 
 async function checkAdmin() {
   try {
@@ -27,11 +27,11 @@ const LIMIT = 10;
 // Select sidebar links and sections
 const sidebarLinks = document.querySelectorAll('.sidebar .nav-links a');
 const sections = {
-  Overview: document.querySelector('.overview-cards'),
-  Users: document.getElementById('users-section'),
-  Posts: document.getElementById('posts-section'),
-  Comments: document.getElementById('comments-section'),
-  Settings: document.getElementById('settings-section')
+  overview: document.querySelector('.overview-cards'),
+  users: document.getElementById('users-section'),
+  posts: document.getElementById('posts-section'),
+  comments: document.getElementById('comments-section'),
+  settings: document.getElementById('settings-section')
 };
 
 // Function to hide all sections
@@ -41,30 +41,38 @@ function hideAllSections() {
   });
 }
 
-// Function to handle link clicks
+function showSection(sectionKey) {
+  Object.values(sections).forEach(sec => {
+    if (sec) sec.style.display = 'none';
+  });
+
+  sidebarLinks.forEach(link => link.classList.remove('active'));
+
+  const section = sections[sectionKey];
+  if (section) {
+    section.style.display = sectionKey === 'overview' ? 'flex' : 'block';
+  }
+
+  const activeLink = document.querySelector(
+    `.sidebar a[data-section="${sectionKey}"]`
+  );
+  activeLink?.classList.add('active');
+
+  if (sectionKey === 'users') loadUsers();
+  if (sectionKey === 'posts') loadPosts();
+  if (sectionKey === 'comments') loadComments();
+}
+
 sidebarLinks.forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
-
-    // Remove active class from all links
-    sidebarLinks.forEach(l => l.classList.remove('active'));
-
-    // Add active class to clicked link
-    link.classList.add('active');
-
-    const linkText = link.textContent.trim();
-
-    hideAllSections(); // Hide everything first
-
-    if (linkText === 'Overview') {
-      sections.Overview.style.display = 'flex';
-    } else if (sections[linkText]) {
-      sections[linkText].style.display = 'block';
-    }
+    const section = link.dataset.section;
+    location.hash = section;
+    showSection(section);
   });
 });
 
-// Utility function to create a table row
+
 function createRow(data, columns, type) {
   const tr = document.createElement('tr');
 
@@ -228,10 +236,20 @@ async function deleteComment(id, row) {
   loadComments(commentsPage);
 }
 
+function initNavigation() {
+  const sectionFromHash = location.hash.replace('#', '') || 'overview';
+  showSection(sectionFromHash);
+}
+
+window.addEventListener('hashchange', initNavigation);
+
 document.addEventListener("DOMContentLoaded", async () => {
   await checkAdmin();
   loadOverviewStats();
   loadUsers(usersPage);
   loadPosts(postsPage);
   loadComments(commentsPage);
+  initNavigation();
 });
+
+
