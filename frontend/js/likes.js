@@ -20,12 +20,10 @@ export async function handleLike(btn) {
     if (alreadyLiked) {
       res = await apiFetch(`/api/posts/${postId}/unlike`, {
         method: "POST",
-        credentials: "include",
       });
     } else {
       res = await apiFetch(`/api/posts/${postId}/like`, {
         method: "POST",
-        credentials: "include",
       });
     }
 

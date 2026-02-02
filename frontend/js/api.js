@@ -22,14 +22,14 @@ export async function apiFetch(url, options = {}) {
   return res;
 }
 
-async function refreshSession() {
+export async function refreshSession() {
   try {
     const res = await fetch(`${AUTH_URL}/refresh`, {
       method: "POST",
       credentials: "include",
     });
 
-    if (!res.ok) throw new Error("Refresh failed");
+    if (!res.ok) return false;
 
     const data = await res.json();
     window.currentUser = data.user;

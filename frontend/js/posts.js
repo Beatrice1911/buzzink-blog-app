@@ -10,8 +10,10 @@ let state = {
   mine: [],
   saved: [],
 };
-let currentPage = 1;
 let totalPages = 1;
+export let currentPage = Number(sessionStorage.getItem("postsPage")) || 1;
+export let currentCategory = sessionStorage.getItem("postsCategory") || "";
+export let currentSearch = sessionStorage.getItem("postsSearch") || "";
 
 function getImageUrl(image) {
   return image && image.startsWith("http") ? image : "/Images/fallback.jpg";
@@ -39,16 +41,23 @@ export async function fetchPosts(page = 1, limit = 6) {
       }
     });
 
-    const res = await apiFetch(`${API_URL}?${queryParams.toString()}`, {
-      credentials: "include",
-    });
+    const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
 
     state.all = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage ?? 1;
     totalPages = data.totalPages ?? 1;
 
-    refreshPage();
+    sessionStorage.setItem("postsPage", currentPage);
+    sessionStorage.setItem(
+      "postsCategory",
+      categoryFilter && categoryFilter !== "all" ? categoryFilter : "",
+    );
+    const activeSearch =
+      [...searchInputs].find((i) => i.value.trim())?.value.trim() || "";
+    sessionStorage.setItem("postsSearch", activeSearch);
+
+    displayPosts("allPostsContainer");
     renderPagination("allPostsContainer", currentPage, totalPages);
   } catch (err) {
     console.error("Error fetching posts:", err);
@@ -70,9 +79,7 @@ export async function fetchMyPosts(page = 1, limit = 6) {
       }
     });
 
-    const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`, {
-      credentials: "include",
-    });
+    const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`);
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -85,8 +92,13 @@ export async function fetchMyPosts(page = 1, limit = 6) {
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
 
+    sessionStorage.setItem("postsPage", currentPage);
+    const activeSearch =
+      [...searchInputs].find((i) => i.value.trim())?.value.trim() || "";
+    sessionStorage.setItem("postsSearch", activeSearch);
+
     const containerId = "myPostsContainer";
-    refreshPage();
+    displayPosts("myPostsContainer", null, "You haven't made any posts yet...");
     renderPagination(containerId, currentPage, totalPages);
     if (state.mine.length === 0) {
       const container = document.getElementById("myPostsContainer");
@@ -271,7 +283,6 @@ export async function addPost(title, content, category, imageFile) {
 
   const res = await apiFetch(`${API_URL}`, {
     method: "POST",
-    credentials: "include",
     body: formData,
   });
 
@@ -286,7 +297,6 @@ export async function deletePost(slug) {
   try {
     const res = await apiFetch(`${API_URL}/${slug}`, {
       method: "DELETE",
-      credentials: "include",
     });
 
     if (!res.ok) {
@@ -332,9 +342,7 @@ export function initPostForm() {
   if (editSlug && editSlug !== "null") {
     (async () => {
       try {
-        const res = await apiFetch(`${API_URL}/${editSlug}`, {
-          credentials: "include",
-        });
+        const res = await apiFetch(`${API_URL}/${editSlug}`);
         if (!res.ok) throw new Error("Post not found");
         const post = await res.json();
 
@@ -369,7 +377,6 @@ export function initPostForm() {
         setPostingState(true);
         const res = await apiFetch(`${API_URL}/${editSlug}`, {
           method: "PUT",
-          credentials: "include",
           body: formData,
         });
 
@@ -466,9 +473,7 @@ export async function loadSinglePost() {
   if (!postSlug) return;
 
   try {
-    const res = await apiFetch(`${API_URL}/${postSlug}`, {
-      credentials: "include",
-    });
+    const res = await apiFetch(`${API_URL}/${postSlug}`);
     if (!res.ok) throw new Error("Failed to fetch post");
     const post = await res.json();
 
@@ -622,7 +627,6 @@ export async function loadSinglePost() {
       try {
         const res = await apiFetch(url, {
           method: "POST",
-          credentials: "include",
         });
         const data = await res.json();
         if (!res.ok)
@@ -649,9 +653,7 @@ export async function loadSinglePost() {
 }
 
 export const fetchTrendingPosts = async () => {
-  const res = await apiFetch(`${API_URL}/trending?limit=5`, {
-    credentials: "include",
-  });
+  const res = await apiFetch(`${API_URL}/trending?limit=5`);
   const data = await res.json();
 
   const trendingList = document.getElementById("trending-list");
@@ -692,9 +694,7 @@ function renderRelatedPosts(posts) {
 
 export const fetchRelatedPosts = async (slug) => {
   try {
-    const res = await apiFetch(`${API_URL}/slug/${slug}/related`, {
-      credentials: "include",
-    });
+    const res = await apiFetch(`${API_URL}/slug/${slug}/related`);
     const relatedPosts = await res.json();
 
     renderRelatedPosts(relatedPosts);
@@ -719,11 +719,7 @@ export async function loadSavedPosts(page = 1, limit = 6) {
     });
 
     const res = await apiFetch(
-      `${API_URL}/saved/me?${queryParams.toString()}`,
-      {
-        credentials: "include",
-      },
-    );
+      `${API_URL}/saved/me?${queryParams.toString()}`);
 
     if (!res.ok) throw new Error("Failed to fetch");
 
@@ -732,6 +728,8 @@ export async function loadSavedPosts(page = 1, limit = 6) {
     state.saved = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
+
+    sessionStorage.setItem("postsPage", currentPage);
 
     const container = savedPostsContainer;
     if (!container) return;
@@ -790,7 +788,6 @@ export async function loadSavedPosts(page = 1, limit = 6) {
         try {
           await apiFetch(`${API_URL}/${slug}/unsave`, {
             method: "POST",
-            credentials: "include",
           });
 
           btn.closest(".post-card").remove();

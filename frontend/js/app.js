@@ -17,22 +17,54 @@ document
   .getElementById("canonicalUrl")
   ?.setAttribute("href", window.location.href);
 
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
+function restoreScroll() {
+  const key = `scroll:${window.location.pathname}${window.location.search}`;
+  const savedScroll = sessionStorage.getItem(key);
+
+  if (savedScroll !== null) {
+    window.scrollTo(0, Number(savedScroll));
+    sessionStorage.removeItem(key);
+  }
+}
+
 async function routeByPage() {
   const path = window.location.pathname;
 
   if (path === "/" || path.endsWith("index.html")) {
-    fetchPosts();
-    fetchTrendingPosts();
+    await fetchPosts();
+    await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
-    fetchMyPosts();
+    await fetchMyPosts();
   } else if (path.endsWith("post.html")) {
-    loadSinglePost();
+    await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
-    loadSavedPosts();
+    await loadSavedPosts();
   } else {
-    fetchPosts();
+    await fetchPosts();
   }
+
+  restoreScroll();
 }
+
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("a[href]");
+  if (!link) return;
+
+  const url = new URL(link.href, window.location.origin);
+
+  if (url.origin !== window.location.origin) return;
+
+  const key = `scroll:${window.location.pathname}${window.location.search}`;
+  sessionStorage.setItem(key, window.scrollY);
+
+  sessionStorage.setItem("postsPage", currentPage);
+  sessionStorage.setItem("postsCategory", currentCategory || "");
+  sessionStorage.setItem("postsSearch", currentSearch || "");
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
@@ -67,6 +99,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
-    window.location.reload();
+    const savedTheme = localStorage.getItem("theme") || "light";
+    applyTheme(savedTheme);
+    initUI();
   }
 });

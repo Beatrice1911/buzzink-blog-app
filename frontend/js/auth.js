@@ -1,4 +1,4 @@
-import { apiFetch } from "./api.js";
+import { apiFetch, refreshSession } from "./api.js";
 import { AUTH_URL, DEFAULT_AVATAR } from "./config.js";
 import { showToast } from "./ui.js";
 import { refreshPage } from "./posts.js";
@@ -32,9 +32,7 @@ export function updateUI(user) {
 
 export async function updateAvatar(user) {
   try {
-    const res = await apiFetch("/api/users/me", {
-      credentials: "include",
-    });
+    const res = await apiFetch("/api/users/me");
 
     if (!res.ok) return;
 
@@ -65,7 +63,6 @@ function initLogin() {
     const res = await apiFetch(`${AUTH_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -103,7 +100,6 @@ function initRegister() {
     const res = await apiFetch(`${AUTH_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      credentials: "include",
       body: JSON.stringify({ name, email, password }),
     });
 
@@ -140,27 +136,21 @@ function initLogout() {
 }
 
 export async function checkUser() {
-  try {
-    const res = await apiFetch(`${AUTH_URL}/me`, {
-      credentials: "include",
-    });
+  const refreshed = await refreshSession();
 
-    if (!res.ok) throw new Error("Not authenticated");
-
-    const data = await res.json();
-    const user = normalizeUser(data);
-
-    localStorage.setItem("user", JSON.stringify(user));
-    window.currentUser = user;
-    updateUI(user);
-    updateAvatar(user);
-
-    return user;
-  } catch (err) {
+  if (!refreshed) {
     updateUI(null);
     updateAvatar(null);
     return null;
   }
+
+  const user = window.currentUser;
+
+  localStorage.setItem("user", JSON.stringify(user));
+  updateUI(user);
+  updateAvatar(user);
+
+  return user;
 }
 
 export async function logout(silent = false) {

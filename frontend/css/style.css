@@ -171,6 +171,11 @@ nav a.active::after {
   border: none;
   outline: none;
   font-size: 0.9rem;
+  background-color: inherit;
+}
+
+.fa-search {
+  color: var(--text);
 }
 
 .icons {
@@ -185,10 +190,6 @@ nav a.active::after {
 
 .icons i:hover {
   opacity: 0.8;
-}
-
-.fa-search {
-  color: var(--text-inverse);
 }
 
 .menu-toggle {
@@ -276,13 +277,12 @@ nav a.active::after {
 }
 
 .mobile-search {
-  width: 80%;
+  width: 100%;
   display: none;
   overflow: hidden;
   transition: all 0.3s ease;
   z-index: 999;
   background-color: var(--surface-card);
-  margin: 5px auto;
   border-radius: 5px;
   border: 1px solid #ccc;
 }
@@ -290,9 +290,12 @@ nav a.active::after {
 .mobile-search input {
   width: 100%;
   padding: 8px;
-  border-radius: 5px;
   outline: none;
-  background-color: var(--surface-card);
+  background-color: inherit;
+}
+
+.hero .mobile-search{
+  margin: 0 auto;
 }
 
 [data-theme="dark"] nav a {
