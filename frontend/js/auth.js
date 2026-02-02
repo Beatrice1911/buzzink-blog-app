@@ -47,6 +47,15 @@ export async function updateAvatar(user) {
       });
     }
 
+    const adminAvatars = document.querySelectorAll(".avatar");
+    if (adminAvatars) {
+      adminAvatars.forEach((avatar) => {
+        avatar.src = user.profilePhoto?.trim()
+          ? user.profilePhoto
+          : DEFAULT_AVATAR;
+      });
+    }
+
     window.currentUser = user;
   } catch (err) {
     console.warn("Failed to load auth user:", err);
