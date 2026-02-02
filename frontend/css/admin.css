@@ -78,6 +78,14 @@ body {
   display: inline-block;
   text-decoration: none;
   color: #333;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: 0.3px;
+  transition: transform .2s ease;
+}
+
+.topbar a:hover {
+  transform: translateY(-1px);
 }
 
 .admin-info {
@@ -95,6 +103,7 @@ body {
   border-radius: 50%;
   width: 40px;
   height: 40px;
+  object-fit: cover;
 }
 
 .logout-btn {
@@ -104,6 +113,8 @@ body {
   padding: 8px 14px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 600;
   transition: background-color .3s ease;
 }
 
