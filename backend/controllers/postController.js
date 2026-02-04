@@ -320,8 +320,10 @@ const incrementView = async (req, res) => {
 
   let shouldIncrement = true;
 
+  post.viewedBy = post.viewedBy || [];
+
   if (req.user) {
-    if (post.viewedBy.includes(req.user._id)) {
+    if (post.viewedBy.some((id) => id.toString() === req.user._id.toString())) {
       shouldIncrement = false;
     } else {
       post.viewedBy.push(req.user._id);

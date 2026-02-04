@@ -1641,7 +1641,7 @@ nav a.active::after {
   line-height: 1.7;
 }
 
-.slide-up {
+/* .slide-up {
   transform: translateY(100%);
   opacity: 0;
   transition: transform 0.3s ease-out, opacity 0.3s ease-out;
@@ -1650,7 +1650,7 @@ nav a.active::after {
 .slide-up.active {
   transform: translateY(0);
   opacity: 1;
-}
+} */
 
 .likes-modal {
   position: fixed;

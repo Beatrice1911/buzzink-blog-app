@@ -86,7 +86,7 @@ sidebarLinks.forEach(link => {
     const section = link.dataset.section;
     location.hash = section;
     showSection(section);
-  });
+  });     
 });
 
 

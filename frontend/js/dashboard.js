@@ -1,11 +1,10 @@
+import { apiFetch } from "./api";
 const API_URI = `/api/users/me`;
 
 // Fetch current user data
 async function loadProfile() {
   try {
-    const res = await fetch(API_URI, {
-      credentials: "include",
-    });
+    const res = await apiFetch(API_URI);
 
     if (!res.ok) {
       showToastUser("Session expired. Please log in again.", "error");
@@ -63,9 +62,8 @@ saveChangesBtn?.addEventListener("click", async (e) => {
   }
 
   try {
-    const res = await fetch(API_URI, {
+    const res = await apiFetch(API_URI, {
       method: "PUT",
-      credentials: "include",
       body: formData,
     });
 
@@ -97,7 +95,7 @@ removePhotoBtn?.addEventListener("click", async () => {
   try {
     const formData = new FormData();
     formData.append("removePhoto", "true");
-    const res = await fetch(API_URI, {
+    const res = await apiFetch(API_URI, {
       method: "PUT",
       credentials: "include",
       body: formData,

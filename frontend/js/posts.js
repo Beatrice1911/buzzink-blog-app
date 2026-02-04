@@ -48,7 +48,9 @@ export async function fetchPosts(page = 1, limit = 6) {
     currentPage = data.currentPage ?? 1;
     totalPages = data.totalPages ?? 1;
 
-    sessionStorage.setItem("postsPage", currentPage);
+    if (typeof currentPage !== "undefined") {
+      sessionStorage.setItem("postsPage", currentPage);
+    }
     sessionStorage.setItem(
       "postsCategory",
       categoryFilter && categoryFilter !== "all" ? categoryFilter : "",
@@ -470,6 +472,14 @@ export async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
   const postSlug = params.get("slug");
 
+  if (postSlug) {
+    apiFetch(`/api/posts/${postSlug}/view`, {
+      method: "POST",
+    }).catch((err) => {
+      console.error("Failed to increment view", err);
+    });
+  }
+
   if (!postSlug) return;
 
   try {
@@ -718,8 +728,7 @@ export async function loadSavedPosts(page = 1, limit = 6) {
       }
     });
 
-    const res = await apiFetch(
-      `${API_URL}/saved/me?${queryParams.toString()}`);
+    const res = await apiFetch(`${API_URL}/saved/me?${queryParams.toString()}`);
 
     if (!res.ok) throw new Error("Failed to fetch");
 
@@ -822,7 +831,9 @@ document
   .getElementById("categoryFilter")
   ?.addEventListener("change", () => fetchPosts(1));
 
-search.forEach((input) => input?.addEventListener("keyup", () => fetchPosts(1)));
+search.forEach((input) =>
+  input?.addEventListener("keyup", () => fetchPosts(1)),
+);
 
 function renderPagination(containerId, page, total) {
   const container = document.getElementById("pagination");
