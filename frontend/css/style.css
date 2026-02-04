@@ -1738,7 +1738,7 @@ nav a.active::after {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-right: 20px;
+    margin-right: 8px;
   }
 
   .icons i {
