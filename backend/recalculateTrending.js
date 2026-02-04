@@ -14,6 +14,7 @@ const recalcTrendingScores = async () => {
     console.log(`Recalculating trending scores for ${posts.length} posts...`);
 
     for (const post of posts) {
+      post.lastEngagementAt = post.lastEngagementAt || post.createdAt;
       updateTrendingScore(post);
       await post.save();
       console.log(`Updated: ${post.title} → trendingScore: ${post.trendingScore}`);

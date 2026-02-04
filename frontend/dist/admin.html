@@ -9,9 +9,9 @@
       type="image/png"
     />
     <title>BuzzInk Admin Dashboard</title>
-    <script type="module" crossorigin src="/assets/admin-EuAAjgOq.js"></script>
+    <script type="module" crossorigin src="/assets/admin-w4ArXOGW.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/api-RE874MEH.js">
-    <link rel="stylesheet" crossorigin href="/assets/admin-BU2DUJqz.css">
+    <link rel="stylesheet" crossorigin href="/assets/admin-Ckp_l0LD.css">
   </head>
   <body>
     <div class="dashboard">
@@ -27,8 +27,16 @@
             </li>
             <li><a href="#users-section" data-section="users">👤 Users</a></li>
             <li><a href="#posts-section" data-section="posts">📝 Posts</a></li>
-            <li><a href="#comments-section" data-section="comments">💬 Comments</a></li>
-            <li><a href="#settings-section" data-section="settings">⚙️ Settings</a></li>
+            <li>
+              <a href="#comments-section" data-section="comments"
+                >💬 Comments</a
+              >
+            </li>
+            <li>
+              <a href="#settings-section" data-section="settings"
+                >⚙️ Settings</a
+              >
+            </li>
           </ul>
         </nav>
       </aside>
@@ -67,6 +75,7 @@
 
         <!-- Users Section -->
         <section id="users-section" class="content-tables">
+          <div id="users-spinner" class="spinner" style="display: none"></div>
           <h2>Users</h2>
           <input type="text" id="user-search" placeholder="Search users..." />
           <table class="data-table" id="users-table">
@@ -89,6 +98,7 @@
           class="content-tables"
           style="display: none"
         >
+          <div id="posts-spinner" class="spinner" style="display: none"></div>
           <h2>Posts</h2>
           <input type="text" id="post-search" placeholder="Search posts..." />
           <table class="data-table" id="posts-table">
@@ -111,6 +121,7 @@
           class="content-tables"
           style="display: none"
         >
+          <div id="comments-spinner" class="spinner" style="display: none"></div>
           <h2>Comments</h2>
           <input
             type="text"
