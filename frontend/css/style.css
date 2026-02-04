@@ -1685,13 +1685,9 @@ nav a.active::after {
   right: 12px;
   font-size: 25px;
   font-weight: bold;
-  color: var(--text);
+  color: var(--text-inverse);
   cursor: pointer;
   transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: var(--text-hover);
 }
 
 .likes-list {

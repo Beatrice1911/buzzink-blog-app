@@ -92,11 +92,11 @@ export function initEvents() {
       e.preventDefault();
       e.stopPropagation();
 
-      const postId = likesInfo.dataset.postId;
+      const postSlug = likesInfo.dataset.slug;
       const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
-      if (!postId || likedBy.length === 0) return;
+      if (!postSlug || likedBy.length === 0) return;
 
-      openLikesModal(postId, likedBy);
+      openLikesModal(postSlug, likedBy);
       return;
     }
 
