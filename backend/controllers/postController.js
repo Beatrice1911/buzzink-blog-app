@@ -288,14 +288,14 @@ const getTrendingPosts = async (req, res) => {
   const since = new Date(Date.now() - 72 * 60 * 60 * 1000);
 
   const trendingPosts = await Post.find({
-    $or: [
-      { lastEngagementAt: { $gte: since } },
-      { lastEngagementAt: { $exists: false } },
-      { lastEngagementAt: null },
-    ],
+    trendingScore: { $gt: 0 },
   })
     .sort({ trendingScore: -1 })
     .limit(5);
+
+  console.log(
+    trendingPosts.map((p) => ({ title: p.title, score: p.trendingScore })),
+  );
 
   res.json(trendingPosts);
 };

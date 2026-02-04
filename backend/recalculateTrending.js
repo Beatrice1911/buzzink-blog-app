@@ -5,10 +5,8 @@ const { updateTrendingScore } = require("./controllers/postController");
 
 const recalcTrendingScores = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("CONNECTED TO:", mongoose.connection.host);
 
     const posts = await Post.find();
     console.log(`Recalculating trending scores for ${posts.length} posts...`);

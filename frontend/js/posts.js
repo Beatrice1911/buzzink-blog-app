@@ -666,6 +666,7 @@ export const fetchTrendingPosts = async () => {
   const res = await apiFetch(`${API_URL}/trending?limit=5`);
   const data = await res.json();
 
+  console.log("TRENDING POSTS:", data);
   const trendingList = document.getElementById("trending-list");
   trendingList.innerHTML = data
     .map((post, index) => {
