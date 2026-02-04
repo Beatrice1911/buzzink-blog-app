@@ -293,10 +293,6 @@ const getTrendingPosts = async (req, res) => {
     .sort({ trendingScore: -1 })
     .limit(5);
 
-  console.log(
-    trendingPosts.map((p) => ({ title: p.title, score: p.trendingScore })),
-  );
-
   res.json(trendingPosts);
 };
 
