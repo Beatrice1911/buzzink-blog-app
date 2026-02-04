@@ -48,7 +48,6 @@ let commentsPage = 1;
 
 const LIMIT = 10;
 
-
 // Select sidebar links and sections
 const sidebarLinks = document.querySelectorAll('.sidebar .admin-nav-links a');
 const sections = {
@@ -58,13 +57,6 @@ const sections = {
   comments: document.getElementById('comments-section'),
   settings: document.getElementById('settings-section')
 };
-
-// Function to hide all sections
-function hideAllSections() {
-  Object.values(sections).forEach(section => {
-    if (section) section.style.display = 'none';
-  });
-}
 
 function showSection(sectionKey) {
   Object.values(sections).forEach(sec => {

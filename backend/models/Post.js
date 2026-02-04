@@ -13,7 +13,7 @@ const postSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now },
     views: { type: Number, default: 0 },
     viewedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    commentCount: { type: Number, default: 0 },
+    commentsCount: { type: Number, default: 0 },
     lastEngagementAt: {
       type: Date,
       default: Date.now,

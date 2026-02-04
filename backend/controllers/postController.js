@@ -298,7 +298,7 @@ const getTrendingPosts = async (req, res) => {
 
 const updateTrendingScore = (post) => {
   const likesCount = post.likes?.length || 0;
-  const commentCount = post.commentsCount || post.commentCount || 0;
+  const commentsCount = post.commentsCount || post.commentCount || 0;
   const viewsCount = post.views || 0;
 
   const createdAt = post.createdAt ? new Date(post.createdAt) : new Date();
@@ -306,7 +306,7 @@ const updateTrendingScore = (post) => {
   const ageInHours = (Date.now() - createdAt.getTime()) / (1000 * 60 * 60);
 
   const engagementScore =
-    likesCount * 5 + commentCount * 4 + Math.log10(viewsCount + 1) * 2;
+    likesCount * 5 + commentsCount * 4 + Math.log10(viewsCount + 1) * 2;
 
   const decay = Math.pow(ageInHours + 2, 1.5);
 
