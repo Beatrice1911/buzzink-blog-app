@@ -288,7 +288,11 @@ const getTrendingPosts = async (req, res) => {
   const since = new Date(Date.now() - 72 * 60 * 60 * 1000);
 
   const trendingPosts = await Post.find({
-    $or: [{ lastEngagementAt: { $gte: since } }, { lastEngagementAt: null }],
+    $or: [
+      { lastEngagementAt: { $gte: since } },
+      { lastEngagementAt: { $exists: false } },
+      { lastEngagementAt: null },
+    ],
   })
     .sort({ trendingScore: -1 })
     .limit(5);
@@ -304,7 +308,7 @@ const updateTrendingScore = (post) => {
   const referenceDate = post.lastEngagementAt || post.createdAt || new Date();
 
   const ageInHours = (Date.now() - referenceDate.getTime()) / (1000 * 60 * 60);
-  
+
   const engagementScore =
     likesCount * 5 + commentsCount * 4 + Math.log10(viewsCount + 1) * 2;
 
