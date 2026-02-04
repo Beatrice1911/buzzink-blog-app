@@ -4,9 +4,9 @@ import { showToast } from "./ui.js";
 import { formatText } from "./posts.js";
 
 export async function toggleComments(commentBtn) {
-  const postId = commentBtn.dataset.postId;
+  const slug = commentBtn.dataset.slug;
 
-  if (!postId) return;
+  if (!slug) return;
 
   const isSinglePost = window.location.pathname.endsWith("post.html");
 
@@ -25,7 +25,7 @@ export async function toggleComments(commentBtn) {
   }
 
   if (isSinglePost || commentsSection.classList.contains("show")) {
-    await fetchComments(postId, commentsList);
+    await fetchComments(slug, commentsList);
   }
 }
 
@@ -77,13 +77,11 @@ export async function handleDeleteComment(deleteBtn) {
   }
 }
 
-export async function fetchComments(postId, commentsList, limit = 3) {
+export async function fetchComments(slug, commentsList, limit = 3) {
   try {
     commentsList.innerHTML = `<p class="loading-comments">Loading comments...</p>`;
 
-    const res = await apiFetch(
-      `${COMMENTS_URL}/post/${postId}?_=${Date.now()}`,
-    );
+    const res = await apiFetch(`${COMMENTS_URL}/post/${slug}?_=${Date.now()}`);
     if (!res.ok) throw new Error("Failed to fetch comments");
 
     const comments = await res.json();
@@ -176,14 +174,9 @@ export function renderComments(comments, commentsList) {
   });
 }
 
-export async function postComment(
-  postId,
-  text,
-  commentsList,
-  commentCountSpan,
-) {
+export async function postComment(slug, text, commentsList, commentCountSpan) {
   try {
-    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`, {
+    const res = await apiFetch(`${COMMENTS_URL}/post/${slug}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -210,7 +203,11 @@ export async function postComment(
       `;
       commentsList.prepend(div);
       if (commentCountSpan) {
-        await updateCommentCount(postId, commentCountSpan);
+        if (commentCountSpan) {
+          let count = parseInt(commentCountSpan.textContent) || 0;
+          commentCountSpan.textContent = count + 1;
+          commentCountSpan.title = `${count + 1} comments`;
+        }
       }
 
       showToast("Comment posted successfully!", "success");
@@ -224,9 +221,9 @@ export async function postComment(
 }
 
 // Update comment count for a post
-export async function updateCommentCount(postId, commentCountSpan) {
+export async function updateCommentCount(slug, commentCountSpan) {
   try {
-    const res = await apiFetch(`${COMMENTS_URL}/post/${postId}`);
+    const res = await apiFetch(`${COMMENTS_URL}/post/${slug}`);
     if (!res.ok) throw new Error("Failed to fetch comment count");
 
     const comments = await res.json();
@@ -256,18 +253,18 @@ async function handleCommentSubmit(e) {
 
   let postElement;
   let commentsList;
-  let postId;
+  let slug;
   let commentCountSpan;
 
   if (window.location.pathname.endsWith("post.html")) {
     postElement = document.getElementById("singlePostContainer");
     commentsList = postElement.querySelector(".comments-list");
-    postId = postElement.querySelector(".comment-btn").dataset.postId;
+    slug = postElement.querySelector(".comment-btn").dataset.slug;
     commentCountSpan = postElement.querySelector(".comment-count");
   } else {
     postElement = commentForm.closest(".post");
     commentsList = postElement.querySelector(".comments-list");
-    postId = postElement.querySelector(".like-btn").dataset.postId;
+    slug = postElement.querySelector(".like-btn").dataset.slug;
     commentCountSpan = postElement.querySelector(".comment-count");
   }
 
@@ -277,7 +274,7 @@ async function handleCommentSubmit(e) {
     return;
   }
 
-  await postComment(postId, commentText, commentsList, commentCountSpan);
+  await postComment(slug, commentText, commentsList, commentCountSpan);
   commentInput.value = "";
 }
 

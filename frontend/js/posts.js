@@ -184,11 +184,11 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
         <br>
         <div class="post-interactions-container">
           <div class="post-interactions">
-            <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post._id}">
+            <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-slug="${post.slug}">
               <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
               <span class="like-count">${post.likesCount || 0}</span>
             </button>
-            <button class="comment-btn" data-post-id="${post._id}">
+            <button class="comment-btn" data-slug="${post.slug}">
               <i class="fa-regular fa-comment"></i>
               <span class="comment-count">${post.commentsCount || 0}</span>
             </button>
@@ -199,11 +199,11 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
           </div>
           <span class="liked-by likes-info">No likes yet</span>
         </div>
-        <div id="likesModal-${post._id}" class="likes-modal hidden slide-up">
+        <div id="likesModal-${post.slug}" class="likes-modal hidden slide-up">
           <div class="likes-modal-content">
-            <span id="closeLikesModal-${post._id}" class="close-btn">&times;</span>
+            <span id="closeLikesModal-${post.slug}" class="close-btn">&times;</span>
             <h3>Liked by</h3>
-            <ul id="likesList-${post._id}" class="likes-list"></ul>            
+            <ul id="likesList-${post.slug}" class="likes-list"></ul>            
           </div>
         </div>
         <div class="comments-section">
@@ -238,7 +238,7 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
     const heart = likeBtn.querySelector("i");
     const likedByEl = div.querySelector(".liked-by");
 
-    likedByEl.dataset.postId = post._id;
+    likedByEl.dataset.slug = post.slug;
     likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
 
     if (post.likedBy && post.likedBy.length > 0) {
@@ -269,7 +269,7 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
 
     const commentCountSpan = div.querySelector(".comment-count");
 
-    updateCommentCount(post._id, commentCountSpan);
+    updateCommentCount(post.slug, commentCountSpan);
   });
 }
 
@@ -504,11 +504,11 @@ export async function loadSinglePost() {
       </div>
       <div class="post-interactions-container">
         <div class="post-interactions">
-          <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-post-id="${post._id}">
+          <button class="like-btn ${post.likedByUser ? "liked" : ""}" data-slug="${post.slug}">
             <i class="${post.likedByUser ? "fa-solid" : "fa-regular"} fa-heart"></i>
             <span class="like-count">${post.likesCount || 0}</span>
           </button>
-          <button class="comment-btn" data-post-id="${post._id}">
+          <button class="comment-btn" data-slug="${post.slug}">
             <i class="fa-regular fa-comment"></i>
             <span class="comment-count">${post.commentsCount || 0}</span>
           </button>
@@ -522,11 +522,11 @@ export async function loadSinglePost() {
         </div>
         <span class="liked-by likes-info">No likes yet</span>
       </div>
-      <div id="likesModal-${post._id}" class="likes-modal hidden slide-up">
+      <div id="likesModal-${post.slug}" class="likes-modal hidden slide-up">
         <div class="likes-modal-content">
-          <span id="closeLikesModal-${post._id}" class="close-btn">&times;</span>
+          <span id="closeLikesModal-${post.slug}" class="close-btn">&times;</span>
           <h3>Liked by</h3>
-          <ul id="likesList-${post._id}" class="likes-list"></ul>            
+          <ul id="likesList-${post.slug}" class="likes-list"></ul>            
         </div>
       </div>
       <div class="comments-section show">
@@ -559,7 +559,7 @@ export async function loadSinglePost() {
     const heart = likeBtn?.querySelector("i");
     const likedByEl = container?.querySelector(".liked-by");
 
-    likedByEl.dataset.postId = post._id;
+    likedByEl.dataset.slug = post.slug;
     likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
 
     if (post.likedBy && post.likedBy.length > 0) {
@@ -589,13 +589,13 @@ export async function loadSinglePost() {
     }
 
     const commentCountSpan = container.querySelector(".comment-count");
-    updateCommentCount(post._id, commentCountSpan);
+    updateCommentCount(post.slug, commentCountSpan);
 
     const commentsSection = document.querySelector(".comments-section");
     const commentsList = commentsSection.querySelector(".comments-list");
 
     if (commentsSection && commentsList) {
-      await fetchComments(post._id, commentsList, Infinity);
+      await fetchComments(post.slug, commentsList, Infinity);
     }
 
     const bookmarkIcon = container.querySelector(".bookmark");

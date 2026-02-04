@@ -8,8 +8,8 @@ const {
 
 const router = express.Router();
 
-router.post("/post/:postId", requireAuth, createComment);
-router.get("/post/:postId", getCommentsByPost);
+router.post("/post/:slug", requireAuth, createComment);
+router.get("/post/:slug", getCommentsByPost);
 router.delete("/:commentId", requireAuth, deleteComment);
 
 module.exports = router;

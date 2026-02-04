@@ -2,7 +2,7 @@ import { apiFetch } from "./api.js";
 import { showToast } from "./ui.js";
 
 export async function handleLike(btn) {
-  const postId = btn.dataset.postId;
+  const slug = btn.dataset.slug;
   const heart = btn.querySelector("i");
   const countEl = btn.querySelector(".like-count");
   const likedByEl = btn
@@ -18,11 +18,11 @@ export async function handleLike(btn) {
   try {
     let res;
     if (alreadyLiked) {
-      res = await apiFetch(`/api/posts/${postId}/unlike`, {
+      res = await apiFetch(`/api/posts/${slug}/unlike`, {
         method: "POST",
       });
     } else {
-      res = await apiFetch(`/api/posts/${postId}/like`, {
+      res = await apiFetch(`/api/posts/${slug}/like`, {
         method: "POST",
       });
     }
@@ -40,7 +40,7 @@ export async function handleLike(btn) {
 
       countEl.textContent = data.likes ?? 0;
 
-      likedByEl.dataset.postId = postId;
+      likedByEl.dataset.slug = slug;
       likedByEl.dataset.likedBy = JSON.stringify(data.likedBy || []);
 
       if (data.likedBy && data.likedBy.length > 0) {

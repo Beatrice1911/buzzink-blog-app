@@ -5,21 +5,25 @@ const { updateTrendingScore } = require("./postController");
 const createComment = async (req, res) => {
   try {
     const { text } = req.body;
-    const { postId } = req.params;
+    const { slug } = req.params;
+
+    const post = await Post.findOne({ slug });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
     const newComment = new Comment({
-      postId,
+      postId: post._id,
       authorId: req.user.id,
       text,
     });
     await newComment.save();
 
-    const post = await Post.findById(postId);
-    if (post) {
-      post.commentsCount = (post.commentsCount || 0) + 1;
-      post.lastEngagementAt = new Date();
-      updateTrendingScore(post);
-      await post.save();
-    }
+    post.commentsCount = (post.commentsCount || 0) + 1;
+    post.lastEngagementAt = new Date();
+    updateTrendingScore(post);
+    await post.save();
+
     res.status(201).json({
       comment: newComment,
       updatedPost: post,
@@ -31,22 +35,19 @@ const createComment = async (req, res) => {
 
 const getCommentsByPost = async (req, res) => {
   try {
-    const { postId } = req.params;
+    const { slug } = req.params;
 
     let comments;
 
-    comments = await Comment.find({ postId })
+    const post = await Post.findOne({ slug });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    comments = await Comment.find({ postId: post._id })
       .populate("authorId", "name email")
       .sort({ createdAt: -1 });
 
-    if (comments.length === 0) {
-      const post = await Post.findOne({ slug: postId });
-      if (post) {
-        comments = await Comment.find({ postId: post._id.toString() })
-          .populate("authorId", "name email")
-          .sort({ createdAt: -1 });
-      }
-    }
     res.status(200).json(comments);
   } catch (err) {
     res.status(500).json({ error: err.message });
