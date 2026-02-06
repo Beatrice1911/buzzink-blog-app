@@ -1,7 +1,7 @@
 import { apiFetch } from "./api.js";
 
 export function setUpPostSEO() {
-  if (window.location.pathname.endsWith("post.html")) {
+  if (window.location.pathname.endsWith("post.html") || window.location.pathname.startsWith("/post/")) {
     (async () => {
       const params = new URLSearchParams(window.location.search);
       const slug = params.get("slug");
