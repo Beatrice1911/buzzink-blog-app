@@ -36,6 +36,7 @@ const {
   unlikePost,
   getTrendingPosts,
   incrementView,
+  incrementShare,
   getPostsByCategory,
   savePost,
   unsavePost,
