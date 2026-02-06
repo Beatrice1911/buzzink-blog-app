@@ -297,11 +297,6 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
 
     const commentCountSpan = div.querySelector(".comment-count");
     updateCommentCount(post.slug, commentCountSpan);
-
-    const shareCountEl = div.querySelector(".share-count");
-    if (shareCountEl) {
-      shareCountEl.textContent = post.shares || 0;
-    }
   });   
 }
 
@@ -638,11 +633,6 @@ export async function loadSinglePost() {
 
     if (commentsSection && commentsList) {
       await fetchComments(post.slug, commentsList, Infinity);
-    }
-
-    const shareCountEl = container.querySelector(".share-count");
-    if (shareCountEl) {
-      shareCountEl.textContent = Number(shareCountEl.textContent) + 1;
     }
 
     const bookmarkIcon = container.querySelector(".bookmark");

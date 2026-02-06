@@ -25,6 +25,11 @@ export const handleShare = async (btn) => {
         method: "POST",
       }).catch(() => {});
     }
+
+    const shareCountEl = btn.querySelector(".share-count");
+    if (shareCountEl) {
+      shareCountEl.textContent = Number(shareCountEl.textContent) + 1;
+    }
   } catch (err) {
     showToast("Failed to share post. Please try again.", "error");
     console.error("Share cancelled or failed", err);
