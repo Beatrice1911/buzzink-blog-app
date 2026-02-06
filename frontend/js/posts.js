@@ -298,11 +298,11 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
     const commentCountSpan = div.querySelector(".comment-count");
     updateCommentCount(post.slug, commentCountSpan);
 
-    const countEl = btn.querySelector(".share-count");
-    if (countEl) {
-      countEl.textContent = Number(countEl.textContent) + 1;
+    const shareCountEl = div.querySelector(".share-count");
+    if (shareCountEl) {
+      shareCountEl.textContent = post.shares || 0;
     }
-  });
+  });   
 }
 
 // Add a new post
@@ -640,7 +640,7 @@ export async function loadSinglePost() {
       await fetchComments(post.slug, commentsList, Infinity);
     }
 
-    const shareCountEl = btn.querySelector(".share-count");
+    const shareCountEl = container.querySelector(".share-count");
     if (shareCountEl) {
       shareCountEl.textContent = Number(shareCountEl.textContent) + 1;
     }
