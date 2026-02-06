@@ -493,6 +493,24 @@ function injectPostJsonLd(post) {
   document.head.appendChild(script);
 }
 
+function updateClientSEO(post) {
+  document.title = `${post.title} - BuzzInk`;
+
+  const desc = post.content.slice(0, 160);
+
+  document.getElementById("postTitle")?.setAttribute("content", post.title);
+  document.getElementById("postDescription")?.setAttribute("content", desc);
+  document.getElementById("ogTitle")?.setAttribute("content", post.title);
+  document.getElementById("ogDescription")?.setAttribute("content", desc);
+  document.getElementById("ogImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
+  document.getElementById("ogUrl")?.setAttribute("content", window.location.href);
+  document.getElementById("twitterTitle")?.setAttribute("content", post.title);
+  document.getElementById("twitterDescription")?.setAttribute("content", desc);
+  document.getElementById("twitterImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
+
+  injectPostJsonLd(post);
+}
+
 export async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
   const postSlug = params.get("slug") || window.location.pathname.split("/").pop();
@@ -679,7 +697,7 @@ export async function loadSinglePost() {
       }
     });
 
-    injectPostJsonLd(post);
+    updateClientSEO(post);
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML =

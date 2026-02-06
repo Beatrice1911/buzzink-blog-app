@@ -1,7 +1,9 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const fs = require("fs");
 const path = require("path");
+const Post = require("./models/Post");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -41,8 +43,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
-
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
@@ -68,6 +68,95 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.get("/post/:slug", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist", "post.html"));
 });
+
+app.get("/post/:slug", async (req, res, next) => {
+  try {
+    const slug = req.params.slug;
+    const post = await Post.findOne({ slug });
+    if (!post) return res.status(404).send("Post not found");
+
+    const indexHtml = fs.readFileSync(
+      path.join(__dirname, "../frontend/dist/index.html"),
+      "utf8",
+    );
+
+    const desc = post.content?.slice(0, 160) || post.title;
+    const imageUrl = post.image || "/Images/fallback.jpg";
+    const postUrl = `https://buzzink.onrender.com/post/${slug}`;
+    const createdAt = post.createdAt?.toISOString() || new Date().toISOString();
+    const updatedAt = post.updatedAt?.toISOString() || createdAt;
+
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: post.title,
+      description: desc,
+      image: imageUrl ? [imageUrl] : [],
+      author: {
+        "@type": "Person",
+        name: post.authorName || "BuzzInk Contributor",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "BuzzInk",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://buzzink.onrender.com/Images/logo_optimized.png",
+        },
+      },
+      datePublished: createdAt,
+      dateModified: updatedAt,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": postUrl,
+      },
+    };
+
+    const html = indexHtml
+      .replace(/<title>.*<\/title>/, `<title>${post.title} - BuzzInk</title>`)
+      .replace(
+        /<meta name="description" content="">/,
+        `<meta name="description" content="${desc}">`,
+      )
+      .replace(
+        /<meta property="og:title" content="">/,
+        `<meta property="og:title" content="${post.title}">`,
+      )
+      .replace(
+        /<meta property="og:description" content="">/,
+        `<meta property="og:description" content="${desc}">`,
+      )
+      .replace(
+        /<meta property="og:image" content="">/,
+        `<meta property="og:image" content="${imageUrl}">`,
+      )
+      .replace(
+        /<meta property="og:url" content="">/,
+        `<meta property="og:url" content="${postUrl}">`,
+      )
+      .replace(
+        /<meta name="twitter:title" content="">/,
+        `<meta name="twitter:title" content="${post.title}">`,
+      )
+      .replace(
+        /<meta name="twitter:description" content="">/,
+        `<meta name="twitter:description" content="${desc}">`,
+      )
+      .replace(
+        /<meta name="twitter:image" content="">/,
+        `<meta name="twitter:image" content="${imageUrl}">`,
+      )
+      .replace(
+        /<\/head>/,
+        `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script></head>`,
+      );
+
+    res.send(html);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
