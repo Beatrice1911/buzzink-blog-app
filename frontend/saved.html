@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/Images/title-logo_optimized_.png" type="image/png">
+    <link
+      rel="icon"
+      href="/Images/title-logo_optimized_.png"
+      type="image/png"
+    />
     <title>Saved Posts - BuzzInk</title>
     <link rel="stylesheet" href="css/style.min.css" />
     <link
@@ -90,7 +94,14 @@
       <h2>Saved Posts</h2>
 
       <div id="savedPostsContainer" class="posts-container">
-        <p class="loading">Loading saved posts...</p>
+        <div id="postsSkeleton" class="skeleton-wrapper hidden">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+        <div id="postsLoader" class="loader hidden">
+          <span></span><span></span><span></span>
+        </div>
       </div>
     </section>
 

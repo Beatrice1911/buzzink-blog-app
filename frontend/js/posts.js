@@ -19,9 +19,29 @@ function getImageUrl(image) {
   return image && image.startsWith("http") ? image : "/Images/fallback.jpg";
 }
 
-function renderNoAuthorPost(container) {
-  container.innerHTML = `<p style="text-align:center; color:gray; font-size: 20px; font-weight: bold;">You haven't made any posts yet...</p>`;
+let loaderTimeout;
+
+function showSkeleton() {
+  clearTimeout(loaderTimeout);
+  document.getElementById("postsSkeleton")?.classList.remove("hidden");
 }
+
+function hideSkeleton() {
+  document.getElementById("postsSkeleton")?.classList.add("hidden");
+}
+
+function showPostsLoader() {
+  clearTimeout(loaderTimeout);
+  loaderTimeout = setTimeout(() => {
+    document.getElementById("postsLoader")?.classList.remove("hidden");
+  }, 150);
+}
+
+function hidePostsLoader() {
+  clearTimeout(loaderTimeout);
+  document.getElementById("postsLoader")?.classList.add("hidden");
+}
+
 
 function updatePageInUrl(page) {
   const url = new URL(window.location);
@@ -91,6 +111,9 @@ export async function fetchPosts(page, limit = 6) {
       }
     });
 
+    if (resolvedPage === 1) showSkeleton();
+    else showPostsLoader();
+
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
 
@@ -116,11 +139,14 @@ export async function fetchPosts(page, limit = 6) {
   } catch (err) {
     console.error("Error fetching posts:", err);
     showToast("Something went wrong while displaying posts!", "error");
+  } finally {
+    hideSkeleton();
+    hidePostsLoader();
   }
 }
 
 // Fetch posts created by the logged-in user
-export async function fetchMyPosts(page = 1, limit = 6) {
+export async function fetchMyPosts(page, limit = 6) {
   try {
     const resolvedPage = page ?? getPageFromUrl();
     const searchInputs = document.querySelectorAll(".search");
@@ -133,6 +159,9 @@ export async function fetchMyPosts(page = 1, limit = 6) {
         if (searchValue) queryParams.append("search", searchValue);
       }
     });
+
+    if (resolvedPage === 1) showSkeleton();
+    else showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`);
 
@@ -155,15 +184,14 @@ export async function fetchMyPosts(page = 1, limit = 6) {
     sessionStorage.setItem("postsSearch", activeSearch);
 
     const containerId = "myPostsContainer";
-    displayPosts("myPostsContainer", null, "You haven't made any posts yet...");
+    displayPosts("myPostsContainer");
     renderPagination(containerId, currentPage, totalPages);
-    if (state.mine.length === 0) {
-      const container = document.getElementById("myPostsContainer");
-      if (container) renderNoAuthorPost(container);
-    }
   } catch (err) {
     console.error("Error fetching my posts:", err);
     showToast("Failed to load your posts!", "error");
+  } finally {
+    hideSkeleton();
+    hidePostsLoader();
   }
 }
 
@@ -196,7 +224,7 @@ export function formatText(text) {
 }
 
 // Display posts in specified container
-export function displayPosts(containerId, limit = null, emptyMessage = null) {
+export function displayPosts(containerId, limit = null) {
   const userId = window.currentUser?._id || window.currentUser?.id;
 
   const container = document.getElementById(containerId);
@@ -220,9 +248,11 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
   if (limit) displayList = displayList.slice(0, limit);
 
   if (displayList.length === 0) {
-    container.innerHTML =
-      emptyMessage ??
-      `<p style="text-align:center; color:gray; font-size:20px;">No results found...</p>`;
+    if (containerId === "myPostsContainer") {
+      container.innerHTML = `<p style="text-align:center; color:gray; font-size: 20px; font-weight: bold;">You haven't made any posts yet...</p>`;
+    } else {
+      container.innerHTML = `<p style="text-align:center; color:gray; font-size:20px;">No results found...</p>`;
+    }
     return;
   }
 
@@ -758,7 +788,7 @@ export const fetchRelatedPosts = async (slug) => {
 
 const savedPostsContainer = document.getElementById("savedPostsContainer");
 
-export async function loadSavedPosts(page = 1, limit = 6) {
+export async function loadSavedPosts(page, limit = 6) {
   try {
     const resolvedPage = page ?? getPageFromUrl();
     const searchInputs = document.querySelectorAll(".search");
@@ -771,6 +801,9 @@ export async function loadSavedPosts(page = 1, limit = 6) {
         if (searchValue) queryParams.append("search", searchValue);
       }
     });
+
+    if (resolvedPage === 1) showSkeleton();
+    else showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/saved/me?${queryParams.toString()}`);
 
@@ -858,6 +891,9 @@ export async function loadSavedPosts(page = 1, limit = 6) {
   } catch (err) {
     console.error(err);
     container.innerHTML = "<p>Error loading saved posts.</p>";
+  } finally {
+    hideSkeleton();
+    hidePostsLoader();
   }
 }
 
@@ -869,7 +905,7 @@ export function refreshPage() {
     displayPosts("featuredPostsContainer", 3);
   }
   if (document.getElementById("myPostsContainer")) {
-    displayPosts("myPostsContainer", null, "You haven't made any posts yet...");
+    displayPosts("myPostsContainer");
   }
 }
 
