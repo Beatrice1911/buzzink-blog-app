@@ -3,7 +3,6 @@ const Post = require("../models/Post");
 const cloudinary = require("../config/cloudinary");
 const slugify = require("slugify");
 const User = require("../models/User");
-const path = require("path");
 
 const getPosts = async (req, res) => {
   try {
@@ -352,7 +351,7 @@ const incrementView = async (req, res) => {
   res.json({ views: post.views });
 };
 
-export const incrementShare = async (req, res) => {
+const incrementShare = async (req, res) => {
   const post = await Post.findOne({ slug: req.params.slug });
   if (!post) return res.status(404).json({ message: "Post not found" });
 
@@ -523,6 +522,7 @@ module.exports = {
   unlikePost,
   getTrendingPosts,
   incrementView,
+  incrementShare,
   getPostsByCategory,
   savePost,
   unsavePost,
