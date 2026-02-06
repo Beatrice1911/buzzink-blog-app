@@ -21,9 +21,57 @@ function getImageUrl(image) {
 
 let loaderTimeout;
 
-function showSkeleton() {
+function showSkeleton(containerType = "allPostsContainer", limit = 6) {
   clearTimeout(loaderTimeout);
-  document.getElementById("postsSkeleton")?.classList.remove("hidden");
+  const container = document.getElementById("postsSkeleton");
+  if (!container) return;
+
+  container.innerHTML = "";
+  container.classList.remove("hidden");
+
+  for (let i = 0; i < limit; i++) {
+    let skeletonHTML = "";
+
+    if (containerType === "savedPostsContainer") {
+      skeletonHTML = `
+        <article class="post-card skeleton">
+          <div class="skeleton-img"></div>
+          <div class="post-body">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-tag"></div>
+            <div class="skeleton-excerpt"></div>
+            <div class="post-meta">
+              <div class="skeleton-meta-line"></div>
+            </div>
+          </div>
+          <div class="skeleton-bookmark"></div>
+        </article>
+      `;
+    } else {
+      skeletonHTML = `
+        <div class="post skeleton">
+          <div class="skeleton-img"></div>
+          <p class="skeleton-tag"></p>
+          <h2 class="skeleton-title"></h2>
+          <p class="skeleton-excerpt"></p>
+          <a href="#" class="skeleton-author"></a>
+          <small class="skeleton-date"></small>
+          <div class="post-interactions-container">
+            <div class="post-interactions">
+              <button class="skeleton-btn like-btn"></button>
+              <button class="skeleton-btn comment-btn"></button>
+              <button class="skeleton-btn share-btn"></button>
+            </div>
+            <span class="liked-by likes-info skeleton"></span>
+          </div>
+          <div class="comments-section skeleton"></div>
+          <div class="post-actions skeleton"></div>
+        </div>
+      `;
+    }
+
+    container.insertAdjacentHTML("beforeend", skeletonHTML);
+  }
 }
 
 function hideSkeleton() {
@@ -41,7 +89,6 @@ function hidePostsLoader() {
   clearTimeout(loaderTimeout);
   document.getElementById("postsLoader")?.classList.add("hidden");
 }
-
 
 function updatePageInUrl(page) {
   const url = new URL(window.location);
@@ -111,7 +158,7 @@ export async function fetchPosts(page, limit = 6) {
       }
     });
 
-    if (resolvedPage === 1) showSkeleton();
+    if (resolvedPage === 1) showSkeleton("allPostsContainer", limit);
     else showPostsLoader();
 
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
@@ -160,7 +207,7 @@ export async function fetchMyPosts(page, limit = 6) {
       }
     });
 
-    if (resolvedPage === 1) showSkeleton();
+    if (resolvedPage === 1) showSkeleton("myPostsContainer", limit);
     else showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`);
@@ -802,7 +849,7 @@ export async function loadSavedPosts(page, limit = 6) {
       }
     });
 
-    if (resolvedPage === 1) showSkeleton();
+    if (resolvedPage === 1) showSkeleton("savedPostsContainer", limit);
     else showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/saved/me?${queryParams.toString()}`);
