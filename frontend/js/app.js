@@ -7,6 +7,7 @@ import {
   loadSinglePost,
   refreshPage,
   initPostForm,
+  currentCategory,
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
@@ -61,9 +62,17 @@ document.addEventListener("click", (e) => {
   const key = `scroll:${window.location.pathname}${window.location.search}`;
   sessionStorage.setItem(key, window.scrollY);
 
-  sessionStorage.setItem("postsPage", currentPage);
-  sessionStorage.setItem("postsCategory", currentCategory || "");
-  sessionStorage.setItem("postsSearch", currentSearch || "");
+  if (typeof currentPage !== "undefined") {
+    sessionStorage.setItem("postsPage", currentPage);
+  }
+
+  if (typeof currentCategory !== "undefined") {
+    sessionStorage.setItem("postsCategory", currentCategory);
+  }
+
+  if (typeof currentSearch !== "undefined") {
+    sessionStorage.setItem("postsSearch", currentSearch);
+  }
 });
 
 document.addEventListener("DOMContentLoaded", async () => {
