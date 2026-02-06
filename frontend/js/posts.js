@@ -32,12 +32,44 @@ function updatePageInUrl(page) {
     url.searchParams.set("page", page);
   }
 
+  const category = sessionStorage.getItem("postsCategory");
+  const search = sessionStorage.getItem("postsSearch");
+
+  if (category) {
+    url.searchParams.set("category", category);
+  } else {
+    url.searchParams.delete("category");
+  }
+
+  if (search) {
+    url.searchParams.set("search", search);
+  } else {
+    url.searchParams.delete("search");
+  }
+
   window.history.pushState({}, "", url);
 }
 
 export function getPageFromUrl() {
   const params = new URLSearchParams(window.location.search);
   return Number(params.get("page")) || 1;
+}
+
+export async function restoreFiltersFromSession() {
+  const savedCategory = sessionStorage.getItem("postsCategory");
+  const savedSearch = sessionStorage.getItem("postsSearch");
+
+  const categorySelect = document.getElementById("categoryFilter");
+  if (categorySelect && savedCategory) {
+    categorySelect.value = savedCategory;
+  }
+
+  const searchInputs = document.querySelectorAll(".search");
+  searchInputs.forEach((input) => {
+    if (savedSearch) {
+      input.value = savedSearch;
+    }
+  });
 }
 
 export async function fetchPosts(page, limit = 6) {
@@ -320,7 +352,7 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
 
     const commentCountSpan = div.querySelector(".comment-count");
     updateCommentCount(post.slug, commentCountSpan);
-  });   
+  });
 }
 
 // Add a new post
@@ -480,7 +512,8 @@ export function initPostForm() {
 
 export async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
-  const postSlug = params.get("slug") || window.location.pathname.split("/").pop();
+  const postSlug =
+    params.get("slug") || window.location.pathname.split("/").pop();
 
   if (postSlug) {
     apiFetch(`/api/posts/${postSlug}/view`, {
@@ -840,12 +873,10 @@ export function refreshPage() {
   }
 }
 
-document
-  .getElementById("categoryFilter")
-  ?.addEventListener("change", () => {
-    updatePageInUrl(1);
-    fetchPosts(1);
-  });
+document.getElementById("categoryFilter")?.addEventListener("change", () => {
+  updatePageInUrl(1);
+  fetchPosts(1);
+});
 
 search.forEach((input) =>
   input?.addEventListener("keyup", () => {

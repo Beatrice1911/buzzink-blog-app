@@ -10,6 +10,7 @@ import {
   currentSearch,
   currentCategory,
   getPageFromUrl,
+  restoreFiltersFromSession,
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
@@ -38,17 +39,21 @@ async function routeByPage() {
   const path = window.location.pathname;
 
   if (path === "/" || path.endsWith("index.html")) {
+    await restoreFiltersFromSession()
     await fetchPosts(getPageFromUrl());
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
+    await restoreFiltersFromSession()
     await fetchMyPosts(getPageFromUrl());
   } else if (path.endsWith("post.html")) {
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
+    await restoreFiltersFromSession()
     await loadSavedPosts(getPageFromUrl());
   } else if (path.startsWith("/post/")) {
     loadSinglePost();
   } else {
+    await restoreFiltersFromSession()
     await fetchPosts(getPageFromUrl());
   }
 
