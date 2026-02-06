@@ -35,13 +35,19 @@ function updatePageInUrl(page) {
   window.history.pushState({}, "", url);
 }
 
-export async function fetchPosts(page = 1, limit = 6) {
+export function getPageFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return Number(params.get("page")) || 1;
+}
+
+export async function fetchPosts(page, limit = 6) {
   try {
+    const resolvedPage = page ?? getPageFromUrl();
     const categoryFilter = document.getElementById("categoryFilter")?.value;
     const searchInputs = document.querySelectorAll(".search");
 
     const queryParams = new URLSearchParams();
-    queryParams.append("page", page);
+    queryParams.append("page", resolvedPage);
     queryParams.append("limit", limit);
     if (categoryFilter && categoryFilter !== "all")
       queryParams.append("category", categoryFilter);
@@ -84,9 +90,10 @@ export async function fetchPosts(page = 1, limit = 6) {
 // Fetch posts created by the logged-in user
 export async function fetchMyPosts(page = 1, limit = 6) {
   try {
+    const resolvedPage = page ?? getPageFromUrl();
     const searchInputs = document.querySelectorAll(".search");
     const queryParams = new URLSearchParams();
-    queryParams.append("page", page);
+    queryParams.append("page", resolvedPage);
     queryParams.append("limit", limit);
     searchInputs.forEach((input) => {
       if (input) {
@@ -720,9 +727,10 @@ const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 export async function loadSavedPosts(page = 1, limit = 6) {
   try {
+    const resolvedPage = page ?? getPageFromUrl();
     const searchInputs = document.querySelectorAll(".search");
     const queryParams = new URLSearchParams();
-    queryParams.append("page", page);
+    queryParams.append("page", resolvedPage);
     queryParams.append("limit", limit);
     searchInputs.forEach((input) => {
       if (input) {
@@ -835,13 +843,13 @@ export function refreshPage() {
 document
   .getElementById("categoryFilter")
   ?.addEventListener("change", () => {
-    sessionStorage.setItem("postsPage", 1);
+    updatePageInUrl(1);
     fetchPosts(1);
   });
 
 search.forEach((input) =>
   input?.addEventListener("keyup", () => {
-    sessionStorage.setItem("postsPage", 1);
+    updatePageInUrl(1);
     fetchPosts(1);
   }),
 );
