@@ -50,12 +50,12 @@ router.get("/trending", getTrendingPosts);
 router.get("/slug/:slug/related", optionalAuth, getPostsByCategory);
 router.post("/:slug/view", optionalAuth, incrementView);
 router.post("/:slug/share", optionalAuth, incrementShare);
-router.get("/:slug", optionalAuth, getPostBySlug);
-router.post("/", requireAuth, upload.single("image"), createPost);
 router.post("/:slug/like", requireAuth, likePost);
 router.post("/:slug/unlike", requireAuth, unlikePost);
 router.post("/:slug/save", requireAuth, savePost);
 router.post("/:slug/unsave", requireAuth, unsavePost);
+router.get("/:slug", optionalAuth, getPostBySlug);
+router.post("/", requireAuth, upload.single("image"), createPost);
 router.put("/:slug", requireAuth, upload.single("image"), updatePost);
 router.delete("/:slug", requireAuth, deletePost);
 

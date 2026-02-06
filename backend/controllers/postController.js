@@ -323,19 +323,19 @@ const incrementView = async (req, res) => {
   post.viewedBy = post.viewedBy || [];
 
   if (req.user) {
-    if (post.viewedBy.some((id) => id.toString() === req.user._id.toString())) {
+    if (post.viewedBy.some((id) => id && id.toString() === req.user._id.toString())) {
       shouldIncrement = false;
     } else {
       post.viewedBy.push(req.user._id);
     }
   } else {
-    const viewed = req.cookies?.viewedPosts || [];
+    const viewed = JSON.parse(req.cookies?.viewedPosts || "[]");
     if (viewed.includes(post.slug)) {
       shouldIncrement = false;
     } else {
       res.cookie(
         "viewedPosts",
-        [...viewed, post.slug],
+        JSON.stringify([...viewed, post.slug]),
         { maxAge: 24 * 60 * 60 * 1000 }
       );
     }
