@@ -112,6 +112,30 @@ export async function fetchMyPosts(page = 1, limit = 6) {
   }
 }
 
+export function timeAgo(date) {
+  const seconds = Math.floor((Date.now() - new Date(date)) / 1000);
+
+  const intervals = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+    { label: "second", seconds: 1 },
+  ];
+
+  const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count >= 1) {
+      return rtf.format(-count, interval.label);
+    }
+  }
+
+  return "Just now";
+}
+
 export function formatText(text) {
   return text.replace(/\n/g, "<br>");
 }
@@ -182,7 +206,9 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
         <a href="profile.html?id=${postAuthorId}" class="author"><em>By ${authorName}</em></a>
-        <small>${new Date(post.date).toLocaleString()}</small>
+        <small title="${new Date(post.date).toLocaleString()}">
+          ${timeAgo(post.date)}
+        </small>
         <br>
         <div class="post-interactions-container">
           <div class="post-interactions">
@@ -194,9 +220,9 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
               <i class="fa-regular fa-comment"></i>
               <span class="comment-count">${post.commentsCount || 0}</span>
             </button>
-            <button class="share-btn">
+            <button class="share-btn" data-slug="${post.slug}">
               <i class="fa-solid fa-share"></i>
-              <span class="share-count"></span>
+              <span class="share-count">${post.shares}</span>
             </button>
           </div>
           <span class="liked-by likes-info">No likes yet</span>
@@ -270,8 +296,12 @@ export function displayPosts(containerId, limit = null, emptyMessage = null) {
     }
 
     const commentCountSpan = div.querySelector(".comment-count");
-
     updateCommentCount(post.slug, commentCountSpan);
+
+    const countEl = btn.querySelector(".share-count");
+    if (countEl) {
+      countEl.textContent = Number(countEl.textContent) + 1;
+    }
   });
 }
 
@@ -508,7 +538,9 @@ export async function loadSinglePost() {
       <h1>${post.title}</h1>
       <p class="tag">${post.category}</p>
       <p onclick="window.location.href='profile.html?id=${postAuthorId}'" style="cursor: pointer;" class="author"><em>By ${authorName}</em></p>
-      <small>${new Date(post.date).toLocaleString()}</small>
+      <small title="${new Date(post.date).toLocaleString()}">
+        ${timeAgo(post.date)}
+      </small>
       <div class="content">
         <p>${formatText(post.content)}</p>
       </div>
@@ -522,9 +554,9 @@ export async function loadSinglePost() {
             <i class="fa-regular fa-comment"></i>
             <span class="comment-count">${post.commentsCount || 0}</span>
           </button>
-          <button class="share-btn">
+          <button class="share-btn" data-slug="${post.slug}">
             <i class="fa-solid fa-share"></i>
-            <span class="share-count"></span>
+            <span class="share-count">${post.shares}</span>
           </button>
           <span class="bookmark ${post.savedByUser ? "saved" : ""}" data-saved="${post.savedByUser ? "true" : "false"}" data-slug="${post.slug}">
             <i class="${post.savedByUser ? "fa-solid" : "fa-regular"} fa-bookmark"></i>
@@ -606,6 +638,11 @@ export async function loadSinglePost() {
 
     if (commentsSection && commentsList) {
       await fetchComments(post.slug, commentsList, Infinity);
+    }
+
+    const shareCountEl = btn.querySelector(".share-count");
+    if (shareCountEl) {
+      shareCountEl.textContent = Number(shareCountEl.textContent) + 1;
     }
 
     const bookmarkIcon = container.querySelector(".bookmark");
@@ -773,7 +810,7 @@ export async function loadSavedPosts(page = 1, limit = 6) {
           </p>
           <div class="post-meta">
             <small>By ${post.authorId?.name || "Unknown"}</small>
-            <small>${new Date(post.date).toLocaleDateString()}</small>
+            <small title="${new Date(post.date).toLocaleString()}">${timeAgo(post.date)}</small>
           </div>
         </div>
         <button 

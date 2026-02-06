@@ -1,5 +1,6 @@
 import { handleLike } from "./likes.js";
 import { toggleComments, handleDeleteComment } from "./comments.js";
+import { handleShare } from "./share.js";
 import { editPost, deletePost } from "./posts.js";
 import { userMenuDetails, userIcon, mobileMenu, menuToggle } from "./ui.js";
 
@@ -7,8 +8,9 @@ let isLikesModalOpen = false;
 
 function openLikesModal(postSlug, users) {
   if (isLikesModalOpen) return;
-  const modal = document.getElementById(`likesModal-${postSlug}`);
-  const list = document.getElementById(`likesList-${postSlug}`);
+  const safeSlug = encodeURIComponent(postSlug);
+  const modal = document.getElementById(`likesModal-${safeSlug}`);
+  const list = document.getElementById(`likesList-${safeSlug}`);
   if (!modal || !list) return;
 
   list.innerHTML = "";
@@ -30,21 +32,20 @@ function openLikesModal(postSlug, users) {
     content.dataset.bound = "true";
   }
 
-  const closeBtn = document.getElementById(`closeLikesModal-${postSlug}`);
+  const closeBtn = document.getElementById(`closeLikesModal-${safeSlug}`);
 
   if (closeBtn && !closeBtn.dataset.bound) {
-    closeBtn?.addEventListener(
-      "click",
-      (e) => {
-        e.stopPropagation();
-        closeLikesModal(postSlug);
-      });
-      closeBtn.dataset.bound = "true";    
+    closeBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      closeLikesModal(postSlug);
+    });
+    closeBtn.dataset.bound = "true";
   }
 }
 
 function closeLikesModal(postSlug) {
-  const modal = document.getElementById(`likesModal-${postSlug}`);
+  const safeSlug = encodeURIComponent(postSlug);
+  const modal = document.getElementById(`likesModal-${safeSlug}`);
   if (!modal) return;
 
   isLikesModalOpen = false;
@@ -87,6 +88,14 @@ export function initEvents() {
     if (commentBtn) {
       e.preventDefault();
       toggleComments(commentBtn);
+      return;
+    }
+
+    // Share button handling
+    const sharebtn = e.target.closest(".share-btn");
+    if (sharebtn) {
+      e.preventDefault();
+      handleShare(sharebtn);
       return;
     }
 

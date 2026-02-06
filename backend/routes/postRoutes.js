@@ -48,6 +48,7 @@ router.get("/saved/me", requireAuth, getSavedPosts);
 router.get("/trending", getTrendingPosts);
 router.get("/slug/:slug/related", optionalAuth, getPostsByCategory);
 router.post("/:slug/view", optionalAuth, incrementView);
+router.post("/:slug/share", optionalAuth, incrementShare);
 router.get("/:slug", optionalAuth, getPostBySlug);
 router.post("/", requireAuth, upload.single("image"), createPost);
 router.post("/:slug/like", requireAuth, likePost);

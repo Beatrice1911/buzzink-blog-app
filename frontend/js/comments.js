@@ -1,7 +1,7 @@
 import { apiFetch } from "./api.js";
 import { COMMENTS_URL } from "./config.js";
 import { showToast } from "./ui.js";
-import { formatText } from "./posts.js";
+import { formatText, timeAgo } from "./posts.js";
 
 export async function toggleComments(commentBtn) {
   const slug = commentBtn.dataset.slug;
@@ -163,7 +163,9 @@ export function renderComments(comments, commentsList) {
             : ""
         }
       </div>  
-      <small>${new Date(comment.createdAt).toLocaleString()}</small>
+      <small title="${new Date(comment.createdAt).toLocaleString()}">
+        ${timeAgo(comment.createdAt)}
+      </small>
     `;
     commentsList.appendChild(div);
 
@@ -199,7 +201,9 @@ export async function postComment(slug, text, commentsList, commentCountSpan) {
             </div>
           </div>
         </div>
-        <small>${new Date(newComment.createdAt).toLocaleString()}</small>
+        <small title="${new Date(newComment.createdAt).toLocaleString()}">
+        ${timeAgo(newComment.createdAt)}
+      </small>
       `;
       commentsList.prepend(div);
       if (commentCountSpan) {
@@ -244,6 +248,7 @@ export async function updateCommentCount(slug, commentCountSpan) {
 
 async function handleCommentSubmit(e) {
   const commentForm = e.target.closest(".comment-form");
+  const addCommentBtn = commentForm.querySelector(".comment-form button");
   if (!commentForm) return;
   e.preventDefault();
 
@@ -268,14 +273,29 @@ async function handleCommentSubmit(e) {
     commentCountSpan = postElement.querySelector(".comment-count");
   }
 
-  if (!window.currentUser) {
-    showToast("Please log in to comment.", "error");
-    commentInput.value = "";
-    return;
-  }
+  const setPostingState = (isPosting) => {
+    addCommentBtn.disabled = isPosting;
+    addCommentBtn.innerHTML = isPosting
+      ? `<i class="fa-solid fa-spinner fa-spin"></i>`
+      : "Comment";
+  };
 
-  await postComment(slug, commentText, commentsList, commentCountSpan);
-  commentInput.value = "";
+  try {
+    setPostingState(true);
+    if (!window.currentUser) {
+      showToast("Please log in to comment.", "error");
+      commentInput.value = "";
+      setPostingState(false);
+      return;
+    }
+
+    await postComment(slug, commentText, commentsList, commentCountSpan);
+    commentInput.value = "";
+  } catch (err) {
+    setPostingState(false);
+  } finally {
+    setPostingState(false);
+  }
 }
 
 export function initComments() {

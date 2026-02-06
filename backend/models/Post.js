@@ -14,6 +14,8 @@ const postSchema = new mongoose.Schema(
     views: { type: Number, default: 0 },
     viewedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     commentsCount: { type: Number, default: 0 },
+    shares: { type: Number, default: 0 },
+    sharedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     lastEngagementAt: {
       type: Date,
       default: Date.now,

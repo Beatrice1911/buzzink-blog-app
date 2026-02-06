@@ -1175,6 +1175,7 @@ nav a.active::after {
 
 .likes-info:not(.disabled):hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
 .like-count, .comment-count {
@@ -1228,6 +1229,7 @@ nav a.active::after {
   border-radius: 5px;
   cursor: pointer;
   font-weight: bold;
+  text-align: center;
 }
 
 .comment-form button:hover {

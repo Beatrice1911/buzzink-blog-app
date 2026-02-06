@@ -300,13 +300,14 @@ const updateTrendingScore = (post) => {
   const likesCount = post.likes?.length || 0;
   const commentsCount = post.commentsCount || post.commentCount || 0;
   const viewsCount = post.views || 0;
+  const sharesCount = post.shares || 0;
 
   const referenceDate = post.lastEngagementAt || post.createdAt || new Date();
 
   const ageInHours = (Date.now() - referenceDate.getTime()) / (1000 * 60 * 60);
 
   const engagementScore =
-    likesCount * 5 + commentsCount * 4 + Math.log10(viewsCount + 1) * 2;
+    likesCount * 5 + commentsCount * 4 + sharesCount * 6 + Math.log10(viewsCount + 1) * 2;
 
   const decay = Math.pow(ageInHours + 2, 1.5);
 
@@ -328,6 +329,17 @@ const incrementView = async (req, res) => {
     } else {
       post.viewedBy.push(req.user._id);
     }
+  } else {
+    const viewed = req.cookies?.viewedPosts || [];
+    if (viewed.includes(post.slug)) {
+      shouldIncrement = false;
+    } else {
+      res.cookie(
+        "viewedPosts",
+        [...viewed, post.slug],
+        { maxAge: 24 * 60 * 60 * 1000 }
+      );
+    }
   }
 
   if (shouldIncrement) {
@@ -338,6 +350,30 @@ const incrementView = async (req, res) => {
   }
 
   res.json({ views: post.views });
+};
+
+export const incrementShare = async (req, res) => {
+  const post = await Post.findOne({ slug: req.params.slug });
+  if (!post) return res.status(404).json({ message: "Post not found" });
+
+  let shouldIncrement = true;
+
+  if (req.user) {
+    if (post.sharedBy.includes(req.user._id)) {
+      shouldIncrement = false;
+    } else {
+      post.sharedBy.push(req.user._id);
+    }
+  }
+
+  if (shouldIncrement) {
+    post.shares += 1;
+    post.lastEngagementAt = new Date();
+    updateTrendingScore(post);
+    await post.save();
+  }
+
+  res.json({ shares: post.shares });
 };
 
 const getPostsByCategory = async (req, res) => {
