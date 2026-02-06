@@ -66,7 +66,6 @@ app.use((err, req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-
 app.get("/post/:slug", async (req, res, next) => {
   try {
     const slug = req.params.slug;
@@ -112,40 +111,53 @@ app.get("/post/:slug", async (req, res, next) => {
       .replace(/<title>.*<\/title>/, `<title>${post.title} - BuzzInk</title>`)
       .replace(
         /<meta name="description" content="" id="postDescription" \/>/,
-        `<meta name="description" content="${desc}" id="postDescription"/>`
+        `<meta name="description" content="${desc}" id="postDescription"/>`,
       )
       .replace(
         /<meta property="og:title" content="" id="ogTitle" \/>/,
-        `<meta property="og:title" content="${post.title}" id="ogTitle"/>`
+        `<meta property="og:title" content="${post.title}" id="ogTitle"/>`,
       )
       .replace(
         /<meta property="og:description" content="" id="ogDescription" \/>/,
-        `<meta property="og:description" content="${desc}" id="ogDescription"/>`
+        `<meta property="og:description" content="${desc}" id="ogDescription"/>`,
       )
       .replace(
         /<meta property="og:image" content="" id="ogImage" \/>/,
-        `<meta property="og:image" content="${imageUrl}" id="ogImage"/>`
+        `<meta property="og:image" content="${imageUrl}" id="ogImage"/>`,
       )
       .replace(
         /<meta property="og:url" content="" id="ogUrl" \/>/,
-        `<meta property="og:url" content="${postUrl}" id="ogUrl"/>`
+        `<meta property="og:url" content="${postUrl}" id="ogUrl"/>`,
+      )
+      .replace(
+        /<meta property="og:type" content="" \/>/,
+        `<meta property="og:type" content="article"/>`,
+      )
+      .replace(
+        /<meta property="fb:app_id" content="" \/>/,
+        `<meta property="fb:app_id" content="YOUR_FB_APP_ID"/>`,
       )
       .replace(
         /<meta name="twitter:title" content="" id="twitterTitle" \/>/,
-        `<meta name="twitter:title" content="${post.title}" id="twitterTitle"/>`
+        `<meta name="twitter:title" content="${post.title}" id="twitterTitle"/>`,
       )
       .replace(
         /<meta name="twitter:description" content="" id="twitterDescription" \/>/,
-        `<meta name="twitter:description" content="${desc}" id="twitterDescription"/>`
+        `<meta name="twitter:description" content="${desc}" id="twitterDescription"/>`,
       )
       .replace(
         /<meta name="twitter:image" content="" id="twitterImage" \/>/,
-        `<meta name="twitter:image" content="${imageUrl}" id="twitterImage"/>`
+        `<meta name="twitter:image" content="${imageUrl}" id="twitterImage"/>`,
       );
+      
+    html = html.replace(
+      /<link rel="canonical" id="canonicalUrl" \/>/,
+      `<link rel="canonical" href="${postUrl}" id="canonicalUrl"/>`,
+    );
 
     html = html.replace(
       /<\/head>/,
-      `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script></head>`
+      `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script></head>`,
     );
 
     res.send(html);
