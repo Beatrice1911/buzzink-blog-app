@@ -455,65 +455,9 @@ export function initPostForm() {
   }
 }
 
-function injectPostJsonLd(post) {
-  const oldScript = document.getElementById("post-jsonld");
-  if (oldScript) oldScript.remove();
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: post.title,
-    description: post.content.slice(0, 160),
-    image: post.image ? [post.image] : [],
-    author: {
-      "@type": "Person",
-      name: post.authorName || "BuzzInk Contributor",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "BuzzInk",
-      logo: {
-        "@type": "ImageObject",
-        url: "https://buzzink.onrender.com/Images/logo_optimized.png",
-      },
-    },
-    datePublished: post.createdAt || post.date,
-    dateModified: post.updatedAt || post.date,
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": window.location.href,
-    },
-  };
-
-  const script = document.createElement("script");
-  script.type = "application/ld+json";
-  script.id = "post-jsonld";
-  script.textContent = JSON.stringify(jsonLd);
-
-  document.head.appendChild(script);
-}
-
-function updateClientSEO(post) {
-  document.title = `${post.title} - BuzzInk`;
-
-  const desc = post.content.slice(0, 160);
-
-  document.getElementById("postTitle")?.setAttribute("content", post.title);
-  document.getElementById("postDescription")?.setAttribute("content", desc);
-  document.getElementById("ogTitle")?.setAttribute("content", post.title);
-  document.getElementById("ogDescription")?.setAttribute("content", desc);
-  document.getElementById("ogImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
-  document.getElementById("ogUrl")?.setAttribute("content", window.location.href);
-  document.getElementById("twitterTitle")?.setAttribute("content", post.title);
-  document.getElementById("twitterDescription")?.setAttribute("content", desc);
-  document.getElementById("twitterImage")?.setAttribute("content", post.image || "/Images/fallback.jpg");
-
-  injectPostJsonLd(post);
-}
-
 export async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
-  const postSlug = params.get("slug") || window.location.pathname.split("/").pop();
+  const postSlug = params.get("slug");
 
   if (postSlug) {
     apiFetch(`/api/posts/${postSlug}/view`, {
@@ -696,8 +640,6 @@ export async function loadSinglePost() {
         showToast("Something went wrong", "error");
       }
     });
-
-    updateClientSEO(post);
   } catch (err) {
     console.error(err);
     document.getElementById("singlePostContainer").innerHTML =

@@ -1,4 +1,3 @@
-import { setUpPostSEO } from "./seo.js";
 import {
   fetchPosts,
   fetchMyPosts,
@@ -44,8 +43,6 @@ async function routeByPage() {
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
     await loadSavedPosts();
-  } else if (path.startsWith("/post/")) {
-    loadSinglePost();
   } else {
     await fetchPosts();
   }
@@ -91,8 +88,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   applyTheme(savedTheme);
 
   await routeByPage();
-
-  setUpPostSEO();
 
   if (
     window.location.pathname.endsWith("write.html") &&

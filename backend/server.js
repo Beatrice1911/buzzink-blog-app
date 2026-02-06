@@ -65,9 +65,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-app.get("/post/:slug", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/dist", "post.html"));
-});
+
 
 app.get("/post/:slug", async (req, res, next) => {
   try {
@@ -75,10 +73,8 @@ app.get("/post/:slug", async (req, res, next) => {
     const post = await Post.findOne({ slug });
     if (!post) return res.status(404).send("Post not found");
 
-    const indexHtml = fs.readFileSync(
-      path.join(__dirname, "../frontend/dist/index.html"),
-      "utf8",
-    );
+    const htmlPath = path.join(__dirname, "../frontend/dist/post.html");
+    let html = fs.readFileSync(htmlPath, "utf8");
 
     const desc = post.content?.slice(0, 160) || post.title;
     const imageUrl = post.image || "/Images/fallback.jpg";
@@ -112,44 +108,45 @@ app.get("/post/:slug", async (req, res, next) => {
       },
     };
 
-    const html = indexHtml
+    html = html
       .replace(/<title>.*<\/title>/, `<title>${post.title} - BuzzInk</title>`)
       .replace(
-        /<meta name="description" content="">/,
-        `<meta name="description" content="${desc}">`,
+        /<meta name="description" content="" id="postDescription" \/>/,
+        `<meta name="description" content="${desc}" id="postDescription"/>`
       )
       .replace(
-        /<meta property="og:title" content="">/,
-        `<meta property="og:title" content="${post.title}">`,
+        /<meta property="og:title" content="" id="ogTitle" \/>/,
+        `<meta property="og:title" content="${post.title}" id="ogTitle"/>`
       )
       .replace(
-        /<meta property="og:description" content="">/,
-        `<meta property="og:description" content="${desc}">`,
+        /<meta property="og:description" content="" id="ogDescription" \/>/,
+        `<meta property="og:description" content="${desc}" id="ogDescription"/>`
       )
       .replace(
-        /<meta property="og:image" content="">/,
-        `<meta property="og:image" content="${imageUrl}">`,
+        /<meta property="og:image" content="" id="ogImage" \/>/,
+        `<meta property="og:image" content="${imageUrl}" id="ogImage"/>`
       )
       .replace(
-        /<meta property="og:url" content="">/,
-        `<meta property="og:url" content="${postUrl}">`,
+        /<meta property="og:url" content="" id="ogUrl" \/>/,
+        `<meta property="og:url" content="${postUrl}" id="ogUrl"/>`
       )
       .replace(
-        /<meta name="twitter:title" content="">/,
-        `<meta name="twitter:title" content="${post.title}">`,
+        /<meta name="twitter:title" content="" id="twitterTitle" \/>/,
+        `<meta name="twitter:title" content="${post.title}" id="twitterTitle"/>`
       )
       .replace(
-        /<meta name="twitter:description" content="">/,
-        `<meta name="twitter:description" content="${desc}">`,
+        /<meta name="twitter:description" content="" id="twitterDescription" \/>/,
+        `<meta name="twitter:description" content="${desc}" id="twitterDescription"/>`
       )
       .replace(
-        /<meta name="twitter:image" content="">/,
-        `<meta name="twitter:image" content="${imageUrl}">`,
-      )
-      .replace(
-        /<\/head>/,
-        `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script></head>`,
+        /<meta name="twitter:image" content="" id="twitterImage" \/>/,
+        `<meta name="twitter:image" content="${imageUrl}" id="twitterImage"/>`
       );
+
+    html = html.replace(
+      /<\/head>/,
+      `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script></head>`
+    );
 
     res.send(html);
   } catch (err) {
