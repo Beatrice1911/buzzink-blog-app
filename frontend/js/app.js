@@ -43,6 +43,8 @@ async function routeByPage() {
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
     await loadSavedPosts();
+  } else if (path.startsWith("/post/")) {
+    loadSinglePost();
   } else {
     await fetchPosts();
   }

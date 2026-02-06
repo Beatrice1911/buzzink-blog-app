@@ -457,7 +457,7 @@ export function initPostForm() {
 
 export async function loadSinglePost() {
   const params = new URLSearchParams(window.location.search);
-  const postSlug = params.get("slug");
+  const postSlug = params.get("slug") || window.location.pathname.split("/").pop();
 
   if (postSlug) {
     apiFetch(`/api/posts/${postSlug}/view`, {
