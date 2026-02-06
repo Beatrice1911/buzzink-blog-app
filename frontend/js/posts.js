@@ -23,6 +23,18 @@ function renderNoAuthorPost(container) {
   container.innerHTML = `<p style="text-align:center; color:gray; font-size: 20px; font-weight: bold;">You haven't made any posts yet...</p>`;
 }
 
+function updatePageInUrl(page) {
+  const url = new URL(window.location);
+
+  if (page === 1) {
+    url.searchParams.delete("page");
+  } else {
+    url.searchParams.set("page", page);
+  }
+
+  window.history.pushState({}, "", url);
+}
+
 export async function fetchPosts(page = 1, limit = 6) {
   try {
     const categoryFilter = document.getElementById("categoryFilter")?.value;
@@ -47,6 +59,8 @@ export async function fetchPosts(page = 1, limit = 6) {
     state.all = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage ?? 1;
     totalPages = data.totalPages ?? 1;
+
+    updatePageInUrl(currentPage);
 
     if (typeof currentPage !== "undefined") {
       sessionStorage.setItem("postsPage", currentPage);
@@ -93,6 +107,8 @@ export async function fetchMyPosts(page = 1, limit = 6) {
     state.mine = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
+
+    updatePageInUrl(currentPage);
 
     sessionStorage.setItem("postsPage", currentPage);
     const activeSearch =
@@ -725,6 +741,8 @@ export async function loadSavedPosts(page = 1, limit = 6) {
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
 
+    updatePageInUrl(currentPage);
+
     sessionStorage.setItem("postsPage", currentPage);
 
     const container = savedPostsContainer;
@@ -816,10 +834,16 @@ export function refreshPage() {
 
 document
   .getElementById("categoryFilter")
-  ?.addEventListener("change", () => fetchPosts(1));
+  ?.addEventListener("change", () => {
+    sessionStorage.setItem("postsPage", 1);
+    fetchPosts(1);
+  });
 
 search.forEach((input) =>
-  input?.addEventListener("keyup", () => fetchPosts(1)),
+  input?.addEventListener("keyup", () => {
+    sessionStorage.setItem("postsPage", 1);
+    fetchPosts(1);
+  }),
 );
 
 function renderPagination(containerId, page, total) {

@@ -6,6 +6,8 @@ import {
   loadSinglePost,
   refreshPage,
   initPostForm,
+  currentPage,
+  currentSearch,
   currentCategory,
 } from "./posts.js";
 import { initEvents } from "./events.js";
@@ -31,18 +33,21 @@ function restoreScroll() {
   }
 }
 
+const params = new URLSearchParams(window.location.search);
+const pageFromUrl = Number(params.get("page")) || 1;
+
 async function routeByPage() {
   const path = window.location.pathname;
 
   if (path === "/" || path.endsWith("index.html")) {
-    await fetchPosts();
+    await fetchPosts(pageFromUrl);
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
-    await fetchMyPosts();
+    await fetchMyPosts(pageFromUrl);
   } else if (path.endsWith("post.html")) {
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
-    await loadSavedPosts();
+    await loadSavedPosts(pageFromUrl);
   } else if (path.startsWith("/post/")) {
     loadSinglePost();
   } else {
