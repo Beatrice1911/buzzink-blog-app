@@ -103,12 +103,14 @@ function initAuthModal() {
 
 function initUserMenu() {
   userIcon.forEach((icon) =>
-    icon?.addEventListener("click", () => {
+    icon?.addEventListener("click", (e) => {
+      e.stopPropagation();
       const storedUser = localStorage.getItem("user");
       const user = storedUser ? JSON.parse(storedUser) : null;
 
       if (user && user.id) {
         userMenuDetails.classList.toggle("show");
+        userMenuDetails?.addEventListener("click", e => e.stopPropagation());
         authModal.classList.add("hidden");
       } else {
         userMenuDetails.classList.add("hidden");
