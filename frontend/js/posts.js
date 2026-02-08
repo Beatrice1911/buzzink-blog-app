@@ -39,28 +39,23 @@ export function getStateFromUrl() {
   };
 }
 
-function updateUrlState({ page, category, search }) {
+function updateUrlState({ page, category, search }, { replace = false } = {}) {
   const url = new URL(window.location);
 
-  if (page === 1) {
-    url.searchParams.delete("page");
-  } else {
-    url.searchParams.set("page", page);
-  }
+  if (page === 1) url.searchParams.delete("page");
+  else url.searchParams.set("page", page);
 
-  if (category) {
-    url.searchParams.set("category", category);
-  } else {
-    url.searchParams.delete("category");
-  }
+  if (category) url.searchParams.set("category", category);
+  else url.searchParams.delete("category");
 
-  if (search) {
-    url.searchParams.set("search", search);
-  } else {
-    url.searchParams.delete("search");
-  }
+  if (search) url.searchParams.set("search", search);
+  else url.searchParams.delete("search");
 
-  window.history.pushState({}, "", url);
+  if (replace) {
+    history.replaceState({ page, category, search }, "", url);
+  } else {
+    history.pushState({ page, category, search }, "", url);
+  }
 }
 
 export function restoreFiltersFromUrl() {
@@ -85,11 +80,14 @@ export async function fetchPosts(pageOverride, limit = 6) {
 
     const search = getSearchValue() || urlState.search;
 
-    updateUrlState({
-      page,
-      category: category !== "all" ? category : "",
-      search,
-    });
+    updateUrlState(
+      {
+        page,
+        category: category !== "all" ? category : "",
+        search,
+      },
+      { replace: true },
+    );
 
     const queryParams = new URLSearchParams({
       page,
@@ -143,10 +141,13 @@ export async function fetchMyPosts(pageOverride, limit = 6) {
     const search = getSearchValue() || urlState.search;
     urlState.search;
 
-    updateUrlState({
-      page,
-      search,
-    });
+    updateUrlState(
+      {
+        page,
+        search,
+      },
+      { replace: true },
+    );
 
     const queryParams = new URLSearchParams({
       page,
@@ -761,11 +762,14 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
     const urlState = getStateFromUrl();
     const page = pageOverride ?? urlState.page;
     const search = getSearchValue() || urlState.search;
-    
-    updateUrlState({
-      page,
-      search,
-    });
+
+    updateUrlState(
+      {
+        page,
+        search,
+      },
+      { replace: true },
+    );
 
     const queryParams = new URLSearchParams({
       page,
