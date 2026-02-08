@@ -4,12 +4,11 @@ import {
   fetchTrendingPosts,
   loadSavedPosts,
   loadSinglePost,
-  refreshPage,
   initPostForm,
   currentPage,
   currentSearch,
   currentCategory,
-  getPageFromUrl,
+  getStateFromUrl,
   restoreFiltersFromSession,
 } from "./posts.js";
 import { initEvents } from "./events.js";
@@ -37,24 +36,25 @@ function restoreScroll() {
 
 async function routeByPage() {
   const path = window.location.pathname;
+  const { page } = getStateFromUrl();
 
   if (path === "/" || path.endsWith("index.html")) {
     await restoreFiltersFromSession()
-    await fetchPosts(getPageFromUrl());
+    await fetchPosts(page);
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
     await restoreFiltersFromSession()
-    await fetchMyPosts(getPageFromUrl());
+    await fetchMyPosts(page);
   } else if (path.endsWith("post.html")) {
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
     await restoreFiltersFromSession()
-    await loadSavedPosts(getPageFromUrl());
+    await loadSavedPosts(page);
   } else if (path.startsWith("/post/")) {
     loadSinglePost();
   } else {
     await restoreFiltersFromSession()
-    await fetchPosts(getPageFromUrl());
+    await fetchPosts(page);
   }
 
   restoreScroll();
@@ -106,10 +106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.removeItem("editSlug");
   }
 
-  if (!window.location.pathname.endsWith("post.html")) {
-    refreshPage();
-  }
-
   initPostForm();
 });
 
@@ -119,4 +115,17 @@ window.addEventListener("pageshow", (event) => {
     applyTheme(savedTheme);
     initUI();
   }
+});
+
+window.addEventListener("popstate", async () => {
+  const { category, search } = getStateFromUrl();
+
+  const categoryFilter = document.getElementById("categoryFilter");
+  if (categoryFilter) categoryFilter.value = category || "all";
+
+  document.querySelectorAll(".search").forEach((input) => {
+    input.value = search || "";
+  });
+
+  await routeByPage();
 });

@@ -1,5 +1,6 @@
 import { registerForm, loginForm } from "./auth";
 import { body } from "./config";
+import { refreshPage } from "./posts";
 
 export const userIcon = document.querySelectorAll(".user-icon");
 export const userMenuDetails = document.getElementById("userMenuDetails");
@@ -177,6 +178,8 @@ export function loadSavedTheme() {
   } else {
     root.setAttribute("data-theme", "light");
   }
+
+  refreshPage();
 }
 
 export function applyTheme(theme) {

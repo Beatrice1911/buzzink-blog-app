@@ -3,7 +3,10 @@ import { API_URL } from "./config.js";
 import { showToast } from "./ui.js";
 import { fetchComments, updateCommentCount } from "./comments.js";
 
-const search = document.querySelectorAll(".search");
+const searchInputs = document.querySelectorAll(".search");
+function getSearchValue() {
+  return [...searchInputs].find((i) => i.value.trim())?.value.trim() || "";
+}
 
 let state = {
   all: [],
@@ -19,20 +22,32 @@ function getImageUrl(image) {
   return image && image.startsWith("http") ? image : "/Images/fallback.jpg";
 }
 
+let skeletonTimeout;
 let loaderTimeout;
 
-function showSkeleton(containerType = "allPostsContainer", limit = 6) {
-  clearTimeout(loaderTimeout);
-  const container = document.getElementById("postsSkeleton");
-  if (!container) return;
+function showSkeleton(containerId = "allPostsContainer", limit = 6) {
+  clearTimeout(skeletonTimeout);
+  const targetContainer = document.getElementById(containerId);
+  if (!targetContainer) return;
 
-  container.innerHTML = "";
-  container.classList.remove("hidden");
+  let skeletonContainer =
+    targetContainer.previousElementSibling?.classList.contains("posts-skeleton")
+      ? targetContainer.previousElementSibling
+      : null;
+
+  if (!skeletonContainer) {
+    skeletonContainer = document.createElement("div");
+    skeletonContainer.className = "posts-skeleton";
+    targetContainer.before(skeletonContainer);
+  }
+
+  skeletonContainer.innerHTML = "";
+  skeletonContainer.classList.remove("hidden");
 
   for (let i = 0; i < limit; i++) {
     let skeletonHTML = "";
 
-    if (containerType === "savedPostsContainer") {
+    if (containerId === "savedPostsContainer") {
       skeletonHTML = `
         <article class="post-card skeleton">
           <div class="skeleton-img"></div>
@@ -70,12 +85,14 @@ function showSkeleton(containerType = "allPostsContainer", limit = 6) {
       `;
     }
 
-    container.insertAdjacentHTML("beforeend", skeletonHTML);
+    skeletonContainer.insertAdjacentHTML("beforeend", skeletonHTML);
   }
 }
 
 function hideSkeleton() {
-  document.getElementById("postsSkeleton")?.classList.add("hidden");
+  document
+    .querySelectorAll(".posts-skeleton")
+    .forEach((el) => el.classList.add("hidden"));
 }
 
 function showPostsLoader() {
@@ -90,7 +107,17 @@ function hidePostsLoader() {
   document.getElementById("postsLoader")?.classList.add("hidden");
 }
 
-function updatePageInUrl(page) {
+export function getStateFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+
+  return {
+    page: Number(params.get("page")) || 1,
+    category: params.get("category") || "",
+    search: params.get("search") || "",
+  };
+}
+
+function updateUrlState({ page, category, search }) {
   const url = new URL(window.location);
 
   if (page === 1) {
@@ -98,9 +125,6 @@ function updatePageInUrl(page) {
   } else {
     url.searchParams.set("page", page);
   }
-
-  const category = sessionStorage.getItem("postsCategory");
-  const search = sessionStorage.getItem("postsSearch");
 
   if (category) {
     url.searchParams.set("category", category);
@@ -117,11 +141,6 @@ function updatePageInUrl(page) {
   window.history.pushState({}, "", url);
 }
 
-export function getPageFromUrl() {
-  const params = new URLSearchParams(window.location.search);
-  return Number(params.get("page")) || 1;
-}
-
 export async function restoreFiltersFromSession() {
   const savedCategory = sessionStorage.getItem("postsCategory");
   const savedSearch = sessionStorage.getItem("postsSearch");
@@ -131,19 +150,19 @@ export async function restoreFiltersFromSession() {
     categorySelect.value = savedCategory;
   }
 
-  const searchInputs = document.querySelectorAll(".search");
   searchInputs.forEach((input) => {
-    if (savedSearch) {
-      input.value = savedSearch;
-    }
+    input.value = savedSearch || "";
   });
 }
 
 export async function fetchPosts(page, limit = 6) {
   try {
-    const resolvedPage = page ?? getPageFromUrl();
-    const categoryFilter = document.getElementById("categoryFilter")?.value;
-    const searchInputs = document.querySelectorAll(".search");
+    const urlState = getStateFromUrl();
+    const resolvedPage = page ?? urlState.page;
+    const categoryFilter =
+      document.getElementById("categoryFilter")?.value || urlState.category;
+
+    const searchValue = getSearchValue() || urlState.search;
 
     const queryParams = new URLSearchParams();
     queryParams.append("page", resolvedPage);
@@ -151,12 +170,9 @@ export async function fetchPosts(page, limit = 6) {
     if (categoryFilter && categoryFilter !== "all")
       queryParams.append("category", categoryFilter);
 
-    searchInputs.forEach((input) => {
-      if (input) {
-        const searchValue = input.value.trim();
-        if (searchValue) queryParams.append("search", searchValue);
-      }
-    });
+    if (searchValue) {
+      queryParams.append("search", searchValue);
+    }
 
     if (resolvedPage === 1) showSkeleton("allPostsContainer", limit);
     else showPostsLoader();
@@ -167,19 +183,23 @@ export async function fetchPosts(page, limit = 6) {
     state.all = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage ?? 1;
     totalPages = data.totalPages ?? 1;
+    currentCategory = categoryFilter || "";
+    currentSearch = searchValue || "";
 
-    updatePageInUrl(currentPage);
+    updateUrlState({
+      page: currentPage,
+      category:
+        categoryFilter && categoryFilter !== "all" ? categoryFilter : "",
+      search: searchValue,
+    });
 
     if (typeof currentPage !== "undefined") {
       sessionStorage.setItem("postsPage", currentPage);
     }
-    sessionStorage.setItem(
-      "postsCategory",
-      categoryFilter && categoryFilter !== "all" ? categoryFilter : "",
-    );
-    const activeSearch =
-      [...searchInputs].find((i) => i.value.trim())?.value.trim() || "";
-    sessionStorage.setItem("postsSearch", activeSearch);
+    if (typeof currentCategory !== "undefined") {
+      sessionStorage.setItem("postsCategory", currentCategory);
+    }
+    sessionStorage.setItem("postsSearch", currentSearch);
 
     displayPosts("allPostsContainer");
     renderPagination("allPostsContainer", currentPage, totalPages);
@@ -195,17 +215,17 @@ export async function fetchPosts(page, limit = 6) {
 // Fetch posts created by the logged-in user
 export async function fetchMyPosts(page, limit = 6) {
   try {
-    const resolvedPage = page ?? getPageFromUrl();
-    const searchInputs = document.querySelectorAll(".search");
+    const urlState = getStateFromUrl();
+    const resolvedPage = page ?? urlState.page;
+    const searchValue = getSearchValue() || urlState.search;
+    urlState.search;
     const queryParams = new URLSearchParams();
     queryParams.append("page", resolvedPage);
     queryParams.append("limit", limit);
-    searchInputs.forEach((input) => {
-      if (input) {
-        const searchValue = input.value.trim();
-        if (searchValue) queryParams.append("search", searchValue);
-      }
-    });
+
+    if (searchValue) {
+      queryParams.append("search", searchValue);
+    }
 
     if (resolvedPage === 1) showSkeleton("myPostsContainer", limit);
     else showPostsLoader();
@@ -223,15 +243,20 @@ export async function fetchMyPosts(page, limit = 6) {
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
 
-    updatePageInUrl(currentPage);
+    updateUrlState({
+      page: currentPage,
+      search: searchValue,
+    });
 
-    sessionStorage.setItem("postsPage", currentPage);
-    const activeSearch =
-      [...searchInputs].find((i) => i.value.trim())?.value.trim() || "";
-    sessionStorage.setItem("postsSearch", activeSearch);
+    if (typeof currentPage !== "undefined") {
+      sessionStorage.setItem("postsPage", currentPage);
+    }
+    sessionStorage.setItem("postsSearch", searchValue || "");
+    sessionStorage.removeItem("postsCategory");
+    currentCategory = "";
 
     const containerId = "myPostsContainer";
-    displayPosts("myPostsContainer");
+    displayPosts(containerId);
     renderPagination(containerId, currentPage, totalPages);
   } catch (err) {
     console.error("Error fetching my posts:", err);
@@ -267,7 +292,9 @@ export function timeAgo(date) {
 }
 
 export function formatText(text) {
-  return text.replace(/\n/g, "<br>");
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML.replace(/\n/g, "<br>");
 }
 
 // Display posts in specified container
@@ -401,27 +428,20 @@ export function displayPosts(containerId, limit = null) {
     likedByEl.dataset.slug = post.slug;
     likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
 
-    if (post.likedBy && post.likedBy.length > 0) {
+    if (post.likedBy && post.likesCount > 0) {
       likedByEl.classList.remove("disabled");
     } else {
       likedByEl.classList.add("disabled");
     }
 
-    const likedByIds = Array.isArray(post.likes)
-      ? post.likes.map((l) => (typeof l === "object" ? l._id : l))
-      : [];
+    likeBtn.classList.toggle("liked", post.likedByUser);
+    heart.className = post.likedByUser
+      ? "fa-solid fa-heart"
+      : "fa-regular fa-heart";
 
-    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
-      likeBtn.classList.add("liked");
-      heart.className = "fa-solid fa-heart";
-    } else {
-      likeBtn.classList.remove("liked");
-      heart.className = "fa-regular fa-heart";
-    }
-
-    if (!post.likedBy || post.likedBy.length === 0) {
+    if (!post.likesCount) {
       likedByEl.textContent = "No likes yet";
-    } else if (post.likedBy.length === 1) {
+    } else if (post.likesCount === 1) {
       likedByEl.textContent = `Liked by ${post.likedBy[0]}`;
     } else {
       likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
@@ -700,11 +720,7 @@ export async function loadSinglePost() {
       likedByEl.classList.add("disabled");
     }
 
-    const likedByIds = Array.isArray(post.likes)
-      ? post.likes.map((l) => (typeof l === "object" ? l._id : l))
-      : [];
-
-    if (userId && (likedByIds.includes(userId) || post.likedByUser)) {
+    if (userId && post.likedByUser) {
       likeBtn.classList.add("liked");
       heart.className = "fa-solid fa-heart";
     } else {
@@ -836,18 +852,18 @@ export const fetchRelatedPosts = async (slug) => {
 const savedPostsContainer = document.getElementById("savedPostsContainer");
 
 export async function loadSavedPosts(page, limit = 6) {
+  const container = savedPostsContainer;
   try {
-    const resolvedPage = page ?? getPageFromUrl();
-    const searchInputs = document.querySelectorAll(".search");
+    const urlState = getStateFromUrl();
+    const resolvedPage = page ?? urlState.page;
+    const searchValue = getSearchValue() || urlState.search;
     const queryParams = new URLSearchParams();
     queryParams.append("page", resolvedPage);
     queryParams.append("limit", limit);
-    searchInputs.forEach((input) => {
-      if (input) {
-        const searchValue = input.value.trim();
-        if (searchValue) queryParams.append("search", searchValue);
-      }
-    });
+
+    if (searchValue) {
+      queryParams.append("search", searchValue);
+    }
 
     if (resolvedPage === 1) showSkeleton("savedPostsContainer", limit);
     else showPostsLoader();
@@ -861,12 +877,18 @@ export async function loadSavedPosts(page, limit = 6) {
     state.saved = Array.isArray(data.posts) ? data.posts : [];
     currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
+    currentSearch = searchValue || "";
 
-    updatePageInUrl(currentPage);
+    updateUrlState({
+      page: currentPage,
+      search: searchValue,
+    });
 
     sessionStorage.setItem("postsPage", currentPage);
+    sessionStorage.removeItem("postsCategory");
+    currentCategory = "";
+    sessionStorage.setItem("postsSearch", currentSearch);
 
-    const container = savedPostsContainer;
     if (!container) return;
 
     if (state.saved.length === 0) {
@@ -925,8 +947,16 @@ export async function loadSavedPosts(page, limit = 6) {
             method: "POST",
           });
 
+          state.saved = state.saved.filter((p) => p.slug !== slug);
+
           btn.closest(".post-card").remove();
           showToast("Removed from saved posts", "success");
+
+          if (state.saved.length === 0 && currentPage > 1) {
+            loadSavedPosts(currentPage - 1);
+          } else {
+            renderPagination("savedPostsContainer", currentPage, totalPages);
+          }
         } catch (err) {
           console.error(err);
           showToast("Failed to remove", "error");
@@ -957,14 +987,18 @@ export function refreshPage() {
 }
 
 document.getElementById("categoryFilter")?.addEventListener("change", () => {
-  updatePageInUrl(1);
+  updateUrlState({ page: 1 });
   fetchPosts(1);
 });
 
-search.forEach((input) =>
+let searchTimeout;
+searchInputs.forEach((input) =>
   input?.addEventListener("keyup", () => {
-    updatePageInUrl(1);
-    fetchPosts(1);
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      updateUrlState({ page: 1 });
+      fetchPosts(1);
+    }, 400);
   }),
 );
 
