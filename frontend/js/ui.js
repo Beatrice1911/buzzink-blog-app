@@ -269,9 +269,12 @@ export function showSkeleton(containerId = "allPostsContainer", limit = 6) {
 }
 
 export function hideSkeleton() {
+  const postsContainer = document.querySelector(".posts-container");
   document.querySelectorAll(".skeleton-wrapper").forEach((el) => {
     el.classList.add("hide");
-    setTimeout(() => el.remove(), 300);
+    setTimeout(() => el.remove(),
+    postsContainer.classList.add("show"),
+    300);
   });
 }
 
