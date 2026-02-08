@@ -967,7 +967,6 @@ nav a.active::after {
   display: flex; align-items: center; justify-content: center;
   background: rgba(0,0,0,0.6);
   z-index: 1000;
-
 }
 
 .auth-modal.hidden, .auth-modal .hidden { 

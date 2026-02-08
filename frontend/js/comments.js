@@ -248,8 +248,9 @@ export async function updateCommentCount(slug, commentCountSpan) {
 
 async function handleCommentSubmit(e) {
   const commentForm = e.target.closest(".comment-form");
-  const addCommentBtn = commentForm.querySelector(".comment-form button");
   if (!commentForm) return;
+
+  const addCommentBtn = commentForm.querySelector(".comment-form button");  
   e.preventDefault();
 
   const commentInput = commentForm.querySelector(".comment-input");
