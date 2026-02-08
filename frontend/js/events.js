@@ -123,7 +123,7 @@ export function initEvents() {
     }
 
     const openModal = document.querySelector(".likes-modal.active");
-    if (openModal && !openModal.contains(e.target)) {
+    if (openModal && e.target === openModal) {
       const modalId = openModal.id.replace("likesModal-", "");
       closeLikesModal(modalId);
     }

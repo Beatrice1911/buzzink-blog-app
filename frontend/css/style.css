@@ -1687,11 +1687,13 @@ nav a.active::after {
 .likes-modal {
   position: fixed;
   inset: 0;
+  top: 0;
+  left: 0;
   background-color: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 9999;
   transition: opacity 0.3s ease;
   opacity: 0;
   pointer-events: none;
@@ -1707,7 +1709,6 @@ nav a.active::after {
 }
 
 .likes-modal-content {
-  position: relative;
   background-color: var(--surface-card);
   padding: 20px 25px;
   border-radius: 10px;
@@ -1746,7 +1747,7 @@ nav a.active::after {
   background: var(--skeleton-bg);
   box-shadow: 0 2px 5px rgba(0,0,0,.1);
   transition: all .3s ease;
-  animation: pulse 1.5s infinite;
+  animation: pulse-skeleton 1.5s infinite;
 }
 
 .skeleton-img {
@@ -1780,7 +1781,7 @@ nav a.active::after {
   border-radius: 50px;
 }
 
-@keyframes pulse {
+@keyframes pulse-skeleton {
   0% { opacity: 1; }
   50% { opacity: 0.4; }
   100% { opacity: 1; }
@@ -1799,13 +1800,13 @@ nav a.active::after {
   height: 12px;
   background: var(--primary);
   border-radius: 50%;
-  animation: pulse 1.4s infinite ease-in-out both;
+  animation: pulse-loader 1.4s infinite ease-in-out both;
 }
 
 .loader span:nth-child(1) { animation-delay: -0.32s; }
 .loader span:nth-child(2) { animation-delay: -0.16s; }
 
-@keyframes pulse {
+@keyframes pulse-loader {
   0%, 80%, 100% {
     transform: scale(0);
     opacity: 0.4;
