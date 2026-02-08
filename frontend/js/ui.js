@@ -130,7 +130,7 @@ function initSearchToggle() {
   searchIcon?.addEventListener("click", () => {
     mobileSearch.classList.toggle("show");
     if (mobileSearch.classList.contains("show")) {
-      mobileSearch.querySelector("input").focus();
+      mobileSearch?.querySelector("input").focus();
     }
   });
 }
