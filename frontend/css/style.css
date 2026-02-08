@@ -969,6 +969,7 @@ nav a.active::after {
   z-index: 1000;
 
 }
+
 .auth-modal.hidden, .auth-modal .hidden { 
   display: none; 
 }

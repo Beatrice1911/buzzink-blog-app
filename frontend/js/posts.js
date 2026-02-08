@@ -904,6 +904,8 @@ searchInputs.forEach((input) =>
       updateUrlState({ page: 1 });
       fetchFeaturedPosts();
       fetchPosts(1);
+      fetchMyPosts(1);
+      loadSavedPosts(1);
     }, 400);
   }),
 );

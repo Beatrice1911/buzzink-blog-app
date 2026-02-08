@@ -2,6 +2,7 @@ import { apiFetch } from "./api.js";
 import { AUTH_URL, DEFAULT_AVATAR } from "./config.js";
 import { showToast } from "./ui.js";
 import { userIcon, userMenuDetails } from "./ui.js";
+import { routeByPage } from "./app.js";
 
 export const loginForm = document.getElementById("loginForm");
 export const registerForm = document.getElementById("registerForm");
@@ -94,6 +95,7 @@ function initLogin() {
     authModal.classList.add("hidden");
     loginForm.reset();
     showToast(`Welcome back, ${user.name}!`, "success");
+    routeByPage();
   });
 }
 
@@ -132,6 +134,7 @@ function initRegister() {
       `Welcome, ${user.name}! Your account has been created.`,
       "success",
     );
+    routeByPage();
   });
 }
 
