@@ -100,5 +100,6 @@ window.addEventListener("pageshow", (event) => {
 });
 
 window.addEventListener("popstate", () => {
+  appInitialized = false;
   routeByPage();
 });

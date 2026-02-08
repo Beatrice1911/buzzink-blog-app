@@ -41,6 +41,7 @@ const {
   savePost,
   unsavePost,
   getSavedPosts,
+  getPostLikes,
 } = require("../controllers/postController");
 
 router.get("/", optionalAuth, getPosts);
@@ -48,6 +49,7 @@ router.get("/mine", requireAuth, getPosts);
 router.get("/saved/me", requireAuth, getSavedPosts);
 router.get("/trending", getTrendingPosts);
 router.get("/slug/:slug/related", optionalAuth, getPostsByCategory);
+router.get("/:slug/likes", getPostLikes);
 router.post("/:slug/view", optionalAuth, incrementView);
 router.post("/:slug/share", optionalAuth, incrementShare);
 router.post("/:slug/like", requireAuth, likePost);

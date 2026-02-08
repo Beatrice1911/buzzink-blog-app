@@ -1,7 +1,7 @@
 import { apiFetch } from "./api.js";
 import { AUTH_URL, DEFAULT_AVATAR } from "./config.js";
 import { showToast } from "./ui.js";
-import { userIcon, userMenuDetails } from "./ui.js";
+import { userIcons, userMenuDetails } from "./ui.js";
 import { routeByPage } from "./app.js";
 
 export const loginForm = document.getElementById("loginForm");
@@ -23,9 +23,9 @@ window.currentUser = (() => {
 
 export function updateUI(user) {
   if (user?.id) {
-    userIcon.forEach((icon) => (icon.title = `Logged in as ${user.name}`));
+    userIcons.forEach((icon) => (icon.title = `Logged in as ${user.name}`));
   } else {
-    userIcon.forEach((icon) => (icon.title = "Click to Login/Register"));
+    userIcons.forEach((icon) => (icon.title = "Click to Login/Register"));
     userMenuDetails?.classList.remove("show");
   }
 }
@@ -38,19 +38,9 @@ export async function updateAvatar(user) {
 
     user = await res.json();
 
-    const avatars = document.querySelectorAll(".user-icon");
-    if (avatars) {
-      avatars.forEach((avatar) => {
-        avatar.src = user.profilePhoto?.trim()
-          ? user.profilePhoto
-          : DEFAULT_AVATAR;
-      });
-    }
-
-    const adminAvatars = document.querySelectorAll(".avatar");
-    if (adminAvatars) {
-      adminAvatars.forEach((avatar) => {
-        avatar.src = user.profilePhoto?.trim()
+    if (userIcons) {
+      userIcons.forEach((icon) => {
+        icon.src = user.profilePhoto?.trim()
           ? user.profilePhoto
           : DEFAULT_AVATAR;
       });
@@ -80,6 +70,7 @@ function initLogin() {
 
     if (!res.ok) {
       showToast(`Login failed: ${data.message || "Unknown error"}`, "error");
+      return;
     }
 
     const user = normalizeUser(data.user);
@@ -120,6 +111,7 @@ function initRegister() {
         `Registration failed: ${data.message || "Unknown error"}`,
         "error",
       );
+      return;
     }
 
     const user = normalizeUser(data.user);

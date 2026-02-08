@@ -6,13 +6,19 @@ import {
   userMenuDetails,
   mobileMenu,
   menuToggle,
+  authModal,
+  loginTab,
+  registerTab,
 } from "./ui.js";
 import { apiFetch } from "./api.js";
+import { loginForm, registerForm } from "./auth.js";
 
-let isLikesModalOpen = false;
+const openModals = new Set();
 
 async function openLikesModal(postSlug) {
-  if (isLikesModalOpen) return;
+   if (openModals.has(postSlug)) return;
+  openModals.add(postSlug);
+
   const safeSlug = encodeURIComponent(postSlug);
   const modal = document.getElementById(`likesModal-${safeSlug}`);
   const list = document.getElementById(`likesList-${safeSlug}`);
@@ -53,7 +59,7 @@ function closeLikesModal(postSlug) {
   const modal = document.getElementById(`likesModal-${safeSlug}`);
   if (!modal) return;
 
-  isLikesModalOpen = false;
+  openModals.delete(postSlug);
   modal.classList.remove("active");
   setTimeout(() => {
     modal.classList.add("hidden");
@@ -132,18 +138,18 @@ export function initEvents() {
     }
 
     // Menu button handling
-    const comentMenuBtn = e.target.closest(".menu-btn");
+    const commentMenuBtn = e.target.closest(".menu-btn");
     const commentOptions = e.target.closest(".menu-options");
 
     // Close all menus if clicking elsewhere
-    if (!comentMenuBtn && !commentOptions) {
+    if (!commentMenuBtn && !commentOptions) {
       document
         .querySelectorAll(".menu-options")
         .forEach((opt) => opt.classList.add("hidden"));
     }
 
-    if (comentMenuBtn) {
-      const menu = comentMenuBtn.nextElementSibling;
+    if (commentMenuBtn) {
+      const menu = commentMenuBtn.nextElementSibling;
       menu.classList.toggle("hidden");
     }
 

@@ -1,12 +1,12 @@
 import { registerForm, loginForm } from "./auth";
 import { body } from "./config";
 
-export const userIcon = document.querySelectorAll(".user-icon");
+export const userIcons = document.querySelectorAll(".user-icon");
 export const userMenuDetails = document.getElementById("userMenuDetails");
-const authModal = document.getElementById("authModal");
+export const authModal = document.getElementById("authModal");
 const closeModal = document.getElementById("closeModal");
-const loginTab = document.getElementById("loginTab");
-const registerTab = document.getElementById("registerTab");
+export const loginTab = document.getElementById("loginTab");
+export const registerTab = document.getElementById("registerTab");
 const writePostBtns = document.querySelectorAll(".write-post");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
@@ -43,7 +43,7 @@ export function showToast(message, type = "info", duration = 5000) {
 
   setTimeout(() => {
     toast.style.animation = "slideOut 0.5s forwards";
-    toast?.addEventListener("animationend", () => toast.remove());
+    toast.addEventListener("animationend", () => toast.remove());
   }, duration);
 }
 
@@ -160,9 +160,11 @@ export function applyTheme(theme) {
   if (theme === "dark") {
     body.classList.add("dark");
     logo.src = "/Images/logo-dark-theme_optimized_.png";
+    if (themeToggle) themeToggle.checked = true;
   } else {
     body.classList.remove("dark");
     logo.src = "/Images/logo_optimized.png";
+    if (themeToggle) themeToggle.checked = false;
   }
 
   localStorage.setItem("theme", theme);
@@ -250,7 +252,10 @@ export function hideSkeleton() {
   const postsContainer = document.querySelector(".posts-container");
   document.querySelectorAll(".skeleton-wrapper").forEach((el) => {
     el.classList.add("hide");
-    setTimeout(() => el.remove(), postsContainer.classList.add("show"), 300);
+    setTimeout(() => {
+      postsContainer.classList.add("show");
+      el.remove();
+    }, 300);
   });
 }
 

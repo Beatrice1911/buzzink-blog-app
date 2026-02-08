@@ -95,6 +95,24 @@ const getPostBySlug = async (req, res) => {
   }
 };
 
+async function getPostLikes(req, res) {
+  try {
+    const { slug } = req.params;
+    const post = await Post.findOne({ slug }).populate("likes", "name email");
+
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const users = post.likes.map((user) => user.name); 
+
+    return res.json({ users });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+}
+
 const createPost = async (req, res) => {
   try {
     const { title, content, category } = req.body;
@@ -515,6 +533,7 @@ const getSavedPosts = async (req, res) => {
 module.exports = {
   getPosts,
   getPostBySlug,
+  getPostLikes,
   createPost,
   updatePost,
   deletePost,

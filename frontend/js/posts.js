@@ -908,7 +908,8 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
 }
 
 document.getElementById("categoryFilter")?.addEventListener("change", () => {
-  updateUrlState({ page: 1 });
+  const currentState = getStateFromUrl();
+  updateUrlState({ ...currentState, page: 1 });
   fetchPosts(1);
 });
 
@@ -917,7 +918,8 @@ searchInputs.forEach((input) =>
   input?.addEventListener("keyup", () => {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
-      updateUrlState({ page: 1 });
+      const currentState = getStateFromUrl();
+      updateUrlState({ ...currentState, page: 1 });
       fetchFeaturedPosts();
       fetchPosts(1);
       fetchMyPosts(1);
