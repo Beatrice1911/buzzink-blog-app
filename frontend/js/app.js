@@ -40,7 +40,6 @@ export async function routeByPage() {
     restoreFiltersFromUrl();
     showSkeleton("featuredPostsContainer", 3);
     await fetchFeaturedPosts();
-    await fetchPosts(page);
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
     restoreFiltersFromUrl();

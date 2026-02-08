@@ -164,5 +164,24 @@ export function initEvents() {
     ) {
       mobileMenu.classList.remove("active");
     }
+
+    const icon = e.target.closest(".user-icon");
+    if (!icon) return;
+    e.stopPropagation();
+
+    const user = window.currentUser;
+
+    if (user && user.id) {
+      userMenuDetails.classList.toggle("show");
+      authModal.classList.add("hidden");
+    } else {
+      userMenuDetails.classList.remove("show");
+      authModal.classList.remove("hidden");
+
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+      loginForm.classList.remove("hidden");
+      registerForm.classList.add("hidden");
+    }
   });
 }

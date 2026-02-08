@@ -168,29 +168,6 @@ export function applyTheme(theme) {
   localStorage.setItem("theme", theme);
 }
 
-export function initUserIconClick() {
-  document.addEventListener("click", (e) => {
-    const icon = e.target.closest(".user-icon");
-    if (!icon) return;
-    e.stopPropagation();
-
-    const user = window.currentUser;
-
-    if (user && user.id) {
-      userMenuDetails.classList.toggle("show");
-      authModal.classList.add("hidden");
-    } else {
-      userMenuDetails.classList.remove("show");
-      authModal.classList.remove("hidden");
-
-      loginTab.classList.add("active");
-      registerTab.classList.remove("active");
-      loginForm.classList.remove("hidden");
-      registerForm.classList.add("hidden");
-    }
-  });
-}
-
 export function initUI() {
   initMenus();
   initAuthModal();
@@ -198,7 +175,6 @@ export function initUI() {
   initWritePostButtons();
   initNavigation();
   initTheme();
-  initUserIconClick();
 }
 
 let skeletonTimeout;
