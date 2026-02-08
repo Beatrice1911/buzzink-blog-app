@@ -26,7 +26,6 @@ async function openLikesModal(postSlug) {
 
   if (modal.classList.contains("active")) return;
 
-  isLikesModalOpen = true;
   modal.classList.remove("hidden");
   requestAnimationFrame(() => modal.classList.add("active"));
 
@@ -177,7 +176,7 @@ export function initEvents() {
 
     const user = window.currentUser;
 
-    if (user && user.id) {
+    if (user && (user.id || user._id)) {
       userMenuDetails.classList.toggle("show");
       authModal.classList.add("hidden");
     } else {

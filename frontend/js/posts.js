@@ -938,7 +938,8 @@ function renderPagination(context, page, total) {
     btn.textContent = i;
     btn.className = i === page ? "pg-active" : "";
     btn?.addEventListener("click", async () => {
-      updateUrlState({ page: i });
+      const currentState = getStateFromUrl();
+      updateUrlState({ ...currentState, page: i });
       fetchPosts(i);
     });
     container.appendChild(btn);

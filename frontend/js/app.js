@@ -56,7 +56,7 @@ export async function routeByPage() {
     showSkeleton("savedPostsContainer", 6);
     await loadSavedPosts(page);
   } else if (path.startsWith("/post/")) {
-    loadSinglePost();
+    await loadSinglePost();
   } else {
     restoreFiltersFromUrl();
     showSkeleton();
@@ -67,7 +67,13 @@ export async function routeByPage() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const user = await checkUser();
+  let user = null;
+  try {
+    user = await checkUser();
+  } catch (err) {
+    console.warn("User not logged in, running as guest.");
+  }
+
   window.currentUser = user;
 
   initAuth();
