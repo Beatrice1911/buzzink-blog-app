@@ -43,6 +43,9 @@ export function getStateFromUrl() {
 function updateUrlState({ page, category, search }, { replace = false } = {}) {
   const url = new URL(window.location);
 
+  page = Number(page);
+  if (!page || page < 1) page = 1;
+
   if (page === 1) url.searchParams.delete("page");
   else url.searchParams.set("page", page);
 
@@ -125,9 +128,12 @@ export async function fetchFeaturedPosts(limit = 3) {
   try {
     const urlState = getStateFromUrl();
     const search = getSearchValue() || urlState.search;
+    const { page: currentPage = 1 } = getStateFromUrl();
 
     updateUrlState(
       {
+        page: currentPage || 1,
+        category: "",
         search,
       },
       { replace: true },
