@@ -119,9 +119,27 @@ export async function fetchPosts(pageOverride, limit = 6) {
 
 export async function fetchFeaturedPosts(limit = 3) {
   try {
+    const urlState = getStateFromUrl();
+    const search = getSearchValue() || urlState.search;
+    
+    updateUrlState(
+      {
+        search,
+      },
+      { replace: true },
+    );
+
+    const queryParams = new URLSearchParams({
+      limit,
+    });
+
+    if (search) {
+      queryParams.append("search", search);
+    }
+
     showSkeleton("featuredPostsContainer", limit);
 
-    const res = await apiFetch(`${API_URL}?page=1&limit=${limit}`);
+    const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
 
     state.featured = Array.isArray(data.posts) ? data.posts : [];
@@ -139,7 +157,6 @@ export async function fetchMyPosts(pageOverride, limit = 6) {
     const urlState = getStateFromUrl();
     const page = pageOverride ?? urlState.page;
     const search = getSearchValue() || urlState.search;
-    urlState.search;
 
     updateUrlState(
       {
