@@ -9,50 +9,44 @@ export async function handleLike(btn) {
     .closest(".post-interactions-container")
     ?.querySelector(".liked-by");
 
-  const alreadyLiked = btn.classList.contains("liked");
   if (!window.currentUser) {
     showToast("Please log in to like or unlike posts.", "error");
     return;
   }
 
+  const alreadyLiked = btn.classList.contains("liked");
+
   try {
-    let res;
-    if (alreadyLiked) {
-      res = await apiFetch(`/api/posts/${slug}/unlike`, {
-        method: "POST",
-      });
-    } else {
-      res = await apiFetch(`/api/posts/${slug}/like`, {
-        method: "POST",
-      });
-    }
+    const res = await apiFetch(
+      `/api/posts/${slug}/${alreadyLiked ? "unlike" : "like"}`,
+      { method: "POST" },
+    );
 
     const data = await res.json();
 
     if (res.ok) {
-      if (alreadyLiked) {
-        btn.classList.remove("liked");
-        heart.className = "fa-regular fa-heart";
-      } else {
-        btn.classList.add("liked");
-        heart.className = "fa-solid fa-heart";
-      }
+      btn.classList.toggle("liked", !alreadyLiked);
+      heart.className = !alreadyLiked
+        ? "fa-solid fa-heart"
+        : "fa-regular fa-heart";
 
-      countEl.textContent = data.likes ?? 0;
+      const likesCount = data.likesCount ?? data.likes ?? 0;
+      countEl.textContent = likesCount;
 
-      likedByEl.dataset.slug = slug;
-      likedByEl.dataset.likedBy = JSON.stringify(data.likedBy || []);
-
-      if (data.likedBy && data.likedBy.length > 0) {
-        likedByEl.classList.remove("disabled");
-        if (data.likedBy.length === 1) {
-          likedByEl.textContent = `Liked by ${data.likedBy[0]}`;
+      if (likedByEl) {
+        if (!likesCount) {
+          likedByEl.textContent = "No likes yet";
+          likedByEl.classList.add("disabled");
         } else {
-          likedByEl.textContent = `Liked by ${data.likedBy[0]} and ${data.likedBy.length - 1} others`;
+          likedByEl.textContent =
+            likesCount === 1 ? "1 like" : `${likesCount} likes`;
+          likedByEl.classList.remove("disabled");
         }
-      } else {
-        likedByEl.classList.add("disabled");
-        likedByEl.textContent = "No likes yet";
+
+        if (Array.isArray(data.likedBy)) {
+          likedByEl.dataset.slug = slug;
+          likedByEl.dataset.likedBy = JSON.stringify(data.likedBy);
+        }
       }
     } else {
       showToast(`Failed to update likes: ${data.message}`, "error");

@@ -3,43 +3,44 @@ import { toggleComments, handleDeleteComment } from "./comments.js";
 import { handleShare } from "./share.js";
 import { editPost, deletePost } from "./posts.js";
 import { userMenuDetails, userIcon, mobileMenu, menuToggle } from "./ui.js";
+import { apiFetch } from "./api.js";
 
 let isLikesModalOpen = false;
 
-function openLikesModal(postSlug, users) {
+async function openLikesModal(postSlug) {
   if (isLikesModalOpen) return;
   const safeSlug = encodeURIComponent(postSlug);
   const modal = document.getElementById(`likesModal-${safeSlug}`);
   const list = document.getElementById(`likesList-${safeSlug}`);
   if (!modal || !list) return;
 
-  list.innerHTML = "";
-  if (!Array.isArray(users) || users.length === 0) return;
-  users.forEach((user) => {
-    const li = document.createElement("li");
-    li.textContent = user;
-    list.appendChild(li);
-  });
+  if (modal.classList.contains("active")) return;
 
+  isLikesModalOpen = true;
   modal.classList.remove("hidden");
   requestAnimationFrame(() => modal.classList.add("active"));
-  isLikesModalOpen = true;
 
-  const content = modal.querySelector(".likes-modal-content");
+  list.innerHTML = "<li>Loading...</li>";
 
-  if (content && !content.dataset.bound) {
-    content?.addEventListener("click", (e) => e.stopPropagation());
-    content.dataset.bound = "true";
-  }
+  try {
+    const res = await apiFetch(`/api/posts/${postSlug}/likes`);
+    const data = await res.json();
 
-  const closeBtn = document.getElementById(`closeLikesModal-${safeSlug}`);
+    list.innerHTML = "";
 
-  if (closeBtn && !closeBtn.dataset.bound) {
-    closeBtn?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      closeLikesModal(postSlug);
+    if (!Array.isArray(data.users) || data.users.length === 0) {
+      list.innerHTML = "<li>No likes yet</li>";
+      return;
+    }
+
+    data.users.forEach((user) => {
+      const li = document.createElement("li");
+      li.textContent = user;
+      list.appendChild(li);
     });
-    closeBtn.dataset.bound = "true";
+  } catch (err) {
+    list.innerHTML = "<li>Failed to load likes</li>";
+    console.error("Failed to fetch likes:", err);
   }
 }
 
@@ -106,19 +107,16 @@ export function initEvents() {
       e.stopPropagation();
 
       const postSlug = likesInfo.dataset.slug;
-      const likedBy = JSON.parse(likesInfo.dataset.likedBy || "[]");
-      if (!postSlug || likedBy.length === 0) return;
+      if (!postSlug) return;
 
-      openLikesModal(postSlug, likedBy);
+      openLikesModal(postSlug);
       return;
     }
 
-    if (isLikesModalOpen) {
-      const openModal = document.querySelector(".likes-modal.active");
-      if (openModal && !openModal.contains(e.target)) {
-        const modalId = openModal.id.replace("likesModal-", "");
-        closeLikesModal(modalId);
-      }
+    const openModal = document.querySelector(".likes-modal.active");
+    if (openModal && !openModal.contains(e.target)) {
+      const modalId = openModal.id.replace("likesModal-", "");
+      closeLikesModal(modalId);
     }
 
     // Delete comment handling

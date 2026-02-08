@@ -2,6 +2,7 @@ import { apiFetch } from "./api.js";
 import { API_URL } from "./config.js";
 import { showToast } from "./ui.js";
 import { fetchComments, updateCommentCount } from "./comments.js";
+import { routeByPage } from "./app.js";
 
 const searchInputs = document.querySelectorAll(".search");
 function getSearchValue() {
@@ -10,6 +11,7 @@ function getSearchValue() {
 
 let state = {
   all: [],
+  featured: [],
   mine: [],
   saved: [],
 };
@@ -219,8 +221,7 @@ export async function fetchFeaturedPosts(limit = 3) {
     const res = await apiFetch(`${API_URL}?page=1&limit=${limit}`);
     const data = await res.json();
 
-    state.all = Array.isArray(data.posts) ? data.posts : [];
-
+    state.featured = Array.isArray(data.posts) ? data.posts : [];
     displayPosts("featuredPostsContainer", limit);
   } catch (err) {
     console.error("Failed to load featured posts", err);
@@ -325,11 +326,10 @@ export function displayPosts(containerId, limit = null) {
 
   let displayList = [];
 
-  if (
-    containerId === "allPostsContainer" ||
-    containerId === "featuredPostsContainer"
-  ) {
+  if (containerId === "allPostsContainer") {
     displayList = [...state.all];
+  } else if (containerId === "featuredPostsContainer") {
+    displayList = [...state.featured];
   } else if (containerId === "myPostsContainer") {
     displayList = [...state.mine];
   } else if (containerId === "savedPostsContainer") {
@@ -405,7 +405,6 @@ export function displayPosts(containerId, limit = null) {
         </div>
         <div id="likesModal-${post.slug}" class="likes-modal hidden slide-up">
           <div class="likes-modal-content">
-            <span id="closeLikesModal-${post.slug}" class="close-btn">&times;</span>
             <h3>Liked by</h3>
             <ul id="likesList-${post.slug}" class="likes-list"></ul>            
           </div>
@@ -448,7 +447,6 @@ export function displayPosts(containerId, limit = null) {
     if (post.likedBy && post.likesCount > 0) {
       likedByEl.classList.remove("disabled");
     } else {
-      likedByEl.classList.add("disabled");
     }
 
     likeBtn.classList.toggle("liked", post.likedByUser);
@@ -458,10 +456,13 @@ export function displayPosts(containerId, limit = null) {
 
     if (!post.likesCount) {
       likedByEl.textContent = "No likes yet";
-    } else if (post.likesCount === 1) {
-      likedByEl.textContent = `Liked by ${post.likedBy[0]}`;
+      likedByEl.classList.add("disabled");
     } else {
-      likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
+      likedByEl.textContent = likedByEl.textContent =
+        post.likesCount === 1
+          ? `Liked by ${post.likedBy[0]}`
+          : `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
+      likedByEl.classList.remove("disabled");
     }
 
     const commentCountSpan = div.querySelector(".comment-count");
@@ -693,7 +694,6 @@ export async function loadSinglePost() {
       </div>
       <div id="likesModal-${post.slug}" class="likes-modal hidden slide-up">
         <div class="likes-modal-content">
-          <span id="closeLikesModal-${post.slug}" class="close-btn">&times;</span>
           <h3>Liked by</h3>
           <ul id="likesList-${post.slug}" class="likes-list"></ul>            
         </div>
@@ -991,18 +991,6 @@ export async function loadSavedPosts(page, limit = 6) {
   }
 }
 
-export function refreshPage() {
-  if (document.getElementById("allPostsContainer")) {
-    displayPosts("allPostsContainer");
-  }
-  if (document.getElementById("featuredPostsContainer")) {
-    displayPosts("featuredPostsContainer", 3);
-  }
-  if (document.getElementById("myPostsContainer")) {
-    displayPosts("myPostsContainer");
-  }
-}
-
 document.getElementById("categoryFilter")?.addEventListener("change", () => {
   updateUrlState({ page: 1 });
   fetchPosts(1);
@@ -1028,14 +1016,9 @@ function renderPagination(containerId, page, total) {
     const btn = document.createElement("button");
     btn.textContent = i;
     btn.className = i === page ? "pg-active" : "";
-    btn?.addEventListener("click", () => {
-      if (containerId === "myPostsContainer") {
-        fetchMyPosts(i);
-      } else if (containerId === "savedPostsContainer") {
-        loadSavedPosts(i);
-      } else {
-        fetchPosts(i);
-      }
+    btn?.addEventListener("click", async () => {
+      updateUrlState({ page: i });
+      await routeByPage();
     });
     container.appendChild(btn);
   }

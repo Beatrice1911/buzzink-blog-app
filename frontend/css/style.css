@@ -1698,21 +1698,6 @@ nav a.active::after {
   color: var(--text);
 }
 
-.close-btn {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 25px;
-  font-weight: bold;
-  color: var(--text);
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.close-btn:hover {
-  color: var(--text-hover);
-}
-
 .likes-list {
   list-style: none;
   padding: 0;
