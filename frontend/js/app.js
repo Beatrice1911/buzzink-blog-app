@@ -32,7 +32,11 @@ function restoreScroll() {
   }
 }
 
+let appInitialized = false;
 export async function routeByPage() {
+  if (appInitialized) return;
+  appInitialized = true;
+
   const path = window.location.pathname;
   const { page } = getStateFromUrl();
 

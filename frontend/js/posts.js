@@ -19,6 +19,8 @@ let state = {
   mine: [],
   saved: [],
 };
+
+let isFetchingPosts = false;
 let totalPages = 1;
 export function getCurrentState() {
   return getStateFromUrl();
@@ -73,7 +75,7 @@ export function restoreFiltersFromUrl() {
 export async function fetchPosts(pageOverride, limit = 6) {
   try {
     const urlState = getStateFromUrl();
-    const page = pageOverride ?? urlState.page;
+    const page = Number(pageOverride ?? urlState.page) || 1;
     const category =
       document.getElementById("categoryFilter")?.value || urlState.category;
 
@@ -105,6 +107,8 @@ export async function fetchPosts(pageOverride, limit = 6) {
     state.all = Array.isArray(data.posts) ? data.posts : [];
     totalPages = data.totalPages ?? 1;
 
+    if (isFetchingPosts) return;
+    isFetchingPosts = true;
     displayPosts("allPostsContainer");
     renderPagination("allPostsContainer", page, totalPages);
   } catch (err) {
@@ -113,6 +117,7 @@ export async function fetchPosts(pageOverride, limit = 6) {
   } finally {
     hideSkeleton();
     hidePostsLoader();
+    isFetchingPosts = false;
   }
 }
 
@@ -140,11 +145,14 @@ export async function fetchFeaturedPosts(limit = 3) {
     const data = await res.json();
 
     state.featured = Array.isArray(data.posts) ? data.posts : [];
+    if (isFetchingPosts) return;
+    isFetchingPosts = true;
     displayPosts("featuredPostsContainer", limit);
   } catch (err) {
     console.error("Failed to load featured posts", err);
   } finally {
     hideSkeleton();
+    isFetchingPosts = false;
   }
 }
 
@@ -152,7 +160,7 @@ export async function fetchFeaturedPosts(limit = 3) {
 export async function fetchMyPosts(pageOverride, limit = 6) {
   try {
     const urlState = getStateFromUrl();
-    const page = pageOverride ?? urlState.page;
+    const page = Number(pageOverride ?? urlState.page) || 1;
     const search = getSearchValue() || urlState.search;
 
     updateUrlState(
@@ -186,6 +194,9 @@ export async function fetchMyPosts(pageOverride, limit = 6) {
     state.mine = Array.isArray(data.posts) ? data.posts : [];
     totalPages = data.totalPages || 1;
 
+    if (isFetchingPosts) return;
+    isFetchingPosts = true;
+
     displayPosts("myPostsContainer");
     renderPagination("myPostsContainer", page, totalPages);
   } catch (err) {
@@ -194,6 +205,7 @@ export async function fetchMyPosts(pageOverride, limit = 6) {
   } finally {
     hideSkeleton();
     hidePostsLoader();
+    isFetchingPosts = false;
   }
 }
 
@@ -290,7 +302,7 @@ export function displayPosts(containerId, limit = null) {
       }
         <p class="tag">${post.category}</p>
         <h2>
-          <a href="post.html?slug=${post.slug}" class="post-link">${post.title}</a>
+          <a href="post.html?slug=${post.slug}"  class="post-link">${post.title}</a>
         </h2>
         <p>${preview} <a href="post.html?slug=${post.slug}" class="read-more">Read more</a></p>
         <a href="profile.html?id=${postAuthorId}" class="author"><em>By ${authorName}</em></a>
@@ -774,7 +786,7 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
   const container = savedPostsContainer;
   try {
     const urlState = getStateFromUrl();
-    const page = pageOverride ?? urlState.page;
+    const page = Number(pageOverride ?? urlState.page) || 1;
     const search = getSearchValue() || urlState.search;
 
     updateUrlState(
@@ -881,6 +893,9 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
       });
     });
 
+    if (isFetchingPosts) return;
+    isFetchingPosts = true;
+
     renderPagination("savedPostsContainer", page, totalPages);
   } catch (err) {
     console.error(err);
@@ -888,6 +903,7 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
   } finally {
     hideSkeleton();
     hidePostsLoader();
+    isFetchingPosts = false;
   }
 }
 
