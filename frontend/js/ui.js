@@ -168,6 +168,29 @@ export function applyTheme(theme) {
   localStorage.setItem("theme", theme);
 }
 
+export function initUserIconClick() {
+  document.addEventListener("click", (e) => {
+    const icon = e.target.closest(".user-icon");
+    if (!icon) return;
+    e.stopPropagation();
+
+    const user = window.currentUser;
+
+    if (user && user.id) {
+      userMenuDetails.classList.toggle("show");
+      authModal.classList.add("hidden");
+    } else {
+      userMenuDetails.classList.remove("show");
+      authModal.classList.remove("hidden");
+
+      loginTab.classList.add("active");
+      registerTab.classList.remove("active");
+      loginForm.classList.remove("hidden");
+      registerForm.classList.add("hidden");
+    }
+  });
+}
+
 export function initUI() {
   initMenus();
   initAuthModal();
@@ -175,29 +198,6 @@ export function initUI() {
   initWritePostButtons();
   initNavigation();
   initTheme();
-}
-
-export function initUserMenu() {
-  document.querySelectorAll(".user-icon").forEach(icon => {
-    icon.addEventListener("click", (e) => {
-      e.stopPropagation();
-
-      const user = window.currentUser;
-
-      if (user && user.id) {
-        userMenuDetails.classList.toggle("show");
-        authModal.classList.add("hidden");
-      } else {
-        userMenuDetails.classList.remove("show");
-        authModal.classList.remove("hidden");
-
-        loginTab.classList.add("active");
-        registerTab.classList.remove("active");
-        loginForm.classList.remove("hidden");
-        registerForm.classList.add("hidden");
-      }
-    });
-  });
 }
 
 let skeletonTimeout;
@@ -209,9 +209,11 @@ export function showSkeleton(containerId = "allPostsContainer", limit = 6) {
   if (!targetContainer) return;
 
   let skeletonContainer =
-    targetContainer.previousElementSibling?.classList.contains("skeleton-wrapper")
+    targetContainer.previousElementSibling?.classList.contains(
+      "skeleton-wrapper",
+    )
       ? targetContainer.previousElementSibling
-      : null;  
+      : null;
 
   if (!skeletonContainer) {
     skeletonContainer = document.createElement("div");
@@ -271,9 +273,7 @@ export function hideSkeleton() {
   const postsContainer = document.querySelector(".posts-container");
   document.querySelectorAll(".skeleton-wrapper").forEach((el) => {
     el.classList.add("hide");
-    setTimeout(() => el.remove(),
-    postsContainer.classList.add("show"),
-    300);
+    setTimeout(() => el.remove(), postsContainer.classList.add("show"), 300);
   });
 }
 

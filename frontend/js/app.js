@@ -11,7 +11,7 @@ import {
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
-import { initUI, applyTheme, loadSavedTheme, showSkeleton, initUserMenu } from "./ui.js";
+import { initUI, applyTheme, loadSavedTheme, showSkeleton } from "./ui.js";
 import { initComments } from "./comments.js";
 
 document
@@ -72,7 +72,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   initEvents();
   initComments();
   loadSavedTheme();
-  initUserMenu();
 
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);

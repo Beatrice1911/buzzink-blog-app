@@ -1,7 +1,7 @@
 import { apiFetch } from "./api.js";
 import { AUTH_URL, DEFAULT_AVATAR } from "./config.js";
 import { showToast } from "./ui.js";
-import { userIcon, userMenuDetails, initUserMenu } from "./ui.js";
+import { userIcon, userMenuDetails } from "./ui.js";
 import { routeByPage } from "./app.js";
 
 export const loginForm = document.getElementById("loginForm");
@@ -96,7 +96,6 @@ function initLogin() {
     loginForm.reset();
     showToast(`Welcome back, ${user.name}!`, "success");
     routeByPage();
-    initUserMenu();
   });
 }
 
@@ -136,7 +135,6 @@ function initRegister() {
       "success",
     );
     routeByPage();
-    initUserMenu();
   });
 }
 
