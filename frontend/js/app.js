@@ -11,7 +11,7 @@ import {
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
-import { initUI, applyTheme, loadSavedTheme } from "./ui.js";
+import { initUI, applyTheme, loadSavedTheme, showSkeleton } from "./ui.js";
 import { initComments } from "./comments.js";
 
 document
@@ -38,23 +38,25 @@ async function routeByPage() {
 
   if (path === "/" || path.endsWith("index.html")) {
     restoreFiltersFromUrl();
+    showSkeleton("featuredPostsContainer", 3);
     await fetchFeaturedPosts();
     await fetchPosts(page);
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
     restoreFiltersFromUrl();
+    showSkeleton("myPostsContainer", 6);
     await fetchMyPosts(page);
   } else if (path.endsWith("post.html")) {
-    restoreFiltersFromUrl();
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
     restoreFiltersFromUrl();
+    showSkeleton("savedPostsContainer", 6);
     await loadSavedPosts(page);
   } else if (path.startsWith("/post/")) {
-    restoreFiltersFromUrl();
     loadSinglePost();
   } else {
     restoreFiltersFromUrl();
+    showSkeleton();
     await fetchPosts(page);
   }
 

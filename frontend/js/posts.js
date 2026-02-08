@@ -2,7 +2,6 @@ import { apiFetch } from "./api.js";
 import { API_URL } from "./config.js";
 import {
   showToast,
-  showSkeleton,
   showPostsLoader,
   hideSkeleton,
   hidePostsLoader,
@@ -98,7 +97,7 @@ export async function fetchPosts(pageOverride, limit = 6) {
       queryParams.append("category", category);
     if (search) queryParams.append("search", search);
 
-    page === 1 ? showSkeleton("allPostsContainer", limit) : showPostsLoader();
+    if (page !== 1) showPostsLoader();
 
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
@@ -137,8 +136,6 @@ export async function fetchFeaturedPosts(limit = 3) {
       queryParams.append("search", search);
     }
 
-    showSkeleton("featuredPostsContainer", limit);
-
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
 
@@ -175,7 +172,7 @@ export async function fetchMyPosts(pageOverride, limit = 6) {
       queryParams.append("search", search);
     }
 
-    page === 1 ? showSkeleton("allPostsContainer", limit) : showPostsLoader();
+    if (page !== 1) showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`);
 
@@ -797,7 +794,7 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
       queryParams.append("search", search);
     }
 
-    page === 1 ? showSkeleton("allPostsContainer", limit) : showPostsLoader();
+    if (page !== 1) showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/saved/me?${queryParams.toString()}`);
 
