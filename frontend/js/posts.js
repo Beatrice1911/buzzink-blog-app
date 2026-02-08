@@ -120,7 +120,7 @@ export async function fetchFeaturedPosts(limit = 3) {
   try {
     const urlState = getStateFromUrl();
     const search = getSearchValue() || urlState.search;
-    
+
     updateUrlState(
       {
         search,
@@ -902,6 +902,7 @@ searchInputs.forEach((input) =>
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(() => {
       updateUrlState({ page: 1 });
+      fetchFeaturedPosts();
       fetchPosts(1);
     }, 400);
   }),
