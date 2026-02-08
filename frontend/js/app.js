@@ -6,11 +6,8 @@ import {
   loadSavedPosts,
   loadSinglePost,
   initPostForm,
-  currentPage,
-  currentSearch,
-  currentCategory,
   getStateFromUrl,
-  restoreFiltersFromSession,
+  restoreFiltersFromUrl,
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
@@ -35,56 +32,34 @@ function restoreScroll() {
   }
 }
 
-export async function routeByPage() {
+async function routeByPage() {
   const path = window.location.pathname;
   const { page } = getStateFromUrl();
 
   if (path === "/" || path.endsWith("index.html")) {
-    await restoreFiltersFromSession()
+    restoreFiltersFromUrl();
     await fetchFeaturedPosts();
     await fetchPosts(page);
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
-    await restoreFiltersFromSession()
+    restoreFiltersFromUrl();
     await fetchMyPosts(page);
   } else if (path.endsWith("post.html")) {
+    restoreFiltersFromUrl();
     await loadSinglePost();
   } else if (path.endsWith("saved.html")) {
-    await restoreFiltersFromSession()
+    restoreFiltersFromUrl();
     await loadSavedPosts(page);
   } else if (path.startsWith("/post/")) {
+    restoreFiltersFromUrl();
     loadSinglePost();
   } else {
-    await restoreFiltersFromSession()
+    restoreFiltersFromUrl();
     await fetchPosts(page);
   }
 
   restoreScroll();
 }
-
-document.addEventListener("click", (e) => {
-  const link = e.target.closest("a[href]");
-  if (!link) return;
-
-  const url = new URL(link.href, window.location.origin);
-
-  if (url.origin !== window.location.origin) return;
-
-  const key = `scroll:${window.location.pathname}${window.location.search}`;
-  sessionStorage.setItem(key, window.scrollY);
-
-  if (typeof currentPage !== "undefined") {
-    sessionStorage.setItem("postsPage", currentPage);
-  }
-
-  if (typeof currentCategory !== "undefined") {
-    sessionStorage.setItem("postsCategory", currentCategory);
-  }
-
-  if (typeof currentSearch !== "undefined") {
-    sessionStorage.setItem("postsSearch", currentSearch);
-  }
-});
 
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await checkUser();
@@ -119,15 +94,6 @@ window.addEventListener("pageshow", (event) => {
   }
 });
 
-window.addEventListener("popstate", async () => {
-  const { category, search } = getStateFromUrl();
-
-  const categoryFilter = document.getElementById("categoryFilter");
-  if (categoryFilter) categoryFilter.value = category || "all";
-
-  document.querySelectorAll(".search").forEach((input) => {
-    input.value = search || "";
-  });
-
-  await routeByPage();
+window.addEventListener("popstate", () => {
+  routeByPage();
 });

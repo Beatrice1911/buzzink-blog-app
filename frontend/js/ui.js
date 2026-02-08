@@ -200,3 +200,89 @@ export function initUI() {
   initNavigation();
   initTheme();
 }
+
+let skeletonTimeout;
+let loaderTimeout;
+
+export function showSkeleton(containerId = "allPostsContainer", limit = 6) {
+  clearTimeout(skeletonTimeout);
+  const targetContainer = document.getElementById(containerId);
+  if (!targetContainer) return;
+
+  let skeletonContainer =
+    targetContainer.previousElementSibling?.classList.contains("skeleton-wrapper")
+      ? targetContainer.previousElementSibling
+      : null;  
+
+  if (!skeletonContainer) {
+    skeletonContainer = document.createElement("div");
+    skeletonContainer.className = "skeleton-wrapper";
+    targetContainer.before(skeletonContainer);
+  }
+
+  skeletonContainer.innerHTML = "";
+  skeletonContainer.classList.remove("hidden");
+
+  for (let i = 0; i < limit; i++) {
+    let skeletonHTML = "";
+
+    if (containerId === "savedPostsContainer") {
+      skeletonHTML = `
+        <article class="post-card skeleton">
+          <div class="skeleton-img"></div>
+          <div class="post-body">
+            <div class="skeleton-title"></div>
+            <div class="skeleton-tag"></div>
+            <div class="skeleton-excerpt"></div>
+            <div class="post-meta">
+              <div class="skeleton-meta-line"></div>
+            </div>
+          </div>
+          <div class="skeleton-bookmark"></div>
+        </article>
+      `;
+    } else {
+      skeletonHTML = `
+        <div class="post skeleton">
+          <div class="skeleton-img"></div>
+          <p class="skeleton-tag"></p>
+          <h2 class="skeleton-title"></h2>
+          <p class="skeleton-excerpt"></p>
+          <a href="#" class="skeleton-author"></a>
+          <small class="skeleton-date"></small>
+          <div class="post-interactions-container">
+            <div class="post-interactions">
+              <button class="skeleton-btn like-btn"></button>
+              <button class="skeleton-btn comment-btn"></button>
+              <button class="skeleton-btn share-btn"></button>
+            </div>
+            <span class="liked-by likes-info skeleton"></span>
+          </div>
+          <div class="comments-section skeleton"></div>
+          <div class="post-actions skeleton"></div>
+        </div>
+      `;
+    }
+
+    skeletonContainer.insertAdjacentHTML("beforeend", skeletonHTML);
+  }
+}
+
+export function hideSkeleton() {
+  document.querySelectorAll(".skeleton-wrapper").forEach((el) => {
+    el.classList.add("hide");
+    setTimeout(() => el.remove(), 300);
+  });
+}
+
+export function showPostsLoader() {
+  clearTimeout(loaderTimeout);
+  loaderTimeout = setTimeout(() => {
+    document.getElementById("postsLoader")?.classList.remove("hidden");
+  }, 150);
+}
+
+export function hidePostsLoader() {
+  clearTimeout(loaderTimeout);
+  document.getElementById("postsLoader")?.classList.add("hidden");
+}

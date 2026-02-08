@@ -1,8 +1,13 @@
 import { apiFetch } from "./api.js";
 import { API_URL } from "./config.js";
-import { showToast } from "./ui.js";
+import {
+  showToast,
+  showSkeleton,
+  showPostsLoader,
+  hideSkeleton,
+  hidePostsLoader,
+} from "./ui.js";
 import { fetchComments, updateCommentCount } from "./comments.js";
-import { routeByPage } from "./app.js";
 
 const searchInputs = document.querySelectorAll(".search");
 function getSearchValue() {
@@ -16,97 +21,12 @@ let state = {
   saved: [],
 };
 let totalPages = 1;
-export let currentPage = Number(sessionStorage.getItem("postsPage")) || 1;
-export let currentCategory = sessionStorage.getItem("postsCategory") || "";
-export let currentSearch = sessionStorage.getItem("postsSearch") || "";
+export function getCurrentState() {
+  return getStateFromUrl();
+}
 
 function getImageUrl(image) {
   return image && image.startsWith("http") ? image : "/Images/fallback.jpg";
-}
-
-let skeletonTimeout;
-let loaderTimeout;
-
-function showSkeleton(containerId = "allPostsContainer", limit = 6) {
-  clearTimeout(skeletonTimeout);
-  const targetContainer = document.getElementById(containerId);
-  if (!targetContainer) return;
-
-  let skeletonContainer =
-    targetContainer.previousElementSibling?.classList.contains("posts-skeleton")
-      ? targetContainer.previousElementSibling
-      : null;
-
-  if (!skeletonContainer) {
-    skeletonContainer = document.createElement("div");
-    skeletonContainer.className = "posts-skeleton";
-    targetContainer.before(skeletonContainer);
-  }
-
-  skeletonContainer.innerHTML = "";
-  skeletonContainer.classList.remove("hidden");
-
-  for (let i = 0; i < limit; i++) {
-    let skeletonHTML = "";
-
-    if (containerId === "savedPostsContainer") {
-      skeletonHTML = `
-        <article class="post-card skeleton">
-          <div class="skeleton-img"></div>
-          <div class="post-body">
-            <div class="skeleton-title"></div>
-            <div class="skeleton-tag"></div>
-            <div class="skeleton-excerpt"></div>
-            <div class="post-meta">
-              <div class="skeleton-meta-line"></div>
-            </div>
-          </div>
-          <div class="skeleton-bookmark"></div>
-        </article>
-      `;
-    } else {
-      skeletonHTML = `
-        <div class="post skeleton">
-          <div class="skeleton-img"></div>
-          <p class="skeleton-tag"></p>
-          <h2 class="skeleton-title"></h2>
-          <p class="skeleton-excerpt"></p>
-          <a href="#" class="skeleton-author"></a>
-          <small class="skeleton-date"></small>
-          <div class="post-interactions-container">
-            <div class="post-interactions">
-              <button class="skeleton-btn like-btn"></button>
-              <button class="skeleton-btn comment-btn"></button>
-              <button class="skeleton-btn share-btn"></button>
-            </div>
-            <span class="liked-by likes-info skeleton"></span>
-          </div>
-          <div class="comments-section skeleton"></div>
-          <div class="post-actions skeleton"></div>
-        </div>
-      `;
-    }
-
-    skeletonContainer.insertAdjacentHTML("beforeend", skeletonHTML);
-  }
-}
-
-function hideSkeleton() {
-  document
-    .querySelectorAll(".posts-skeleton")
-    .forEach((el) => el.classList.add("hidden"));
-}
-
-function showPostsLoader() {
-  clearTimeout(loaderTimeout);
-  loaderTimeout = setTimeout(() => {
-    document.getElementById("postsLoader")?.classList.remove("hidden");
-  }, 150);
-}
-
-function hidePostsLoader() {
-  clearTimeout(loaderTimeout);
-  document.getElementById("postsLoader")?.classList.add("hidden");
 }
 
 export function getStateFromUrl() {
@@ -143,68 +63,53 @@ function updateUrlState({ page, category, search }) {
   window.history.pushState({}, "", url);
 }
 
-export async function restoreFiltersFromSession() {
-  const savedCategory = sessionStorage.getItem("postsCategory");
-  const savedSearch = sessionStorage.getItem("postsSearch");
+export function restoreFiltersFromUrl() {
+  const { category, search } = getStateFromUrl();
 
   const categorySelect = document.getElementById("categoryFilter");
-  if (categorySelect && savedCategory) {
-    categorySelect.value = savedCategory;
+  if (categorySelect) {
+    categorySelect.value = category || "all";
   }
 
   searchInputs.forEach((input) => {
-    input.value = savedSearch || "";
+    input.value = search || "";
   });
 }
 
-export async function fetchPosts(page, limit = 6) {
+export async function fetchPosts(pageOverride, limit = 6) {
   try {
     const urlState = getStateFromUrl();
-    const resolvedPage = page ?? urlState.page;
-    const categoryFilter =
+    const page = pageOverride ?? urlState.page;
+    const category =
       document.getElementById("categoryFilter")?.value || urlState.category;
 
-    const searchValue = getSearchValue() || urlState.search;
+    const search = getSearchValue() || urlState.search;
 
-    const queryParams = new URLSearchParams();
-    queryParams.append("page", resolvedPage);
-    queryParams.append("limit", limit);
-    if (categoryFilter && categoryFilter !== "all")
-      queryParams.append("category", categoryFilter);
+    updateUrlState({
+      page,
+      category: category !== "all" ? category : "",
+      search,
+    });
 
-    if (searchValue) {
-      queryParams.append("search", searchValue);
-    }
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+    });
 
-    if (resolvedPage === 1) showSkeleton("allPostsContainer", limit);
-    else showPostsLoader();
+    if (category && category !== "all")
+      queryParams.append("category", category);
+    if (search) queryParams.append("search", search);
+
+    page === 1 ? showSkeleton("allPostsContainer", limit) : showPostsLoader();
 
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
 
     state.all = Array.isArray(data.posts) ? data.posts : [];
-    currentPage = data.currentPage ?? 1;
     totalPages = data.totalPages ?? 1;
-    currentCategory = categoryFilter || "";
-    currentSearch = searchValue || "";
-
-    updateUrlState({
-      page: currentPage,
-      category:
-        categoryFilter && categoryFilter !== "all" ? categoryFilter : "",
-      search: searchValue,
-    });
-
-    if (typeof currentPage !== "undefined") {
-      sessionStorage.setItem("postsPage", currentPage);
-    }
-    if (typeof currentCategory !== "undefined") {
-      sessionStorage.setItem("postsCategory", currentCategory);
-    }
-    sessionStorage.setItem("postsSearch", currentSearch);
 
     displayPosts("allPostsContainer");
-    renderPagination("allPostsContainer", currentPage, totalPages);
+    renderPagination("allPostsContainer", page, totalPages);
   } catch (err) {
     console.error("Error fetching posts:", err);
     showToast("Something went wrong while displaying posts!", "error");
@@ -231,22 +136,28 @@ export async function fetchFeaturedPosts(limit = 3) {
 }
 
 // Fetch posts created by the logged-in user
-export async function fetchMyPosts(page, limit = 6) {
+export async function fetchMyPosts(pageOverride, limit = 6) {
   try {
     const urlState = getStateFromUrl();
-    const resolvedPage = page ?? urlState.page;
-    const searchValue = getSearchValue() || urlState.search;
+    const page = pageOverride ?? urlState.page;
+    const search = getSearchValue() || urlState.search;
     urlState.search;
-    const queryParams = new URLSearchParams();
-    queryParams.append("page", resolvedPage);
-    queryParams.append("limit", limit);
 
-    if (searchValue) {
-      queryParams.append("search", searchValue);
+    updateUrlState({
+      page,
+      search,
+    });
+
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+    });
+
+    if (search) {
+      queryParams.append("search", search);
     }
 
-    if (resolvedPage === 1) showSkeleton("myPostsContainer", limit);
-    else showPostsLoader();
+    page === 1 ? showSkeleton("allPostsContainer", limit) : showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/mine?${queryParams.toString()}`);
 
@@ -258,24 +169,10 @@ export async function fetchMyPosts(page, limit = 6) {
     const data = await res.json();
 
     state.mine = Array.isArray(data.posts) ? data.posts : [];
-    currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
 
-    updateUrlState({
-      page: currentPage,
-      search: searchValue,
-    });
-
-    if (typeof currentPage !== "undefined") {
-      sessionStorage.setItem("postsPage", currentPage);
-    }
-    sessionStorage.setItem("postsSearch", searchValue || "");
-    sessionStorage.removeItem("postsCategory");
-    currentCategory = "";
-
-    const containerId = "myPostsContainer";
-    displayPosts(containerId);
-    renderPagination(containerId, currentPage, totalPages);
+    displayPosts("myPostsContainer");
+    renderPagination("myPostsContainer", page, totalPages);
   } catch (err) {
     console.error("Error fetching my posts:", err);
     showToast("Failed to load your posts!", "error");
@@ -444,11 +341,6 @@ export function displayPosts(containerId, limit = null) {
     likedByEl.dataset.slug = post.slug;
     likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
 
-    if (post.likedBy && post.likesCount > 0) {
-      likedByEl.classList.remove("disabled");
-    } else {
-    }
-
     likeBtn.classList.toggle("liked", post.likedByUser);
     heart.className = post.likedByUser
       ? "fa-solid fa-heart"
@@ -458,7 +350,7 @@ export function displayPosts(containerId, limit = null) {
       likedByEl.textContent = "No likes yet";
       likedByEl.classList.add("disabled");
     } else {
-      likedByEl.textContent = likedByEl.textContent =
+      likedByEl.textContent =
         post.likesCount === 1
           ? `Liked by ${post.likedBy[0]}`
           : `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
@@ -502,10 +394,11 @@ export async function deletePost(slug) {
     }
 
     showToast("Post deleted successfully!", "success");
+    const { page } = getStateFromUrl();
     if (window.location.pathname.endsWith("my-posts.html")) {
-      fetchMyPosts(currentPage);
+      fetchMyPosts(page);
     } else {
-      fetchPosts(currentPage);
+      fetchPosts(page);
     }
   } catch (err) {
     console.error("Error deleting post:", err);
@@ -731,26 +624,20 @@ export async function loadSinglePost() {
     likedByEl.dataset.slug = post.slug;
     likedByEl.dataset.likedBy = JSON.stringify(post.likedBy || []);
 
-    if (post.likedBy && post.likedBy.length > 0) {
-      likedByEl.classList.remove("disabled");
-    } else {
-      likedByEl.classList.add("disabled");
-    }
+    likeBtn.classList.toggle("liked", post.likedByUser);
+    heart.className = post.likedByUser
+      ? "fa-solid fa-heart"
+      : "fa-regular fa-heart";
 
-    if (userId && post.likedByUser) {
-      likeBtn.classList.add("liked");
-      heart.className = "fa-solid fa-heart";
-    } else {
-      likeBtn.classList.remove("liked");
-      heart.className = "fa-regular fa-heart";
-    }
-
-    if (!post.likedBy || post.likedBy.length === 0) {
+    if (!post.likesCount) {
       likedByEl.textContent = "No likes yet";
-    } else if (post.likedBy.length === 1) {
-      likedByEl.textContent = `Liked by ${post.likedBy[0]}`;
+      likedByEl.classList.add("disabled");
     } else {
-      likedByEl.textContent = `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
+      likedByEl.textContent =
+        post.likesCount === 1
+          ? `Liked by ${post.likedBy[0]}`
+          : `Liked by ${post.likedBy[0]} and ${post.likedBy.length - 1} others`;
+      likedByEl.classList.remove("disabled");
     }
 
     const commentCountSpan = container.querySelector(".comment-count");
@@ -868,22 +755,28 @@ export const fetchRelatedPosts = async (slug) => {
 
 const savedPostsContainer = document.getElementById("savedPostsContainer");
 
-export async function loadSavedPosts(page, limit = 6) {
+export async function loadSavedPosts(pageOverride, limit = 6) {
   const container = savedPostsContainer;
   try {
     const urlState = getStateFromUrl();
-    const resolvedPage = page ?? urlState.page;
-    const searchValue = getSearchValue() || urlState.search;
-    const queryParams = new URLSearchParams();
-    queryParams.append("page", resolvedPage);
-    queryParams.append("limit", limit);
+    const page = pageOverride ?? urlState.page;
+    const search = getSearchValue() || urlState.search;
+    
+    updateUrlState({
+      page,
+      search,
+    });
 
-    if (searchValue) {
-      queryParams.append("search", searchValue);
+    const queryParams = new URLSearchParams({
+      page,
+      limit,
+    });
+
+    if (search) {
+      queryParams.append("search", search);
     }
 
-    if (resolvedPage === 1) showSkeleton("savedPostsContainer", limit);
-    else showPostsLoader();
+    page === 1 ? showSkeleton("allPostsContainer", limit) : showPostsLoader();
 
     const res = await apiFetch(`${API_URL}/saved/me?${queryParams.toString()}`);
 
@@ -892,19 +785,7 @@ export async function loadSavedPosts(page, limit = 6) {
     const data = await res.json();
 
     state.saved = Array.isArray(data.posts) ? data.posts : [];
-    currentPage = data.currentPage || 1;
     totalPages = data.totalPages || 1;
-    currentSearch = searchValue || "";
-
-    updateUrlState({
-      page: currentPage,
-      search: searchValue,
-    });
-
-    sessionStorage.setItem("postsPage", currentPage);
-    sessionStorage.removeItem("postsCategory");
-    currentCategory = "";
-    sessionStorage.setItem("postsSearch", currentSearch);
 
     if (!container) return;
 
@@ -968,11 +849,12 @@ export async function loadSavedPosts(page, limit = 6) {
 
           btn.closest(".post-card").remove();
           showToast("Removed from saved posts", "success");
+          const { page } = getStateFromUrl();
 
-          if (state.saved.length === 0 && currentPage > 1) {
-            loadSavedPosts(currentPage - 1);
+          if (state.saved.length === 0 && page > 1) {
+            loadSavedPosts(page - 1);
           } else {
-            renderPagination("savedPostsContainer", currentPage, totalPages);
+            renderPagination("savedPostsContainer", page, totalPages);
           }
         } catch (err) {
           console.error(err);
@@ -981,7 +863,7 @@ export async function loadSavedPosts(page, limit = 6) {
       });
     });
 
-    renderPagination("savedPostsContainer", currentPage, totalPages);
+    renderPagination("savedPostsContainer", page, totalPages);
   } catch (err) {
     console.error(err);
     container.innerHTML = "<p>Error loading saved posts.</p>";
@@ -1007,7 +889,7 @@ searchInputs.forEach((input) =>
   }),
 );
 
-function renderPagination(containerId, page, total) {
+function renderPagination(context, page, total) {
   const container = document.getElementById("pagination");
   if (!container) return;
   container.innerHTML = "";
@@ -1018,7 +900,7 @@ function renderPagination(containerId, page, total) {
     btn.className = i === page ? "pg-active" : "";
     btn?.addEventListener("click", async () => {
       updateUrlState({ page: i });
-      await routeByPage();
+      fetchPosts(i);
     });
     container.appendChild(btn);
   }
