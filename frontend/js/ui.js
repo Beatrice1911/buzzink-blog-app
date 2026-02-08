@@ -3,10 +3,10 @@ import { body } from "./config";
 
 export const userIcon = document.querySelectorAll(".user-icon");
 export const userMenuDetails = document.getElementById("userMenuDetails");
-export const authModal = document.getElementById("authModal");
+const authModal = document.getElementById("authModal");
 const closeModal = document.getElementById("closeModal");
-export const loginTab = document.getElementById("loginTab");
-export const registerTab = document.getElementById("registerTab");
+const loginTab = document.getElementById("loginTab");
+const registerTab = document.getElementById("registerTab");
 const writePostBtns = document.querySelectorAll(".write-post");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
@@ -175,6 +175,29 @@ export function initUI() {
   initWritePostButtons();
   initNavigation();
   initTheme();
+}
+
+export function initUserMenu() {
+  document.querySelectorAll(".user-icon").forEach(icon => {
+    icon.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      const user = window.currentUser;
+
+      if (user && user.id) {
+        userMenuDetails.classList.toggle("show");
+        authModal.classList.add("hidden");
+      } else {
+        userMenuDetails.classList.remove("show");
+        authModal.classList.remove("hidden");
+
+        loginTab.classList.add("active");
+        registerTab.classList.remove("active");
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+      }
+    });
+  });
 }
 
 let skeletonTimeout;

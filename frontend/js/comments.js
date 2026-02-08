@@ -250,7 +250,8 @@ async function handleCommentSubmit(e) {
   const commentForm = e.target.closest(".comment-form");
   if (!commentForm) return;
 
-  const addCommentBtn = commentForm.querySelector(".comment-form button");  
+  const addCommentBtn = commentForm.querySelector("button");  
+  if (!addCommentBtn) return;
   e.preventDefault();
 
   const commentInput = commentForm.querySelector(".comment-input");
