@@ -198,6 +198,7 @@ export function initUI() {
   initWritePostButtons();
   initNavigation();
   initTheme();
+  initUserIconClick();
 }
 
 let skeletonTimeout;
