@@ -212,6 +212,23 @@ export async function fetchPosts(page, limit = 6) {
   }
 }
 
+export async function fetchFeaturedPosts(limit = 3) {
+  try {
+    showSkeleton("featuredPostsContainer", limit);
+
+    const res = await apiFetch(`${API_URL}?page=1&limit=${limit}`);
+    const data = await res.json();
+
+    state.all = Array.isArray(data.posts) ? data.posts : [];
+
+    displayPosts("featuredPostsContainer", limit);
+  } catch (err) {
+    console.error("Failed to load featured posts", err);
+  } finally {
+    hideSkeleton();
+  }
+}
+
 // Fetch posts created by the logged-in user
 export async function fetchMyPosts(page, limit = 6) {
   try {

@@ -1,5 +1,6 @@
 import {
   fetchPosts,
+  fetchFeaturedPosts,
   fetchMyPosts,
   fetchTrendingPosts,
   loadSavedPosts,
@@ -40,6 +41,7 @@ async function routeByPage() {
 
   if (path === "/" || path.endsWith("index.html")) {
     await restoreFiltersFromSession()
+    await fetchFeaturedPosts();
     await fetchPosts(page);
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
