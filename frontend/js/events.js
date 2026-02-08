@@ -2,8 +2,9 @@ import { handleLike } from "./likes.js";
 import { toggleComments, handleDeleteComment } from "./comments.js";
 import { handleShare } from "./share.js";
 import { editPost, deletePost } from "./posts.js";
-import { userMenuDetails, userIcon, mobileMenu, menuToggle } from "./ui.js";
+import { userMenuDetails, userIcon, mobileMenu, menuToggle, authModal, registerTab, loginTab } from "./ui.js";
 import { apiFetch } from "./api.js";
+import { registerForm, loginForm } from "./auth.js";
 
 let isLikesModalOpen = false;
 
@@ -147,7 +148,7 @@ export function initEvents() {
     if (
       userMenuDetails?.classList.contains("show") &&
       !userMenuDetails.contains(e.target) &&
-      ![...userIcon].some((icon) => icon.contains(e.target))
+      !e.target.closest(".user-icon")
     ) {
       userMenuDetails.classList.remove("show");
     }
@@ -161,4 +162,26 @@ export function initEvents() {
       mobileMenu.classList.remove("active");
     }
   });
+
+  const icon = e.target.closest(".user-icon");
+  if (!icon) return;
+
+  e.stopPropagation();
+  const storedUser = localStorage.getItem("user");
+  const user = storedUser ? JSON.parse(storedUser) : null;
+
+  if (user && user.id) {
+    userMenuDetails.classList.toggle("show");
+    userMenuDetails?.addEventListener("click", (e) => e.stopPropagation());
+    authModal.classList.add("hidden");
+  } else {
+    userMenuDetails.classList.add("hidden");
+    authModal.classList.remove("hidden");
+    loginTab.classList.add("active");
+    registerTab.classList.remove("active");
+    loginForm.classList.remove("hidden");
+    registerForm.classList.add("hidden");
+    loginForm?.reset();
+    registerForm?.reset();
+  }
 }

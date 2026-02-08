@@ -3,10 +3,10 @@ import { body } from "./config";
 
 export const userIcon = document.querySelectorAll(".user-icon");
 export const userMenuDetails = document.getElementById("userMenuDetails");
-const authModal = document.getElementById("authModal");
+export const authModal = document.getElementById("authModal");
 const closeModal = document.getElementById("closeModal");
-const loginTab = document.getElementById("loginTab");
-const registerTab = document.getElementById("registerTab");
+export const loginTab = document.getElementById("loginTab");
+export const registerTab = document.getElementById("registerTab");
 const writePostBtns = document.querySelectorAll(".write-post");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
@@ -101,31 +101,6 @@ function initAuthModal() {
   });
 }
 
-function initUserMenu() {
-  userIcon.forEach((icon) =>
-    icon?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const storedUser = localStorage.getItem("user");
-      const user = storedUser ? JSON.parse(storedUser) : null;
-
-      if (user && user.id) {
-        userMenuDetails.classList.toggle("show");
-        userMenuDetails?.addEventListener("click", e => e.stopPropagation());
-        authModal.classList.add("hidden");
-      } else {
-        userMenuDetails.classList.add("hidden");
-        authModal.classList.remove("hidden");
-        loginTab.classList.add("active");
-        registerTab.classList.remove("active");
-        loginForm.classList.remove("hidden");
-        registerForm.classList.add("hidden");
-        loginForm?.reset();
-        registerForm?.reset();
-      }
-    }),
-  );
-}
-
 function initSearchToggle() {
   searchIcon?.addEventListener("click", () => {
     mobileSearch.classList.toggle("show");
@@ -196,7 +171,6 @@ export function applyTheme(theme) {
 export function initUI() {
   initMenus();
   initAuthModal();
-  initUserMenu();
   initSearchToggle();
   initWritePostButtons();
   initNavigation();
