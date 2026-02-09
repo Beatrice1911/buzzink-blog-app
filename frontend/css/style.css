@@ -362,6 +362,7 @@ nav a.active::after {
   transform: translate(-50%, -50%);
   color: var(--text-inverse);
   text-align: center;
+  pointer-events: none;
 }
 
 .hero-content h1 {
