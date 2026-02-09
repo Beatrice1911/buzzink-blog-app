@@ -64,7 +64,7 @@ app.use((err, req, res, next) => {
     .json({ message: err.message || "Server error" });
 });
 
-app.get("/post/:slug", async (req, res, next) => {
+async function renderPostWithSEO(req, res) {
   try {
     const slug = req.params.slug;
     const post = await Post.findOne({ slug });
@@ -162,7 +162,10 @@ app.get("/post/:slug", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
+}
+
+app.get("/post/:slug", renderPostWithSEO);
+app.get("/post.html", renderPostWithSEO);
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
