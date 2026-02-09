@@ -3,12 +3,14 @@ import { COMMENTS_URL } from "./config.js";
 import { showToast } from "./ui.js";
 import { formatText, timeAgo } from "./posts.js";
 
+const path = window.location.pathname;
+
 export async function toggleComments(commentBtn) {
   const slug = commentBtn.dataset.slug;
 
   if (!slug) return;
 
-  const isSinglePost = window.location.pathname.endsWith("post.html");
+  const isSinglePost = path.endsWith("post.html") || path.startsWith("/post/");
 
   const postElement = isSinglePost
     ? document.getElementById("singlePostContainer")
@@ -53,7 +55,7 @@ export async function handleDeleteComment(deleteBtn) {
       const commentEl = deleteBtn.closest(".comment");
       if (commentEl) commentEl.remove();
 
-      const postElement = window.location.pathname.endsWith("post.html")
+      const postElement = path.endsWith("post.html") || path.startsWith("/post/")
         ? document.getElementById("singlePostContainer")
         : deleteBtn.closest(".post");
 
@@ -250,7 +252,7 @@ async function handleCommentSubmit(e) {
   const commentForm = e.target.closest(".comment-form");
   if (!commentForm) return;
 
-  const addCommentBtn = commentForm.querySelector("button");  
+  const addCommentBtn = commentForm.querySelector("button");
   if (!addCommentBtn) return;
   e.preventDefault();
 
@@ -263,7 +265,7 @@ async function handleCommentSubmit(e) {
   let slug;
   let commentCountSpan;
 
-  if (window.location.pathname.endsWith("post.html")) {
+  if (path.endsWith("post.html") || path.startsWith("/post/")) {
     postElement = document.getElementById("singlePostContainer");
     commentsList = postElement.querySelector(".comments-list");
     slug = postElement.querySelector(".comment-btn").dataset.slug;
