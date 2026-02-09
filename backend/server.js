@@ -66,7 +66,7 @@ app.use((err, req, res, next) => {
 
 async function renderPostWithSEO(req, res) {
   try {
-    const slug = req.params.slug;
+    const slug = req.params.slug || req.query.slug;
     const post = await Post.findOne({ slug });
     if (!post) return res.status(404).send("Post not found");
 
