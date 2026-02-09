@@ -16,6 +16,8 @@ import { loginForm, registerForm } from "./auth.js";
 const modal = document.getElementById("likesModal");
 const list = document.getElementById("likesList");
 
+let activeLikesSlug = null;
+
 async function openLikesModal(postSlug) {
   activeLikesSlug = postSlug;
 
