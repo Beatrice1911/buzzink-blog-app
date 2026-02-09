@@ -10,6 +10,7 @@ export const registerTab = document.getElementById("registerTab");
 const writePostBtns = document.querySelectorAll(".write-post");
 const searchIcon = document.querySelector(".search-icon");
 const mobileSearch = document.getElementById("mobileSearch");
+const mobileSearchInput = mobileSearch?.querySelector("input");
 export const menuToggle = document.querySelector(".menu-toggle");
 export const mobileMenu = document.getElementById("mobileMenu");
 const logo = document.querySelector(".logo");
@@ -107,9 +108,13 @@ function initSearchToggle() {
     mobileSearch.classList.toggle("show");
     if (mobileSearch.classList.contains("show")) {
       setTimeout(() => {
-        mobileSearch?.querySelector("input").focus();
+        mobileSearchInput?.focus();
       }, 0);
     }
+  });
+
+  mobileSearch?.addEventListener("click", (e) => {
+    e.stopPropagation();
   });
 }
 
