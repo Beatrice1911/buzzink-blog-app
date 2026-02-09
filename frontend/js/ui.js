@@ -102,10 +102,13 @@ function initAuthModal() {
 }
 
 function initSearchToggle() {
-  searchIcon?.addEventListener("click", () => {
+  searchIcon?.addEventListener("click", (e) => {
+    e.stopPropagation();
     mobileSearch.classList.toggle("show");
     if (mobileSearch.classList.contains("show")) {
-      mobileSearch?.querySelector("input").focus();
+      setTimeout(() => {
+        mobileSearch?.querySelector("input").focus();
+      }, 0);
     }
   });
 }
