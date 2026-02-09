@@ -13,18 +13,11 @@ import {
 import { apiFetch } from "./api.js";
 import { loginForm, registerForm } from "./auth.js";
 
-const openModals = new Set();
+const modal = document.getElementById("likesModal");
+const list = document.getElementById("likesList");
 
 async function openLikesModal(postSlug) {
-   if (openModals.has(postSlug)) return;
-  openModals.add(postSlug);
-
-  const safeSlug = encodeURIComponent(postSlug);
-  const modal = document.getElementById(`likesModal-${safeSlug}`);
-  const list = document.getElementById(`likesList-${safeSlug}`);
-  if (!modal || !list) return;
-
-  if (modal.classList.contains("active")) return;
+  activeLikesSlug = postSlug;
 
   modal.classList.remove("hidden");
   requestAnimationFrame(() => modal.classList.add("active"));
@@ -34,6 +27,8 @@ async function openLikesModal(postSlug) {
   try {
     const res = await apiFetch(`/api/posts/${postSlug}/likes`);
     const data = await res.json();
+
+    if (activeLikesSlug !== postSlug) return;
 
     list.innerHTML = "";
 
@@ -48,20 +43,19 @@ async function openLikesModal(postSlug) {
       list.appendChild(li);
     });
   } catch (err) {
-    list.innerHTML = "<li>Failed to load likes</li>";
+    if (activeLikesSlug === postSlug) {
+      list.innerHTML = "<li>Failed to load likes</li>";
+    }
     console.error("Failed to fetch likes:", err);
   }
 }
 
-function closeLikesModal(postSlug) {
-  const safeSlug = encodeURIComponent(postSlug);
-  const modal = document.getElementById(`likesModal-${safeSlug}`);
-  if (!modal) return;
-
-  openModals.delete(postSlug);
+function closeLikesModal() {
+  activeLikesSlug = null;
   modal.classList.remove("active");
   setTimeout(() => {
     modal.classList.add("hidden");
+    list.innerHTML = "";
   }, 300);
 }
 
@@ -122,10 +116,8 @@ export function initEvents() {
       return;
     }
 
-    const openModal = document.querySelector(".likes-modal.active");
-    if (openModal && e.target === openModal) {
-      const modalId = openModal.id.replace("likesModal-", "");
-      closeLikesModal(modalId);
+    if (e.target === modal) {
+      closeLikesModal();
     }
 
     // Delete comment handling
@@ -190,3 +182,9 @@ export function initEvents() {
     }
   });
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && modal.classList.contains("active")) {
+    closeLikesModal();
+  }
+});

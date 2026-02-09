@@ -333,12 +333,6 @@ export function displayPosts(containerId, limit = null) {
           </div>
           <span class="liked-by likes-info">No likes yet</span>
         </div>
-        <div id="likesModal-${post.slug}" class="likes-modal hidden slide-up">
-          <div class="likes-modal-content">
-            <h3>Liked by</h3>
-            <ul id="likesList-${post.slug}" class="likes-list"></ul>            
-          </div>
-        </div>
         <div class="comments-section">
           <form class="comment-form">
             <input type="text" class="comment-input" placeholder="Write a comment..." required />
@@ -617,12 +611,6 @@ export async function loadSinglePost() {
           </span>
         </div>
         <span class="liked-by likes-info">No likes yet</span>
-      </div>
-      <div id="likesModal-${post.slug}" class="likes-modal hidden slide-up">
-        <div class="likes-modal-content">
-          <h3>Liked by</h3>
-          <ul id="likesList-${post.slug}" class="likes-list"></ul>            
-        </div>
       </div>
       <div class="comments-section show">
         <form class="comment-form">
