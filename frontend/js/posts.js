@@ -914,10 +914,24 @@ searchInputs.forEach((input) =>
     searchTimeout = setTimeout(() => {
       const currentState = getStateFromUrl();
       updateUrlState({ ...currentState, page: 1 });
-      fetchFeaturedPosts();
-      fetchPosts(1);
-      fetchMyPosts(1);
-      loadSavedPosts(1);
+      if (document.getElementById("postsContainer")) {
+        fetchPosts(1);
+      }
+
+      if (document.getElementById("featuredPostsContainer")) {
+        fetchFeaturedPosts();
+      }
+
+      if (window.currentUser && document.getElementById("myPostsContainer")) {
+        fetchMyPosts(1);
+      }
+
+      if (
+        window.currentUser &&
+        document.getElementById("savedPostsContainer")
+      ) {
+        loadSavedPosts(1);
+      }
     }, 400);
   }),
 );
