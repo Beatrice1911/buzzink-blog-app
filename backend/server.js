@@ -165,7 +165,11 @@ async function renderPostWithSEO(req, res) {
 }
 
 app.get("/post/:slug", renderPostWithSEO);
-app.get("/post.html", renderPostWithSEO);
+app.get("/post.html", (req, res) => {
+  const slug = req.query.slug;
+  if (!slug) return res.sendFile(path.join(__dirname, "../frontend/dist/post.html"));
+  res.redirect(301, `/post/${slug}`);
+});
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
