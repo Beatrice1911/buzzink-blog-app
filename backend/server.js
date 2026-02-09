@@ -64,8 +64,6 @@ app.use((err, req, res, next) => {
     .json({ message: err.message || "Server error" });
 });
 
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
 app.get("/post/:slug", async (req, res, next) => {
   try {
     const slug = req.params.slug;
@@ -165,6 +163,8 @@ app.get("/post/:slug", async (req, res, next) => {
     next(err);
   }
 });
+
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
