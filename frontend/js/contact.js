@@ -2,8 +2,9 @@ import { showToast } from "./ui.js";
 
 export function handleContactFormSubmit() {
   const form = document.getElementById("contactForm");
+  if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+  form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const payload = {

@@ -61,17 +61,17 @@
 
   --shadow-sm: 0 10px 25px rgba(160, 76, 240, 0.25);
   --shadow-lg: 0 15px 30px rgba(160, 76, 240, 0.35);  
+  --shadow-card: rgba(0, 0, 0, 0.08);
+  --shadow-card-img: rgba(0, 0, 0, 0.15);
+
 
   --bg-color: var(--page-bg);
-  --card-bg: var(--card-bg);
   --text-color: var(--text-main);
   --text-secondary: var(--text-muted);
   --primary-color: var(--brand-primary);
   --primary-hover: var(--secondary);
   --danger-color: #b91c1c;
-  --danger-bg: #fee2e2;
-  --shadow-card: rgba(0, 0, 0, 0.08);
-  --shadow-card-img: rgba(0, 0, 0, 0.15);
+  --danger-bg: #fee2e2;  
 }
 
 [data-theme="dark"] { 
@@ -80,12 +80,16 @@
   --surface-footer: #020617;
   --skeleton-bg: #2a2a2a;
   --skeleton-highlight: #3a3a3a;
+
   --text: #e5e7eb;
   --text-hover: #9ca3af;
   --muted: #9ca3af;
+
   --bg-alt: #1e293b;
   --bg-muted: #334155;
+
   --divider: rgba(255, 255, 255, 0.12);
+
   --glass-bg: rgba(0,0,0,0.45);
 
   --bg-color: #1e1e1e;
@@ -96,6 +100,7 @@
   --primary-hover: #00509d;
   --danger-color: #fca5a5;
   --danger-bg: #b91c1c;
+  
   --shadow-card: rgba(255, 255, 255, 0.05);
   --shadow-card-img: rgba(255, 255, 255, 0.1);
 }
