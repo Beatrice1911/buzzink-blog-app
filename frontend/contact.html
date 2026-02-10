@@ -61,8 +61,8 @@
       <nav>
         <a href="index.html">Home</a>
         <a href="all-posts.html">Posts</a>
-        <a href="about.html" class="active">About</a>
-        <a href="contact.html">Contact</a>
+        <a href="about.html">About</a>
+        <a href="contact.html" class="active">Contact</a>
         <img
           id="navUserAvatar"
           src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png"
@@ -80,7 +80,7 @@
       <a href="index.html">Home</a>
       <a href="all-posts.html">Posts</a>
       <a href="about.html">About</a>
-      <a href="contact.html" class="active">Contact</a>
+      <a href="contact.html">Contact</a>
     </div>
     <div class="mobile-search" id="mobileSearch">
       <input type="text" placeholder="Search posts..." class="search" />
@@ -124,17 +124,17 @@
         <form id="contactForm" class="contact-form">
           <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" id="name" required />
+            <input type="text" name="name" id="name" required />
           </div>
 
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" required />
+            <input type="email" name="email" id="email" required />
           </div>
 
           <div class="form-group">
             <label for="topic">Topic (optional)</label>
-            <select id="topic">
+            <select id="topic" name="topic">
               <option value="">Select a topic</option>
               <option value="general">General</option>
               <option value="feedback">Suggestion / Feedback</option>
@@ -147,7 +147,8 @@
 
           <div class="form-group">
             <label for="message">Message</label>
-            <textarea
+            <textarea 
+              name="message"
               id="message"
               rows="5"
               placeholder="Tell us what’s on your mind…"
