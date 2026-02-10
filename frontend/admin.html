@@ -31,6 +31,12 @@
               >
             </li>
             <li>
+              <a href="#messages-section" data-section="messages"
+                >📨 Messages
+                <span id="unreadCount" class="badge hidden"></span>
+              </a>
+            </li>
+            <li>
               <a href="#settings-section" data-section="settings"
                 >⚙️ Settings</a
               >
@@ -119,7 +125,11 @@
           class="content-tables"
           style="display: none"
         >
-          <div id="comments-spinner" class="spinner" style="display: none"></div>
+          <div
+            id="comments-spinner"
+            class="spinner"
+            style="display: none"
+          ></div>
           <h2>Comments</h2>
           <input
             type="text"
@@ -140,12 +150,51 @@
           <div class="pagination" id="comments-pagination"></div>
         </section>
 
+        <!-- Messages Section -->
+        <section
+          id="messages-section"
+          class="content-tables"
+          style="display: none"
+        >
+          <div
+            id="messages-spinner"
+            class="spinner"
+            style="display: none"
+          ></div>
+          <h2>Contact Messages</h2>
+
+          <div id="messagesList" class="messages-list"></div>
+
+          <div id="messages-pagination" class="pagination"></div>
+        </section>
+
         <!-- Settings Section -->
         <section id="settings-section" class="section" style="display: none">
           <h2>Admin Settings</h2>
           <p>More controls coming soon…</p>
         </section>
       </main>
+    </div>
+
+    <div id="messageModal" class="modal hidden">
+      <div class="modal-content">
+        <button class="close-btn" id="closeMessageModal">×</button>
+
+        <h3 id="modalSubject"></h3>
+        <p><strong>From:</strong> <span id="modalName"></span></p>
+        <p><strong>Email:</strong> <span id="modalEmail"></span></p>
+        <p><strong>Date:</strong> <span id="modalDate"></span></p>
+
+        <hr />
+
+        <p id="modalMessage"></p>
+
+        <div class="modal-actions">
+          <button id="replyBtn">Reply</button>
+          <button id="archiveBtn">Archive</button>
+          <button id="deleteBtn" class="danger">Delete</button>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="js/admin.min.js"></script>

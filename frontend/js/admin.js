@@ -45,6 +45,9 @@ async function updateAvatar(user) {
 let usersPage = 1;
 let postsPage = 1;
 let commentsPage = 1;
+let messages = [];
+let messagesPage = 1;
+const MESSAGES_LIMIT = 8;
 
 const LIMIT = 10;
 
@@ -55,6 +58,7 @@ const sections = {
   users: document.getElementById("users-section"),
   posts: document.getElementById("posts-section"),
   comments: document.getElementById("comments-section"),
+  messages: document.getElementById("messages-section"),
   settings: document.getElementById("settings-section"),
 };
 
@@ -78,6 +82,7 @@ function showSection(sectionKey) {
   if (sectionKey === "users") loadUsers();
   if (sectionKey === "posts") loadPosts();
   if (sectionKey === "comments") loadComments();
+  if (sectionKey === "messages") loadMessages();
 }
 
 sidebarLinks.forEach((link) => {
@@ -457,6 +462,153 @@ function initLogout() {
     logout();
     window.location.href = "index.html";
   });
+}
+
+function renderMessage(message) {
+  return `
+    <div class="message-card ${message.isRead ? "read" : "unread"}"
+         data-id="${message._id}">
+      <div class="message-header">
+        <strong>${message.name}</strong>
+        <span>${new Date(message.createdAt).toLocaleString()}</span>
+      </div>
+
+      <p class="message-email">${message.email}</p>
+      <p class="message-subject">${message.subject}</p>
+
+      <p class="message-preview">
+        ${message.message.slice(0, 120)}${message.message.length > 120 ? "..." : ""}
+      </p>
+
+      <button class="mark-read-btn">
+        Mark as read
+      </button>
+    </div>
+  `;
+}
+
+function renderMessages(messages) {
+  const container = document.getElementById("messagesList");
+  container.innerHTML = "";
+
+  messages.forEach((msg) => {
+    container.insertAdjacentHTML("beforeend", renderMessage(msg));
+  });
+
+  attachMessageEvents();
+}
+
+async function loadMessages(page = messagesPage) {
+  messagesPage = page;
+  const spinner = document.getElementById("messages-spinner");
+  const container = document.getElementById("messagesList");
+
+  spinner.style.display = "block";
+  container.innerHTML = "";
+  try {
+    const res = await apiFetch(
+      `/api/admin/messages?page=${page}&limit=${MESSAGES_LIMIT}`,
+    );
+    const result = await res.json();
+    messages = Array.isArray(result)
+  ? result
+  : result.data;
+
+    if (!messages.length) {
+      container.innerHTML = "<p>No messages yet.</p>";
+      return;
+    }
+
+    updateUnreadCount();
+    renderMessages(messages);
+
+    renderPagination(
+      "messages-pagination",
+      messagesPage,
+      result.pages,
+      loadMessages,
+    );
+  } catch (err) {
+    showToast("Failed to load messages", "error");
+  } finally {
+    spinner.style.display = "none";
+  }
+}
+
+function attachMessageEvents() {
+  document.querySelectorAll(".message-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      openMessageModalById(card.dataset.id);
+    });
+
+    const btn = card.querySelector(".mark-read-btn");
+    if (btn) {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        await markAsRead(card.dataset.id);
+        card.classList.remove("unread");
+        card.classList.add("read");
+        btn.remove();
+      });
+    }
+  });
+}
+
+function openMessageModal(msg) {
+  document.getElementById("modalSubject").textContent = msg.subject;
+  document.getElementById("modalName").textContent = msg.name;
+  document.getElementById("modalEmail").textContent = msg.email;
+  document.getElementById("modalDate").textContent = new Date(
+    msg.createdAt,
+  ).toLocaleString();
+  document.getElementById("modalMessage").textContent = msg.message;
+
+  document.getElementById("messageModal").classList.remove("hidden");
+
+  if (!msg.isRead) {
+    markAsRead(msg._id);
+    msg.isRead = true;
+  }
+}
+
+function openMessageModalById(id) {
+  const msg = messages.find((m) => m._id === id);
+  if (!msg) return;
+
+  openMessageModal(msg);
+}
+
+document.getElementById("closeMessageModal").onclick = () => {
+  document.getElementById("messageModal").classList.add("hidden");
+};
+
+async function markAsRead(id) {
+  try {
+    await apiFetch(`/api/admin/messages/${id}/read`, {
+      method: "PATCH",
+    });
+
+    const msg = messages.find((m) => m._id === id);
+    if (msg) msg.isRead = true;
+
+    updateUnreadCount();
+  } catch {
+    showToast("Failed to update message", "error");
+  }
+}
+
+function updateUnreadCount() {
+  const badge = document.getElementById("unreadCount");
+  if (!badge || !Array.isArray(messages)) return;
+
+  const unread = messages.filter((m) => !m.isRead).length;
+
+  if (unread > 0) {
+    badge.textContent = unread;
+    badge.classList.remove("hidden");
+  } else {
+    badge.classList.add("hidden");
+  }
 }
 
 window.addEventListener("hashchange", initNavigation);

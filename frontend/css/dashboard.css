@@ -1,28 +1,4 @@
-:root {
-  --bg-color: var(--page-bg);
-  --card-bg: var(--card-bg);
-  --text-color: var(--text-main);
-  --text-secondary: var(--text-muted);
-  --primary-color: var(--brand-primary);
-  --primary-hover: var(--secondary);
-  --danger-color: #b91c1c;
-  --danger-bg: #fee2e2;
-  --shadow-card: rgba(0, 0, 0, 0.08);
-  --shadow-card-img: rgba(0, 0, 0, 0.15);
-}
-
-:root[data-theme="dark"] {
-  --bg-color: #1e1e1e;
-  --card-bg: #2a2a2a;
-  --text-color: #f0f0f0;
-  --text-secondary: #ccc;
-  --primary-color: #0096c7;
-  --primary-hover: #00509d;
-  --danger-color: #fca5a5;
-  --danger-bg: #b91c1c;
-  --shadow-card: rgba(255, 255, 255, 0.05);
-  --shadow-card-img: rgba(255, 255, 255, 0.1);
-}
+@import "./colors.css";
 
 .dashboard-container {
   display: grid;

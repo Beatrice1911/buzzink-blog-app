@@ -10,6 +10,7 @@ export default defineConfig({
         main: path.resolve(__dirname, "index.html"),
         allPosts: path.resolve(__dirname, "all-posts.html"),
         about: path.resolve(__dirname, "about.html"),
+        contact: path.resolve(__dirname, "contact.html"),
         saved: path.resolve(__dirname, "saved.html"),
         dashboard: path.resolve(__dirname, "dashboard.html"),
         settings: path.resolve(__dirname, "settings.html"),

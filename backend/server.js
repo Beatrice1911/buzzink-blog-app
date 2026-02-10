@@ -15,6 +15,8 @@ const postsRoutes = require("./routes/postRoutes");
 const userRoutes = require("./routes/userRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const adminContactRoutes = require("./routes/adminContactRoutes");
 
 const app = express();
 
@@ -55,6 +57,8 @@ app.use("/api/users", userRoutes);
 // app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/api/comments", commentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/admin/messages", adminContactRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
