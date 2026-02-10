@@ -2,7 +2,7 @@ const ContactMessage = require("../models/ContactMessage");
 
 const createContactMessage = async (req, res, next) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, topic, message } = req.body;
 
     if (!name || !email || !message) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -11,7 +11,7 @@ const createContactMessage = async (req, res, next) => {
     await ContactMessage.create({
       name,
       email,
-      subject,
+      topic,
       message,
     });
 

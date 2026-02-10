@@ -4,7 +4,7 @@ const contactMessageSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
-    subject: { type: String, default: "general" },
+    topic: { type: String, default: "general" },
     message: { type: String, required: true },
     isRead: { type: Boolean, default: false },
   },

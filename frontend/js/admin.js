@@ -474,7 +474,7 @@ function renderMessage(message) {
       </div>
 
       <p class="message-email">${message.email}</p>
-      <p class="message-subject">${message.subject}</p>
+      <p class="message-topic">${message.topic}</p>
 
       <p class="message-preview">
         ${message.message.slice(0, 120)}${message.message.length > 120 ? "..." : ""}
@@ -555,7 +555,7 @@ function attachMessageEvents() {
 }
 
 function openMessageModal(msg) {
-  document.getElementById("modalSubject").textContent = msg.subject;
+  document.getElementById("modalTopic").textContent = msg.topic;
   document.getElementById("modalName").textContent = msg.name;
   document.getElementById("modalEmail").textContent = msg.email;
   document.getElementById("modalDate").textContent = new Date(
