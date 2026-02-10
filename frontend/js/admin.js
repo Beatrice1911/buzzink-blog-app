@@ -479,9 +479,7 @@ function renderMessage(message) {
         ${message.message.slice(0, 120)}${message.message.length > 120 ? "..." : ""}
       </p>
 
-      <button class="mark-read-btn">
-        Mark as read
-      </button>
+      ${message.isRead ? "" : `<button class="mark-read-btn">Mark as read</button>`}
     </div>
   `;
 }
@@ -537,8 +535,8 @@ async function loadMessages(page = messagesPage) {
 
 function attachMessageEvents() {
   document.querySelectorAll(".message-card").forEach((card) => {
-    card.addEventListener("click", () => {
-      openMessageModalById(card.dataset.id);
+    card.addEventListener("click", async () => {
+      await openMessageModalById(card.dataset.id);
     });
 
     const btn = card.querySelector(".mark-read-btn");
@@ -554,7 +552,7 @@ function attachMessageEvents() {
   });
 }
 
-function openMessageModal(msg) {
+async function openMessageModal(msg) {
   document.getElementById("modalTopic").textContent = msg.topic;
   document.getElementById("modalName").textContent = msg.name;
   document.getElementById("modalEmail").textContent = msg.email;
@@ -566,16 +564,16 @@ function openMessageModal(msg) {
   document.getElementById("messageModal").classList.remove("hidden");
 
   if (!msg.isRead) {
-    markAsRead(msg._id);
+    await markAsRead(msg._id);
     msg.isRead = true;
   }
 }
 
-function openMessageModalById(id) {
+async function openMessageModalById(id) {
   const msg = messages.find((m) => m._id === id);
   if (!msg) return;
 
-  openMessageModal(msg);
+  await openMessageModal(msg);
 }
 
 document.getElementById("closeMessageModal").onclick = () => {
@@ -614,7 +612,7 @@ function updateUnreadCount() {
 }
 
 function attachMessageActions() {
-  document.querySelectorAll(".delete-btn").forEach(btn => {
+  document.querySelectorAll(".delete-message-btn").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const card = e.target.closest(".message-card");
       const id = card.dataset.id;
@@ -647,6 +645,8 @@ markAllBtn?.addEventListener("click", async () => {
     });
 
     if (!res.ok) throw new Error();
+
+    messages.forEach(msg => msg.isRead = true);
 
     document.querySelectorAll(".message-card").forEach(card => {
       card.classList.remove("unread");

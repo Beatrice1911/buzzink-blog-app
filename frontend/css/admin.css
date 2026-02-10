@@ -165,6 +165,7 @@ body {
 
 .content-tables h2 {
   margin-bottom: 15px;
+  color: #333;
 }
 
 .content-tables input[type="text"] {
