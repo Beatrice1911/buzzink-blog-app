@@ -85,6 +85,8 @@ function initNavigation() {
 }
 
 function initAuthModal() {
+  loginForm.reset();
+  registerForm.reset();
   loginTab?.addEventListener("click", () => {
     loginForm.classList.remove("hidden");
     registerForm.classList.add("hidden");

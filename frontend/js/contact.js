@@ -25,7 +25,8 @@ export function handleContactFormSubmit() {
 
       showToast("Thanks for reaching out! 💙", "success");
       form.reset();
-    } catch {
+    } catch (err) {
+      console.error("Contact form submission failed:", err);
       showToast("Failed to send message. Try again.", "error");
     }
   });
