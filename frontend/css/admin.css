@@ -246,10 +246,18 @@ body {
   background-color: #575787;
 } 
 
+.badge {
+  margin-left: 30px;
+  background-color: #6c63ff;
+  padding: 10px;
+  border-radius: 50%;
+}
+
 .message-card {
   background: #fafafa;
   padding: 1rem;
   border-radius: 12px;
+  margin-top: 1rem;
   margin-bottom: 1rem;
   border-left: 4px solid transparent;
 }
