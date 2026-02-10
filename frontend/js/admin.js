@@ -466,15 +466,14 @@ function initLogout() {
 
 function renderMessage(message) {
   return `
-    <div class="message-card ${message.isRead ? "read" : "unread"}"
-         data-id="${message._id}">
+    <div class="message-card ${message.isRead ? "read" : "unread"}" data-id="${message._id}">
       <div class="message-header">
         <strong>${message.name}</strong>
         <span>${new Date(message.createdAt).toLocaleString()}</span>
       </div>
 
       <p class="message-email">${message.email}</p>
-      <p class="message-topic">${message.topic}</p>
+      ${message.topic ? `<p class="message-topic">${message.topic}</p>` : ""}
 
       <p class="message-preview">
         ${message.message.slice(0, 120)}${message.message.length > 120 ? "..." : ""}
@@ -510,9 +509,7 @@ async function loadMessages(page = messagesPage) {
       `/api/admin/messages?page=${page}&limit=${MESSAGES_LIMIT}`,
     );
     const result = await res.json();
-    messages = Array.isArray(result)
-  ? result
-  : result.data;
+    messages = result?.data || [];
 
     if (!messages.length) {
       container.innerHTML = "<p>No messages yet.</p>";
@@ -522,12 +519,14 @@ async function loadMessages(page = messagesPage) {
     updateUnreadCount();
     renderMessages(messages);
 
-    renderPagination(
-      "messages-pagination",
-      messagesPage,
-      result.pages,
-      loadMessages,
-    );
+    if (result.pages) {
+      renderPagination(
+        "messages-pagination",
+        messagesPage,
+        result.pages,
+        loadMessages,
+      );
+    }
   } catch (err) {
     showToast("Failed to load messages", "error");
   } finally {
