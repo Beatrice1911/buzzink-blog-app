@@ -247,9 +247,9 @@ body {
 } 
 
 .badge {
-  margin-left: 30px;
+  margin-left: 20px;
   background-color: #6c63ff;
-  padding: 10px;
+  padding: 5px 8px;
   border-radius: 50%;
 }
 
