@@ -520,7 +520,6 @@ async function loadMessages(page = messagesPage) {
 
     updateUnreadCount();
     renderMessages(messages);
-    attachMessageActions();
 
     if (result.pages) {
       renderPagination(
@@ -557,6 +556,9 @@ function attachMessageEvents() {
 }
 
 async function openMessageModal(msg) {
+  const modal = document.getElementById("messageModal");
+  modal.dataset.messageId = msg._id;
+
   document.getElementById("modalTopic").textContent = msg.topic;
   document.getElementById("modalName").textContent = msg.name;
   document.getElementById("modalEmail").textContent = msg.email;
@@ -565,7 +567,7 @@ async function openMessageModal(msg) {
   ).toLocaleString();
   document.getElementById("modalMessage").textContent = msg.message;
 
-  document.getElementById("messageModal").classList.remove("hidden");
+  modal.classList.remove("hidden");
 
   if (!msg.isRead) {
     await markAsRead(msg._id);
@@ -615,30 +617,45 @@ function updateUnreadCount() {
   }
 }
 
-function attachMessageActions() {
-  document.querySelectorAll(".delete-message-btn").forEach((btn) => {
-    btn.addEventListener("click", async (e) => {
-      const card = e.target.closest(".message-card");
-      const id = card.dataset.id;
+const modalDeleteBtn = document.getElementById("deleteBtn");
 
-      if (!confirm("Delete this message?")) return;
+modalDeleteBtn.addEventListener("click", async () => {
+  const modal = document.getElementById("messageModal");
+  const msgId = modal.dataset.messageId;
+  if (!msgId) return;
 
-      try {
-        const res = await apiFetch(`/api/admin/messages/${id}`, {
-          method: "DELETE",
-        });
+  if (!confirm("Delete this message?")) return;
 
-        if (!res.ok) throw new Error("Delete failed");
-
-        showToast("Message deleted", "success");
-        card.remove();
-        updateUnreadCount();
-      } catch {
-        showToast("Failed to delete message", "error");
-      }
+  try {
+    const res = await apiFetch(`/api/admin/messages/${msgId}`, {
+      method: "DELETE",
     });
-  });
-}
+    if (!res.ok) throw new Error("Delete failed");
+
+    const card = document.querySelector(`.message-card[data-id="${msgId}"]`);
+    if (card) card.remove();
+
+    messages = messages.filter((m) => m._id !== msgId);
+
+    showToast("Message deleted", "success");
+    updateUnreadCount();
+
+    modal.classList.add("hidden");
+  } catch {
+    showToast("Failed to delete message", "error");
+  }
+});
+
+const replyBtn = document.getElementById("replyBtn");
+
+replyBtn.addEventListener("click", () => {
+  const modal = document.getElementById("messageModal");
+  const msgId = modal.dataset.messageId;
+  const msg = messages.find(m => m._id === msgId);
+  if (!msg) return;
+
+  window.location.href = `mailto:${msg.email}?subject=Re: ${encodeURIComponent(msg.topic || "Your Message")}`;
+});
 
 const markAllBtn = document.getElementById("markAllReadBtn");
 
