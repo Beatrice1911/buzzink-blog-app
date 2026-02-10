@@ -1910,11 +1910,12 @@ nav a.active::after {
 .info-card h3 {
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
+  color: var(--text);
 }
 
 .info-card p {
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: var(--text);
 }
 
 .contact-form {
@@ -1937,6 +1938,7 @@ nav a.active::after {
 
 .form-group label {
   font-weight: 600;
+  color: var(--text);
 }
 
 .form-group input,
@@ -1956,6 +1958,13 @@ nav a.active::after {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+  background: var(--bg-muted);
+  color: var(--text-inverse);
 }
 
 .btn-primary {
