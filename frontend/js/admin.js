@@ -518,6 +518,7 @@ async function loadMessages(page = messagesPage) {
 
     updateUnreadCount();
     renderMessages(messages);
+    attachMessageActions();
 
     if (result.pages) {
       renderPagination(
@@ -602,6 +603,8 @@ function updateUnreadCount() {
 
   const unread = messages.filter((m) => !m.isRead).length;
 
+  markAllBtn.disabled = unread === 0;
+
   if (unread > 0) {
     badge.textContent = unread;
     badge.classList.remove("hidden");
@@ -609,6 +612,53 @@ function updateUnreadCount() {
     badge.classList.add("hidden");
   }
 }
+
+function attachMessageActions() {
+  document.querySelectorAll(".delete-btn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const card = e.target.closest(".message-card");
+      const id = card.dataset.id;
+
+      if (!confirm("Delete this message?")) return;
+
+      try {
+        const res = await apiFetch(`/api/admin/messages/${id}`, {
+          method: "DELETE",
+        });
+
+        if (!res.ok) throw new Error("Delete failed");
+
+        showToast("Message deleted", "success");
+        card.remove();
+        updateUnreadCount();
+      } catch {
+        showToast("Failed to delete message", "error");
+      }
+    });
+  });
+}
+
+const markAllBtn = document.getElementById("markAllReadBtn");
+
+markAllBtn?.addEventListener("click", async () => {
+  try {
+    const res = await apiFetch("/api/admin/messages/mark-all-read", {
+      method: "PATCH",
+    });
+
+    if (!res.ok) throw new Error();
+
+    document.querySelectorAll(".message-card").forEach(card => {
+      card.classList.remove("unread");
+      card.classList.add("read");
+    });
+
+    showToast("All messages marked as read", "success");
+    updateUnreadCount();
+  } catch {
+    showToast("Failed to update messages", "error");
+  }
+});
 
 window.addEventListener("hashchange", initNavigation);
 

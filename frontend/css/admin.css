@@ -268,9 +268,12 @@ body {
   margin: 0.5rem 0;
 }
 
-.mark-read-btn {
-  background: none;
-  color: #6d28d9;
+.mark-read-btn, #markAllReadBtn {
+  background: #6d28d9;
+  color: #fff;
+  border: none;
+  padding: 5px;
+  border-radius: 7px;
   cursor: pointer;
   font-weight: 600;
 }
@@ -306,7 +309,8 @@ body {
 
 .close-btn {
   float: right;
-  font-size: 20px;
+  font-size: 25px;
+  font-weight: 600;
   background: none;
   border: none;
   cursor: pointer;
@@ -318,8 +322,22 @@ body {
   margin-top: 20px;
 }
 
+.modal-actions button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#replyBtn, #archiveBtn {
+  background: #ccc;
+  color: #333;
+  font-weight: 600;
+}
+
 .danger {
-  background: crimson;
+  background: #e74c3c;
   color: white;
 }
 

@@ -7,10 +7,7 @@ const getContactMessages = async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const [messages, total] = await Promise.all([
-      ContactMessage.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
+      ContactMessage.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
       ContactMessage.countDocuments(),
     ]);
 
@@ -37,7 +34,31 @@ const markAsReadContactMessage = async (req, res, next) => {
   }
 };
 
-module.exports = {
-    getContactMessages,
-    markAsReadContactMessage,
+const markAllAsReadContactMessages = async (req, res, next) => {
+  await ContactMessage.updateMany(
+    { isRead: false },
+    { $set: { isRead: true } }
+  );
+
+  res.json({ message: "All messages marked as read" });
 }
+
+const deleteContactMessage = async (req, res, next) => {
+  const { id } = req.params;
+
+  const message = await ContactMessage.findById(id);
+  if (!message) {
+    return res.status(404).json({ message: "Message not found" });
+  }
+
+  await message.deleteOne();
+
+  res.json({ message: "Message deleted" });
+};
+
+module.exports = {
+  getContactMessages,
+  markAsReadContactMessage,
+  markAllAsReadContactMessages,
+  deleteContactMessage,
+};
