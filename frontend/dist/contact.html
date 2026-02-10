@@ -2,9 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/Images/title-logo_optimized_.png" type="image/png">
-    <title>Settings - BuzzInk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
@@ -21,6 +23,12 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
     />
+    <link
+      rel="icon"
+      href="/Images/title-logo_optimized_.png"
+      type="image/png"
+    />
+    <title>Contact Us - BuzzInk</title>
     <script type="module" crossorigin src="/assets/app-BWTpAQci.js"></script>
     <link rel="stylesheet" crossorigin href="/assets/style-ChGf6Jlt.css">
   </head>
@@ -54,8 +62,8 @@
       <nav>
         <a href="index.html">Home</a>
         <a href="all-posts.html">Posts</a>
-        <!-- <a href="#">Categories</a> -->
-        <a href="about.html">About</a>
+        <a href="about.html" class="active">About</a>
+        <a href="contact.html">Contact</a>
         <img
           id="navUserAvatar"
           src="https://i.postimg.cc/KvF0rh0Q/custom-default-avatar.png"
@@ -73,11 +81,12 @@
       <a href="index.html">Home</a>
       <a href="all-posts.html">Posts</a>
       <a href="about.html">About</a>
-      <a href="contact.html">Contact</a>
+      <a href="contact.html" class="active">Contact</a>
     </div>
     <div class="mobile-search" id="mobileSearch">
       <input type="text" placeholder="Search posts..." class="search" />
     </div>
+
     <div class="user-menu-details" id="userMenuDetails">
       <p id="profile-edit">Profile</p>
       <p id="myPosts">My Posts</p>
@@ -86,87 +95,75 @@
       <button id="logoutBtn">Logout</button>
     </div>
 
-    <section class="settings-section">
-      <h3><i class="fa-solid fa-palette"></i> Appearance</h3>
+    <main class="contact-page">
+      <section class="contact-hero">
+        <h1>Let’s Talk</h1>
+        <p>
+          Have a question, suggestion, complaint, or just want to say hi? We
+          read every message.
+        </p>
+      </section>
 
-      <div class="setting-item">
-        <div class="setting-left">
-          <i class="fa-solid fa-moon"></i>
-          <span>Dark Mode</span>
+      <section class="contact-content">
+        <div class="contact-info">
+          <div class="info-card">
+            <h3>💬 General</h3>
+            <p>Suggestions, feedback, complaints, questions.</p>
+          </div>
+
+          <div class="info-card">
+            <h3>🤝 Collaborations</h3>
+            <p>Guest posts, partnerships, sponsorships.</p>
+          </div>
+
+          <div class="info-card">
+            <h3>🛠 Support</h3>
+            <p>Report issues or get help with your account.</p>
+          </div>
         </div>
-        <label class="theme-switch">
-          <input type="checkbox" id="themeToggle" />
-          <span class="slider"></span>
-        </label>
-      </div>
 
-      <div class="setting-item disabled">
-        <div class="setting-left">
-          <i class="fa-solid fa-text-height"></i>
-          <span>Font Size</span>
-        </div>
-        <small>Coming soon</small>
-      </div>
-    </section>
+        <form id="contactForm" class="contact-form">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" required />
+          </div>
 
-    <section class="settings-section">
-      <h3><i class="fa-solid fa-user-gear"></i> Content & Privacy</h3>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required />
+          </div>
 
-      <div class="setting-item disabled">
-        <div class="setting-left">
-          <i class="fa-solid fa-comment-slash"></i>
-          <span>Who can comment on my posts</span>
-        </div>
-        <small>Coming soon</small>
-      </div>
+          <div class="form-group">
+            <label for="topic">Topic (optional)</label>
+            <select id="topic">
+              <option value="">Select a topic</option>
+              <option value="general">General</option>
+              <option value="feedback">Suggestion / Feedback</option>
+              <option value="complaint">Complaint</option>
+              <option value="collaboration">Collaboration</option>
+              <option value="support">Technical issue</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
 
-      <div class="setting-item disabled">
-        <span>Show likes count publicly</span>
-        <small>Coming soon</small>
-      </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea
+              id="message"
+              rows="5"
+              placeholder="Tell us what’s on your mind…"
+              required
+            ></textarea>
+          </div>
 
-      <div class="setting-item" onclick="location.href = 'saved.html'">
-        <div class="setting-left">
-          <i class="fa-solid fa-bookmark"></i>
-          <span>Saved Posts</span>
-        </div>
-        <i class="fa-solid fa-chevron-right"></i>
-      </div>
-    </section>
+          <button type="submit" class="btn-primary btn">Send message</button>
 
-    <section class="settings-section">
-      <h3>Notifications</h3>
-
-      <div class="setting-item disabled">
-        <span>New comment alerts</span>
-        <small>Coming soon</small>
-      </div>
-
-      <div class="setting-item disabled">
-        <span>New like alerts</span>
-        <small>Coming soon</small>
-      </div>
-    </section>
-
-    <section class="settings-section">
-      <h3>App</h3>
-
-      <div class="setting-item">
-        <span>Clear cache</span>
-        <button class="btn small danger">Clear</button>
-      </div>
-
-      <div class="setting-item disabled">
-        <span>Language</span>
-        <small>English</small>
-      </div>
-
-      <div class="setting-item">
-        <span>Version</span>
-        <small>v1.0.0</small>
-      </div>
-    </section>
-
+          <p class="form-note">
+            We usually reply within 24–48 hours. No spam — ever.
+          </p>
+        </form>
+      </section>
+    </main>
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-about">
@@ -251,6 +248,7 @@
         </form>
       </div>
     </div>
+
     <div
       id="toast-container"
       style="position: fixed; top: 20px; right: 20px; z-index: 9999"
