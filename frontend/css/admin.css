@@ -342,6 +342,11 @@ body {
   color: white;
 }
 
+#markAllReadBtn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .dashboard {

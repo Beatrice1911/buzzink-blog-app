@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Post = require("../models/Post");
 const Comment = require("../models/Comment");
+const ContactMessage = require("../models/ContactMessage");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -135,9 +136,14 @@ exports.deleteComment = async (req, res) => {
 };
 
 exports.getAdminStats = async (req, res) => {
-  const users = await User.countDocuments();
-  const posts = await Post.countDocuments();
-  const comments = await Comment.countDocuments();
+  try {
+    const users = await User.countDocuments();
+    const posts = await Post.countDocuments();
+    const comments = await Comment.countDocuments();
+    const messages = await ContactMessage.countDocuments();
 
-  res.json({ users, posts, comments });
+    res.json({ users, posts, comments, messages });
+  } catch (err) {
+    next(err);
+  }
 };

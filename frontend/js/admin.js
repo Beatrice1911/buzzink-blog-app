@@ -133,13 +133,17 @@ function createRow(data, columns, type) {
 
 // Fetch and render Overview Stats
 async function loadOverviewStats() {
-  const res = await apiFetch("/api/admin/stats");
+  try {
+    const res = await apiFetch("/api/admin/stats");
+    const data = await res.json();
 
-  const data = await res.json();
-
-  document.getElementById("total-users").textContent = data.users;
-  document.getElementById("total-posts").textContent = data.posts;
-  document.getElementById("total-comments").textContent = data.comments;
+    document.getElementById("total-users").textContent = data.users;
+    document.getElementById("total-posts").textContent = data.posts;
+    document.getElementById("total-comments").textContent = data.comments;
+    document.getElementById("total-messages").textContent = data.messages;
+  } catch (err) {
+    console.error("Failed to load overview stats:", err);
+  }
 }
 
 // Search inputs
@@ -612,7 +616,7 @@ function updateUnreadCount() {
 }
 
 function attachMessageActions() {
-  document.querySelectorAll(".delete-message-btn").forEach(btn => {
+  document.querySelectorAll(".delete-message-btn").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       const card = e.target.closest(".message-card");
       const id = card.dataset.id;
@@ -646,16 +650,16 @@ markAllBtn?.addEventListener("click", async () => {
 
     if (!res.ok) throw new Error();
 
-    messages.forEach(msg => msg.isRead = true);
+    messages.forEach((msg) => (msg.isRead = true));
 
-    document.querySelectorAll(".message-card").forEach(card => {
+    document.querySelectorAll(".message-card").forEach((card) => {
       card.classList.remove("unread");
       card.classList.add("read");
     });
 
     showToast("All messages marked as read", "success");
     updateUnreadCount();
-  } catch {
+  } catch (err) {
     showToast("Failed to update messages", "error");
   }
 });
@@ -670,5 +674,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadUsers(usersPage);
   loadPosts(postsPage);
   loadComments(commentsPage);
+  loadMessages(messagesPage);
   initNavigation();
 });
