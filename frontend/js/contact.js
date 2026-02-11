@@ -71,7 +71,7 @@ export function initSubscribeForm({
 
     spinner.classList.remove("hidden");
     button.disabled = true;
-    text.textContent = "Subscribing...";
+    text.textContent = "Subscribing";
 
     try {
       const res = await fetch(endpoint, {
@@ -97,6 +97,9 @@ export function initSubscribeForm({
       throw new Error(data.message);
     } catch {
       showToast("Subscription failed. Try again later.", "error");
+      spinner.classList.remove("hidden");
+      button.disabled = false;
+      text.textContent = "Subscribe";
     } finally {
       spinner.classList.remove("hidden");
       button.disabled = false;
