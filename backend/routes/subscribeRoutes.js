@@ -1,5 +1,8 @@
+const express = require("express");
 const Subscriber = require("../models/Subscriber");
 const contactsApi = require("../config/brevo");
+
+const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { email } = req.body;
@@ -40,3 +43,5 @@ router.post("/", async (req, res) => {
     });
   }
 });
+
+module.exports = router;
