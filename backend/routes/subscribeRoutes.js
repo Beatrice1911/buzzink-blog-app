@@ -26,19 +26,14 @@ router.post("/", async (req, res) => {
 
     await contactsApi.createContact({
       email,
-      updateEnabled: false,
+      updateEnabled: true,
       listIds: [2],
     });
 
     res.status(201).json({ message: "Subscribed successfully" });
   } catch (error) {
-    if (error?.response?.body?.code === "duplicate_parameter") {
-      return res.status(409).json({
-        message: "You are already subscribed",
-      });
-    }
     console.error("Brevo error:", error);
-    return res.status(500).json({
+    res.status(500).json({
       message: "Subscription failed",
     });
   }
