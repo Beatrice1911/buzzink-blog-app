@@ -441,11 +441,13 @@ export function editPost(slug) {
 
 export function initPostForm() {
   const postForm = document.getElementById("postForm");
-  const addPostBtn = document.querySelector(".add-post-btn");
+  const addPostBtn = postForm?.querySelector(".add-post-btn");
 
   if (!postForm) return;
 
   const editSlug = localStorage.getItem("editSlug");
+
+  addPostBtn.innerHTML = editSlug ? "Update Post" : "Add Post";
 
   const setPostingState = (isPosting) => {
     addPostBtn.disabled = isPosting;

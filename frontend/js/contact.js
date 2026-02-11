@@ -50,6 +50,15 @@ export function initSubscribeForm({
   const form = document.getElementById(formId);
   const emailInput = document.getElementById(inputId);
 
+  const button = form.querySelector("button");
+
+  const setPostingState = (isPosting) => {
+    button.disabled = isPosting;
+    button.innerHTML = isPosting
+      ? `<i class="fa-solid fa-spinner fa-spin"></i>`
+      : "Subscribe";
+  };
+
   if (!form || !emailInput) return;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -65,15 +74,8 @@ export function initSubscribeForm({
       return;
     }
 
-    const button = form.querySelector("button");
-    const spinner = form.querySelector(".spinner");
-    const text = form.querySelector(".btn-text");
-
-    spinner.classList.remove("hidden");
-    button.disabled = true;
-    text.textContent = "Subscribing";
-
     try {
+      setPostingState(true);
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -97,13 +99,9 @@ export function initSubscribeForm({
       throw new Error(data.message);
     } catch {
       showToast("Subscription failed. Try again later.", "error");
-      spinner.classList.remove("hidden");
-      button.disabled = false;
-      text.textContent = "Subscribe";
+      setPostingState(false);
     } finally {
-      spinner.classList.remove("hidden");
-      button.disabled = false;
-      text.textContent = "Subscribe";
+      setPostingState(false);
     }
   });
 }
