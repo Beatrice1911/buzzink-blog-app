@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const Comment = require("../models/Comment");
 const ContactMessage = require("../models/ContactMessage");
+const Subscriber = require("../models/Subscriber");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -141,8 +142,9 @@ exports.getAdminStats = async (req, res) => {
     const posts = await Post.countDocuments();
     const comments = await Comment.countDocuments();
     const messages = await ContactMessage.countDocuments();
+    const subscribers = await Subscriber.countDocuments();
 
-    res.json({ users, posts, comments, messages });
+    res.json({ users, posts, comments, messages, subscribers });
   } catch (err) {
     next(err);
   }

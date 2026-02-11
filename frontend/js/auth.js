@@ -52,81 +52,110 @@ export async function updateAvatar(user) {
   }
 }
 
+const loginButton = loginForm.querySelector("button");
+const registerButton = registerForm.querySelector("button");
+
 function initLogin() {
+  const setPostingState = (isPosting) => {
+    loginButton.disabled = isPosting;
+    loginButton.innerHTML = isPosting
+      ? `<i class="fa-solid fa-spinner fa-spin"></i>`
+      : "Login";
+  };
   loginForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
     console.log("Login Triggered");
 
-    const res = await apiFetch(`${AUTH_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      setPostingState(true);
+      const res = await apiFetch(`${AUTH_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
-    console.log("Login response:", data);
+      const data = await res.json();
+      console.log("Login response:", data);
 
-    if (!res.ok) {
-      showToast(`Login failed: ${data.message || "Unknown error"}`, "error");
-      return;
+      if (!res.ok) {
+        showToast(`Login failed: ${data.message || "Unknown error"}`, "error");
+        return;
+      }
+
+      const user = normalizeUser(data.user);
+      localStorage.setItem("user", JSON.stringify(user));
+      window.currentUser = user;
+      localStorage.setItem("role", user.role);
+      if (user.role === "admin") {
+        window.location.href = "admin.html";
+      }
+
+      updateUI(user);
+      updateAvatar(user);
+      authModal.classList.add("hidden");
+      loginForm.reset();
+      showToast(`Welcome back, ${user.name}!`, "success");
+      routeByPage();
+    } catch {
+      setPostingState(false);
+    } finally {
+      setPostingState(false);
     }
-
-    const user = normalizeUser(data.user);
-    localStorage.setItem("user", JSON.stringify(user));
-    window.currentUser = user;
-    localStorage.setItem("role", user.role);
-    if (user.role === "admin") {
-      window.location.href = "admin.html";
-    }
-
-    updateUI(user);
-    updateAvatar(user);
-    authModal.classList.add("hidden");
-    loginForm.reset();
-    showToast(`Welcome back, ${user.name}!`, "success");
-    routeByPage();
   });
 }
 
 function initRegister() {
+  const setPostingState = (isPosting) => {
+    registerButton.disabled = isPosting;
+    registerButton.innerHTML = isPosting
+      ? `<i class="fa-solid fa-spinner fa-spin"></i>`
+      : "Register";
+  };
   registerForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const name = document.getElementById("registerName").value;
     const email = document.getElementById("registerEmail").value;
     const password = document.getElementById("registerPassword").value;
 
-    const res = await apiFetch(`${AUTH_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      setPostingState(true);
+      const res = await apiFetch(`${AUTH_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const data = await res.json();
-    console.log("Register response:", data);
+      const data = await res.json();
+      console.log("Register response:", data);
 
-    if (!res.ok) {
+      if (!res.ok) {
+        showToast(
+          `Registration failed: ${data.message || "Unknown error"}`,
+          "error",
+        );
+        return;
+      }
+
+      const user = normalizeUser(data.user);
+      localStorage.setItem("user", JSON.stringify(user));
+      window.currentUser = user;
+      localStorage.setItem("role", user.role);
+      updateUI(user);
+      updateAvatar(user);
+      authModal.classList.add("hidden");
+      registerForm.reset();
       showToast(
-        `Registration failed: ${data.message || "Unknown error"}`,
-        "error",
+        `Welcome, ${user.name}! Your account has been created.`,
+        "success",
       );
-      return;
+      routeByPage();
+    } catch {
+      setPostingState(false);
+    } finally {
+      setPostingState(false);
     }
-
-    const user = normalizeUser(data.user);
-    localStorage.setItem("user", JSON.stringify(user));
-    window.currentUser = user;
-    localStorage.setItem("role", user.role);
-    updateUI(user);
-    updateAvatar(user);
-    authModal.classList.add("hidden");
-    registerForm.reset();
-    showToast(
-      `Welcome, ${user.name}! Your account has been created.`,
-      "success",
-    );
-    routeByPage();
   });
 }
 

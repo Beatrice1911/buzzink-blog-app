@@ -13,7 +13,7 @@ import { initEvents } from "./events.js";
 import { initAuth, checkUser } from "./auth.js";
 import { initUI, applyTheme, loadSavedTheme, showSkeleton } from "./ui.js";
 import { initComments } from "./comments.js";
-import { handleContactFormSubmit } from "./contact.js";
+import { handleContactFormSubmit, initSubscribeForm } from "./contact.js";
 
 document
   .getElementById("canonicalUrl")
@@ -83,6 +83,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   initComments();
   loadSavedTheme();
   handleContactFormSubmit();
+  initSubscribeForm({
+    formId: "subscribeForm",
+    inputId: "subscribeEmail",
+  });
 
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);

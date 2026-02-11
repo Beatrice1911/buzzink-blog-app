@@ -47,6 +47,7 @@ let postsPage = 1;
 let commentsPage = 1;
 let messages = [];
 let messagesPage = 1;
+let subscribersPage = 1;
 const MESSAGES_LIMIT = 8;
 
 const LIMIT = 10;
@@ -59,6 +60,7 @@ const sections = {
   posts: document.getElementById("posts-section"),
   comments: document.getElementById("comments-section"),
   messages: document.getElementById("messages-section"),
+  subscribers: document.getElementById("subscribers-section"),
   settings: document.getElementById("settings-section"),
 };
 
@@ -83,6 +85,7 @@ function showSection(sectionKey) {
   if (sectionKey === "posts") loadPosts();
   if (sectionKey === "comments") loadComments();
   if (sectionKey === "messages") loadMessages();
+  if (sectionKey === "subscribers") loadSubscribers();
 }
 
 sidebarLinks.forEach((link) => {
@@ -141,6 +144,7 @@ async function loadOverviewStats() {
     document.getElementById("total-posts").textContent = data.posts;
     document.getElementById("total-comments").textContent = data.comments;
     document.getElementById("total-messages").textContent = data.messages;
+    document.getElementById("total-subscribers").textContent = data.subscribers;
   } catch (err) {
     console.error("Failed to load overview stats:", err);
   }
@@ -390,6 +394,54 @@ async function loadComments(page = commentsPage) {
   }
 }
 
+function renderSubscribers(subscribers) {
+  const tbody = document.querySelector("#subscribers-table tbody");
+  tbody.innerHTML = "";
+
+  const fragment = document.createDocumentFragment();
+
+  subscribers.data.forEach((sub) => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${sub.email}</td>
+      <td>${new Date(sub.createdAt).toLocaleDateString()}</td>
+      <td>
+        <button class="btn-delete" data-id="${sub._id}">Delete</button>
+      </td>
+    `;
+
+    tr.querySelector("button").onclick = () =>
+      deleteSubscriber(sub._id, tr);
+
+    fragment.appendChild(tr);
+  });
+
+  tbody.appendChild(fragment);
+
+  renderPagination(
+    "subscribers-pagination",
+    subscribersPage,
+    subscribers.pages,
+    loadSubscribers
+  );
+}
+
+async function loadSubscribers(page = subscribersPage) {
+  subscribersPage = page;
+
+  try {
+    const res = await apiFetch(
+      `/api/admin/subscribers?page=${page}&limit=${LIMIT}`
+    );
+
+    const subscribers = await res.json();
+    renderSubscribers(subscribers);
+  } catch (err) {
+    showToast("Failed to load subscribers", "error");
+  }
+}
+
 // Delete functions
 async function deleteUser(id, row) {
   if (!confirm("Are you sure you want to delete this user?")) return;
@@ -453,6 +505,23 @@ async function deleteComment(id, row) {
   } catch (err) {
     console.error(err);
     showToast("Failed to delete comment.", "error");
+  }
+}
+
+async function deleteSubscriber(id, row) {
+  if (!confirm("Remove this subscriber?")) return;
+
+  try {
+    const res = await apiFetch(`/api/admin/subscribers/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) throw new Error();
+
+    row.remove();
+    showToast("Subscriber removed", "success");
+  } catch {
+    showToast("Failed to remove subscriber", "error");
   }
 }
 
@@ -692,5 +761,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   loadPosts(postsPage);
   loadComments(commentsPage);
   loadMessages(messagesPage);
+  loadSubscribers(subscribersPage);
   initNavigation();
 });

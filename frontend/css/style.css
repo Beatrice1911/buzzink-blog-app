@@ -801,6 +801,25 @@ nav a.active::after {
   background: var(--accent-dark);
 }
 
+.footer-subscribe button .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.footer-subscribe button .hidden {
+  display: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .social-media-icons {
   margin-top: 15px;
 }
@@ -887,7 +906,7 @@ nav a.active::after {
   box-shadow: var(--shadow-lg);
 }
 
-.add-post-btn[disabled] {
+.add-post-btn[disabled], .comment-form button[disabled], #loginForm button[disabled], #registerForm button[disabled], #subscribeForm button[disabled] {
   opacity: 0.7;
   cursor: not-allowed;
 }

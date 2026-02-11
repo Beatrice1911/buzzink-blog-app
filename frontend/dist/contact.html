@@ -29,8 +29,8 @@
       type="image/png"
     />
     <title>Contact Us - BuzzInk</title>
-    <script type="module" crossorigin src="/assets/app-Bbuow-3M.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/style-CsPW2jDl.css">
+    <script type="module" crossorigin src="/assets/app-D3MBmE7V.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/style-oo9zob5b.css">
   </head>
   <body>
     <div class="header">
@@ -148,7 +148,7 @@
 
           <div class="form-group">
             <label for="message">Message</label>
-            <textarea 
+            <textarea
               name="message"
               id="message"
               rows="5"
@@ -184,10 +184,23 @@
 
         <div class="footer-subscribe">
           <h4>Subscribe</h4>
-          <form>
-            <input type="email" placeholder="Your email" required />
-            <button type="submit">Subscribe</button>
+          <form id="subscribeForm">
+            <input
+              type="email"
+              id="subscribeEmail"
+              placeholder="Your email"
+              required
+            />
+            <button type="submit">
+              <span class="btn-text">Subscribe</span>
+              <span class="spinner hidden"></span>
+            </button>
           </form>
+          <div class="social-media-icons">
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          </div>
         </div>
       </div>
 

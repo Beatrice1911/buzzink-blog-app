@@ -9,8 +9,8 @@
       type="image/png"
     />
     <title>BuzzInk Admin Dashboard</title>
-    <script type="module" crossorigin src="/assets/admin-BTaKai_u.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/app-Bbuow-3M.js">
+    <script type="module" crossorigin src="/assets/admin-45nBa1Ab.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/app-D3MBmE7V.js">
     <link rel="stylesheet" crossorigin href="/assets/admin-DWyFyvfb.css">
   </head>
   <body>
@@ -37,6 +37,11 @@
                 >📨 Messages
                 <span id="unreadCount" class="badge hidden"></span>
               </a>
+            </li>
+            <li>
+              <a href="#subscribers-section" data-section="subscribers"
+                >🔔 Subscribers</a
+              >
             </li>
             <li>
               <a href="#settings-section" data-section="settings"
@@ -80,6 +85,10 @@
           <div class="card">
             <h3>Total Messages</h3>
             <p id="total-messages">0</p>
+          </div>
+          <div class="card">
+            <h3>Total Subscribers</h3>
+            <p id="total-subscribers">0</p>
           </div>
         </section>
 
@@ -173,6 +182,24 @@
           <div id="messagesList" class="messages-list"></div>
 
           <div id="messages-pagination" class="pagination"></div>
+        </section>
+
+        <!-- Subscribers Section -->
+        <section id="subscribers-section" class="content-tables" style="display: none">
+          <h2>Subscribers</h2>
+
+          <table id="subscribers-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Subscribed On</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <div id="subscribers-pagination" class="pagination"></div>
         </section>
 
         <!-- Settings Section -->

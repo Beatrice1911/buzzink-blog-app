@@ -10,14 +10,6 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 dotenv.config();
 
-const authRoutes = require("./routes/authRoutes");
-const postsRoutes = require("./routes/postRoutes");
-const userRoutes = require("./routes/userRoutes");
-const commentRoutes = require("./routes/commentRoutes");
-const adminRoutes = require("./routes/adminRoutes");
-const contactRoutes = require("./routes/contactRoutes");
-const adminContactRoutes = require("./routes/adminContactRoutes");
-
 const app = express();
 
 app.set("trust proxy", 1);
@@ -50,6 +42,15 @@ const authLimiter = rateLimit({
   max: 100,
   message: "Too many requests from this IP, please try again later",
 });
+const authRoutes = require("./routes/authRoutes");
+const postsRoutes = require("./routes/postRoutes");
+const userRoutes = require("./routes/userRoutes");
+const commentRoutes = require("./routes/commentRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const contactRoutes = require("./routes/contactRoutes");
+const adminContactRoutes = require("./routes/adminContactRoutes");
+const subscribeRoutes = require("./routes/subscribeRoutes");
+const adminSubscriberRoutes = require("./routes/adminSubscriberRoutes");
 
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/posts", postsRoutes);
@@ -59,6 +60,8 @@ app.use("/api/comments", commentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin/messages", adminContactRoutes);
+app.use("/api/subscribe", subscribeRoutes);
+app.use("/api/admin/subscribers", adminSubscriberRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -151,7 +154,7 @@ async function renderPostWithSEO(req, res) {
         /<meta name="twitter:image" content="" id="twitterImage" \/>/,
         `<meta name="twitter:image" content="${imageUrl}" id="twitterImage"/>`,
       );
-      
+
     html = html.replace(
       /<link rel="canonical" id="canonicalUrl" \/>/,
       `<link rel="canonical" href="${postUrl}" id="canonicalUrl"/>`,
@@ -171,7 +174,8 @@ async function renderPostWithSEO(req, res) {
 app.get("/post/:slug", renderPostWithSEO);
 app.get("/post.html", (req, res) => {
   const slug = req.query.slug;
-  if (!slug) return res.sendFile(path.join(__dirname, "../frontend/dist/post.html"));
+  if (!slug)
+    return res.sendFile(path.join(__dirname, "../frontend/dist/post.html"));
   res.redirect(301, `/post/${slug}`);
 });
 

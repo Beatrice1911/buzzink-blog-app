@@ -20,7 +20,11 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
     />
-    <link rel="icon" href="/Images/title-logo_optimized_.png" type="image/png">
+    <link
+      rel="icon"
+      href="/Images/title-logo_optimized_.png"
+      type="image/png"
+    />
     <title>Write a Post - BuzzInk</title>
   </head>
 
@@ -148,10 +152,23 @@
 
         <div class="footer-subscribe">
           <h4>Subscribe</h4>
-          <form>
-            <input type="email" placeholder="Your email" required />
-            <button type="submit">Subscribe</button>
+          <form id="subscribeForm">
+            <input
+              type="email"
+              id="subscribeEmail"
+              placeholder="Your email"
+              required
+            />
+            <button type="submit">
+              <span class="btn-text">Subscribe</span>
+              <span class="spinner hidden"></span>
+            </button>
           </form>
+          <div class="social-media-icons">
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          </div>
         </div>
       </div>
 

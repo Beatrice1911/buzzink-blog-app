@@ -37,6 +37,11 @@
               </a>
             </li>
             <li>
+              <a href="#subscribers-section" data-section="subscribers"
+                >🔔 Subscribers</a
+              >
+            </li>
+            <li>
               <a href="#settings-section" data-section="settings"
                 >⚙️ Settings</a
               >
@@ -78,6 +83,10 @@
           <div class="card">
             <h3>Total Messages</h3>
             <p id="total-messages">0</p>
+          </div>
+          <div class="card">
+            <h3>Total Subscribers</h3>
+            <p id="total-subscribers">0</p>
           </div>
         </section>
 
@@ -171,6 +180,24 @@
           <div id="messagesList" class="messages-list"></div>
 
           <div id="messages-pagination" class="pagination"></div>
+        </section>
+
+        <!-- Subscribers Section -->
+        <section id="subscribers-section" class="content-tables" style="display: none">
+          <h2>Subscribers</h2>
+
+          <table id="subscribers-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Subscribed On</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <div id="subscribers-pagination" class="pagination"></div>
         </section>
 
         <!-- Settings Section -->
