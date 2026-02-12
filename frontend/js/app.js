@@ -33,10 +33,10 @@ function restoreScroll() {
   }
 }
 
-let appInitialized = false;
+window.appInitialized = false;
 export async function routeByPage() {
-  if (appInitialized) return;
-  appInitialized = true;
+  if (window.appInitialized) return;
+  window.appInitialized = true;
 
   const path = window.location.pathname;
   const { page } = getStateFromUrl();
@@ -112,6 +112,6 @@ window.addEventListener("pageshow", (event) => {
 });
 
 window.addEventListener("popstate", () => {
-  appInitialized = false;
+  window.appInitialized = false;
   routeByPage();
 });

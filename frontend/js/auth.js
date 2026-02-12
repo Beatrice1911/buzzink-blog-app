@@ -21,6 +21,24 @@ window.currentUser = (() => {
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
+export async function checkUser() {
+  try {
+    const res = await apiFetch(`${AUTH_URL}/me`);
+
+    if (!res.ok) throw new Error("Not authenticated");
+
+    const data = await res.json();
+    const user = normalizeUser(data);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    window.currentUser = user;
+
+    return user;
+  } catch (err) {
+    return null;
+  }
+}
+
 export function updateUI(user) {
   if (user?.id) {
     userIcons.forEach((icon) => (icon.title = `Logged in as ${user.name}`));
@@ -32,24 +50,32 @@ export function updateUI(user) {
 
 export async function updateAvatar(user) {
   try {
-    const res = await apiFetch("/api/users/me");
-
-    if (!res.ok) return;
-
-    user = await res.json();
-
-    if (userIcons) {
+    if (!user) {
       userIcons.forEach((icon) => {
-        icon.src = user.profilePhoto?.trim()
-          ? user.profilePhoto
-          : DEFAULT_AVATAR;
+        icon.src = DEFAULT_AVATAR;
       });
+      return;
     }
+
+    userIcons.forEach((icon) => {
+      icon.src = user.profilePhoto?.trim() ? user.profilePhoto : DEFAULT_AVATAR;
+    });
 
     window.currentUser = user;
   } catch (err) {
-    console.warn("Failed to load auth user:", err);
+    console.warn("Avatar update failed:", err);
   }
+}
+
+export async function refreshAuthState() {
+  const user = await checkUser();
+
+  updateUI(user);
+  await updateAvatar(user);
+
+  window.appInitialized = false;
+
+  await routeByPage();
 }
 
 const loginButton = document.getElementById("login-btn");
@@ -99,12 +125,12 @@ function initLogin() {
         window.location.href = "admin.html";
       }
 
-      updateUI(user);
-      updateAvatar(user);
       authModal.classList.add("hidden");
       loginForm.reset();
+
+      await refreshAuthState();
+
       showToast(`Welcome back, ${user.name}!`, "success");
-      routeByPage();
     } catch (err) {
       console.error(err);
     } finally {
@@ -114,6 +140,8 @@ function initLogin() {
 }
 
 function showResendVerificationButton(email) {
+  const old = document.getElementById("resendVerificationContainer");
+  old?.remove();
   let container = document.getElementById("resendVerificationContainer");
   if (!container) {
     container = document.createElement("div");
@@ -142,52 +170,54 @@ function showResendVerificationButton(email) {
 }
 
 function initPasswordStrength() {
-  const passwordInput = document.querySelector(
+  const passwordInputs = document.querySelectorAll(
     "#registerPassword, #newPassword",
   );
   const container = document.querySelector(".password-strength");
   const bar = document.querySelector(".strength-bar");
   const text = document.getElementById("strengthText");
 
-  if (!passwordInput || !container || !bar || !text) return;
+  if (!passwordInputs.length || !container || !bar || !text) return;
 
-  passwordInput?.addEventListener("input", () => {
-    const val = passwordInput.value;
+  passwordInputs.forEach((passwordInput) => {
+    passwordInput?.addEventListener("input", () => {
+      const val = passwordInput.value;
 
-    if (!val) {
-      container.style.display = "none";
-      text.style.display = "none";
-      bar.style.width = "0%";
-      text.textContent = "";
-      passwordInput.dataset.strength = "weak";
-      return;
-    }
+      if (!val) {
+        container.style.display = "none";
+        text.style.display = "none";
+        bar.style.width = "0%";
+        text.textContent = "";
+        passwordInput.dataset.strength = "weak";
+        return;
+      }
 
-    container.style.display = "block";
-    text.style.display = "block";
+      container.style.display = "block";
+      text.style.display = "block";
 
-    let score = 0;
+      let score = 0;
 
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
+      if (val.length >= 8) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
 
-    const states = [
-      { width: "25%", color: "#e74c3c", label: "Weak" },
-      { width: "50%", color: "#f39c12", label: "Fair" },
-      { width: "75%", color: "#3498db", label: "Good" },
-      { width: "100%", color: "#2ecc71", label: "Strong" },
-    ];
+      const states = [
+        { width: "25%", color: "#e74c3c", label: "Weak" },
+        { width: "50%", color: "#f39c12", label: "Fair" },
+        { width: "75%", color: "#3498db", label: "Good" },
+        { width: "100%", color: "#2ecc71", label: "Strong" },
+      ];
 
-    const state = states[Math.max(score - 1, 0)];
+      const state = states[Math.max(score - 1, 0)];
 
-    bar.style.width = state.width;
-    bar.style.background = state.color;
-    text.textContent = `Strength: ${state.label}`;
+      bar.style.width = state.width;
+      bar.style.background = state.color;
+      text.textContent = `Strength: ${state.label}`;
 
-    passwordInput.dataset.strength =
-      state.label === "Strong" ? "strong" : "weak";
+      passwordInput.dataset.strength =
+        state.label === "Strong" ? "strong" : "weak";
+    });
   });
 }
 
@@ -238,6 +268,10 @@ function initRegister() {
 
       authModal.classList.add("hidden");
       registerForm.reset();
+      const strengthBar = document.querySelector(".password-strength");
+      if (strengthBar) {
+        strengthBar.style.display = "none";
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -253,27 +287,6 @@ function initLogout() {
   });
 }
 
-export async function checkUser() {
-  try {
-    const res = await apiFetch(`${AUTH_URL}/me`);
-
-    if (!res.ok) throw new Error("Not authenticated");
-
-    const data = await res.json();
-    const user = normalizeUser(data);
-    localStorage.setItem("user", JSON.stringify(user));
-
-    window.currentUser = user;
-    updateUI(user);
-    updateAvatar(user);
-    return user;
-  } catch (err) {
-    updateUI(null);
-    updateAvatar(null);
-    return null;
-  }
-}
-
 export async function logout(silent = false) {
   try {
     await fetch(`${AUTH_URL}/logout`, {
@@ -287,6 +300,7 @@ export async function logout(silent = false) {
   localStorage.removeItem("user");
   window.currentUser = null;
   updateUI(null);
+  updateAvatar(null);
 
   if (!silent) showToast("You have been logged out.", "info");
 }
