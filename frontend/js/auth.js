@@ -51,11 +51,13 @@ export function updateUI(user) {
   }
 }
 
-export async function updateAvatar(user) {
+export async function updateAvatar(user = null) {
   try {
-    const res = await apiFetch("/api/users/me");
-    if (!res.ok) return;
-    user = await res.json();
+    if (!user) {
+      const res = await apiFetch("/api/users/me");
+      if (!res.ok) return;
+      user = await res.json();
+    }
     if (userIcons) {
       userIcons.forEach((icon) => {
         icon.src = user.profilePhoto?.trim()
@@ -64,7 +66,7 @@ export async function updateAvatar(user) {
       });
     }
 
-    window.currentUser = user;
+    window.currentUser = normalizeUser(user);
   } catch (err) {
     console.warn("Avatar update failed:", err);
   }
