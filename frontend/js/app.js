@@ -10,7 +10,7 @@ import {
   restoreFiltersFromUrl,
 } from "./posts.js";
 import { initEvents } from "./events.js";
-import { initAuth, checkUser } from "./auth.js";
+import { initAuth, checkUser, updateAvatar } from "./auth.js";
 import { initUI, applyTheme, loadSavedTheme, showSkeleton } from "./ui.js";
 import { initComments } from "./comments.js";
 import { handleContactFormSubmit, initSubscribeForm } from "./contact.js";

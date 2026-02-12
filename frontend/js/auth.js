@@ -106,7 +106,7 @@ function initLogin() {
 
       showToast(`Welcome back, ${user.name}!`, "success");
 
-      await routeByPage();
+      window.location.reload();
     } catch (err) {
       console.error(err);
     } finally {
