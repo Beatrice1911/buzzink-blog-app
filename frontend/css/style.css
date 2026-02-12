@@ -1017,35 +1017,6 @@ nav a.active::after {
   text-align: center;
 }
 
-.password-field, .auth-submit-btn, #forgotPasswordForm button {
-  width: 100%; 
-  padding: 10px; 
-  margin: 10px 0;
-  border: 1px solid var(--divider); 
-  border-radius: 5px;
-}
-
-.password-field {
-  position: relative;
-}
-
-.password-field input {
-  width: 100%;
-  padding-right: 40px;
-}
-
-.auth-submit-btn, #forgotPasswordForm button{
-  background-color: var(--accent);
-  color: var(--text-inverse);
-  font-size: 18px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.auth-submit-btn:hover, #forgotPasswordForm button:hover {
-  background-color: var(--bg-modal);
-}
-
 .auth-tabs button { 
   margin: 5px; 
   padding: 8px 16px; 
@@ -1073,9 +1044,37 @@ nav a.active::after {
   color: var(--text);
 }
 
+.auth-form input, .auth-submit-btn, #forgotPasswordForm button {
+  width: 100%; 
+  padding: 10px; 
+  margin: 10px 0;
+  border: 1px solid var(--divider); 
+  border-radius: 5px;
+}
+
 .password-field {
   position: relative;
+  width: 100%; 
+  margin: 10px 0;
+  border: 1px solid var(--divider); 
+  border-radius: 5px;
+}
+
+.password-field input {
   width: 100%;
+  padding-right: 40px;
+}
+
+.auth-submit-btn, #forgotPasswordForm button{
+  background-color: var(--accent);
+  color: var(--text-inverse);
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-submit-btn:hover, #forgotPasswordForm button:hover {
+  background-color: var(--bg-modal);
 }
 
 .toggle-password {
