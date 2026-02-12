@@ -100,13 +100,13 @@ function initLogin() {
       }
 
       updateUI(user);
-      updateAvatar(user);
+      await updateAvatar(user);
       authModal.classList.add("hidden");
       loginForm.reset();
 
       showToast(`Welcome back, ${user.name}!`, "success");
 
-      routeByPage();
+      await routeByPage();
     } catch (err) {
       console.error(err);
     } finally {
@@ -275,11 +275,9 @@ export async function checkUser() {
 
     window.currentUser = user;
     updateUI(user);
-    updateAvatar(user);
     return user;
   } catch (err) {
     updateUI(null);
-    updateAvatar(null);
     return null;
   }
 }
@@ -297,7 +295,6 @@ export async function logout(silent = false) {
   localStorage.removeItem("user");
   window.currentUser = null;
   updateUI(null);
-  updateAvatar(null);
 
   if (!silent) showToast("You have been logged out.", "info");
 }

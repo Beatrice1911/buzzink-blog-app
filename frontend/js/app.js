@@ -92,6 +92,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   applyTheme(savedTheme);
 
   await routeByPage();
+  if (window.currentUser) {
+    await updateAvatar();
+  }
 
   if (
     window.location.pathname.endsWith("write.html") &&
