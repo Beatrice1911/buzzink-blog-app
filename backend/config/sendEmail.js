@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const Brevo = require("@getbrevo/brevo");
 
 const apiInstance = new Brevo.TransactionalEmailsApi();
@@ -24,9 +23,6 @@ exports.sendResetEmail = async (email, token) => {
       `,
   });
 }
-
-exports.createVerificationToken = () =>
-  crypto.randomBytes(32).toString("hex");
 
 exports.sendVerificationEmail = async (email, token) => {
   const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;

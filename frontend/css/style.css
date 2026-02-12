@@ -1111,13 +1111,13 @@ nav a.active::after {
 }
 
 .resend-btn {
-  background-color: none;
+  background: none;
   color: var(--text);
   border: none;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .resend-btn:hover {

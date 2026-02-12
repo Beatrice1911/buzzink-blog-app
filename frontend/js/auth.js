@@ -127,7 +127,7 @@ function showResendVerificationButton(email) {
 
     const btn = document.getElementById("resendVerificationBtn");
 
-    btn.addEventListener("click", async () => {
+    btn.addEventListener("click", async (e) => {
       e.preventDefault();
       e.stopPropagation();
       const res = await apiFetch(`${AUTH_URL}/resend-verification`, {

@@ -4,7 +4,6 @@ const RefreshToken = require("../models/RefreshToken");
 const ms = require("ms");
 const crypto = require("crypto");
 const {
-  createVerificationToken,
   sendVerificationEmail,
   sendResetEmail,
 } = require("../config/sendEmail");
@@ -52,6 +51,8 @@ async function signRefreshToken(user) {
 
   return token;
 }
+
+const createVerificationToken = () => crypto.randomBytes(32).toString("hex");
 
 exports.register = async (req, res, next) => {
   try {
