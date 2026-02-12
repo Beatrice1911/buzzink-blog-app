@@ -21,27 +21,6 @@ window.currentUser = (() => {
   return stored ? normalizeUser(JSON.parse(stored)) : null;
 })();
 
-export async function checkUser() {
-  try {
-    const res = await apiFetch(`${AUTH_URL}/me`);
-
-    if (!res.ok) throw new Error("Not authenticated");
-
-    const data = await res.json();
-    const user = normalizeUser(data);
-    localStorage.setItem("user", JSON.stringify(user));
-
-    window.currentUser = user;
-    updateUI(user);
-    updateAvatar(user);
-    return user;
-  } catch (err) {
-    updateUI(null);
-    updateAvatar(null);
-    return null;
-  }
-}
-
 export function updateUI(user) {
   if (user?.id) {
     userIcons.forEach((icon) => (icon.title = `Logged in as ${user.name}`));
@@ -51,13 +30,14 @@ export function updateUI(user) {
   }
 }
 
-export async function updateAvatar(user = null) {
+export async function updateAvatar(user) {
   try {
-    if (!user) {
-      const res = await apiFetch("/api/users/me");
-      if (!res.ok) return;
-      user = await res.json();
-    }
+    const res = await apiFetch("/api/users/me");
+
+    if (!res.ok) return;
+
+    user = await res.json();
+
     if (userIcons) {
       userIcons.forEach((icon) => {
         icon.src = user.profilePhoto?.trim()
@@ -66,9 +46,9 @@ export async function updateAvatar(user = null) {
       });
     }
 
-    window.currentUser = normalizeUser(user);
+    window.currentUser = user;
   } catch (err) {
-    console.warn("Avatar update failed:", err);
+    console.warn("Failed to load auth user:", err);
   }
 }
 
@@ -119,17 +99,15 @@ function initLogin() {
         window.location.href = "admin.html";
       }
 
+      updateUI(user);
+      updateAvatar(user);
       authModal.classList.add("hidden");
       loginForm.reset();
 
-      updateUI(user);
-      updateAvatar(user);
+      showToast(`Welcome back, ${user.name}!`, "success");
 
       window.appInitialized = false;
-
       await routeByPage();
-
-      showToast(`Welcome back, ${user.name}!`, "success");
     } catch (err) {
       console.error(err);
     } finally {
@@ -284,6 +262,27 @@ function initLogout() {
     logout();
     window.location.href = "index.html";
   });
+}
+
+export async function checkUser() {
+  try {
+    const res = await apiFetch(`${AUTH_URL}/me`);
+
+    if (!res.ok) throw new Error("Not authenticated");
+
+    const data = await res.json();
+    const user = normalizeUser(data);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    window.currentUser = user;
+    updateUI(user);
+    updateAvatar(user);
+    return user;
+  } catch (err) {
+    updateUI(null);
+    updateAvatar(null);
+    return null;
+  }
 }
 
 export async function logout(silent = false) {
