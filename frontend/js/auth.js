@@ -106,7 +106,6 @@ function initLogin() {
 
       showToast(`Welcome back, ${user.name}!`, "success");
 
-      window.appInitialized = false;
       await routeByPage();
     } catch (err) {
       console.error(err);
