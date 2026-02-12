@@ -96,7 +96,7 @@ exports.verifyEmail = async (req, res) => {
       verifyExpires: { $gt: Date.now() },
     });
 
-    if (!user) return res.status(400).send("Invalid or expired link");
+    if (!user) return res.status(400).json({ message: "Invalid or expired link" });
 
     user.verified = true;
     user.verifyToken = undefined;
