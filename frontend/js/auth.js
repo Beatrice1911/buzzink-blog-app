@@ -32,9 +32,12 @@ export async function checkUser() {
     localStorage.setItem("user", JSON.stringify(user));
 
     window.currentUser = user;
-
+    updateUI(user);
+    updateAvatar(user);
     return user;
   } catch (err) {
+    updateUI(null);
+    updateAvatar(null);
     return null;
   }
 }
@@ -50,32 +53,21 @@ export function updateUI(user) {
 
 export async function updateAvatar(user) {
   try {
-    if (!user) {
+    const res = await apiFetch("/api/users/me");
+    if (!res.ok) return;
+    user = await res.json();
+    if (userIcons) {
       userIcons.forEach((icon) => {
-        icon.src = DEFAULT_AVATAR;
+        icon.src = user.profilePhoto?.trim()
+          ? user.profilePhoto
+          : DEFAULT_AVATAR;
       });
-      return;
     }
-
-    userIcons.forEach((icon) => {
-      icon.src = user.profilePhoto?.trim() ? user.profilePhoto : DEFAULT_AVATAR;
-    });
 
     window.currentUser = user;
   } catch (err) {
     console.warn("Avatar update failed:", err);
   }
-}
-
-export async function refreshAuthState() {
-  const user = await checkUser();
-
-  updateUI(user);
-  await updateAvatar(user);
-
-  window.appInitialized = false;
-
-  await routeByPage();
 }
 
 const loginButton = document.getElementById("login-btn");
@@ -128,7 +120,12 @@ function initLogin() {
       authModal.classList.add("hidden");
       loginForm.reset();
 
-      await refreshAuthState();
+      updateUI(user);
+      updateAvatar(user);
+
+      window.appInitialized = false;
+
+      await routeByPage();
 
       showToast(`Welcome back, ${user.name}!`, "success");
     } catch (err) {
