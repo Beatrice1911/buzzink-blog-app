@@ -107,7 +107,7 @@ function initAuthModal() {
 function initPasswordToggle() {
   document.querySelectorAll(".toggle-password").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const input = document.getElementById(btn.dataset.target);
+      const input = btn.closest(".password-field").querySelector("input");
       const icon = btn.querySelector("i");
 
       if (input.type === "password") {

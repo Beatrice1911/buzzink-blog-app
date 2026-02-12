@@ -143,13 +143,27 @@ function initPasswordStrength() {
   const passwordInput = document.querySelector(
     "#registerPassword, #newPassword",
   );
+  const container = document.querySelector(".password-strength");
   const bar = document.querySelector(".strength-bar");
   const text = document.getElementById("strengthText");
 
-  if (!passwordInput || !bar || !text) return;
+  if (!passwordInput || !container || !bar || !text) return;
 
   passwordInput?.addEventListener("input", () => {
     const val = passwordInput.value;
+
+    if (!val) {
+      container.style.display = "none";
+      text.style.display = "none";
+      bar.style.width = "0%";
+      text.textContent = "";
+      passwordInput.dataset.strength = "weak";
+      return;
+    }
+
+    container.style.display = "block";
+    text.style.display = "block";
+
     let score = 0;
 
     if (val.length >= 8) score++;
@@ -164,17 +178,14 @@ function initPasswordStrength() {
       { width: "100%", color: "#2ecc71", label: "Strong" },
     ];
 
-    if (!val) {
-      bar.style.width = "0%";
-      text.textContent = "";
-      return;
-    }
-
     const state = states[Math.max(score - 1, 0)];
 
     bar.style.width = state.width;
     bar.style.background = state.color;
     text.textContent = `Strength: ${state.label}`;
+
+    passwordInput.dataset.strength =
+      state.label === "Strong" ? "strong" : "weak";
   });
 }
 
@@ -190,6 +201,16 @@ function initRegister() {
     const name = document.getElementById("registerName").value;
     const email = document.getElementById("registerEmail").value;
     const password = document.getElementById("registerPassword").value;
+
+    const passwordInput = document.getElementById("registerPassword");
+
+    if (passwordInput.dataset.strength !== "strong") {
+      showToast(
+        "Please choose a stronger password before registering.",
+        "error",
+      );
+      return;
+    }
 
     try {
       setPostingState(true);
@@ -326,6 +347,16 @@ function initResetPassword() {
 
     const newPassword = document.getElementById("newPassword").value;
     const confirmPassword = document.getElementById("confirmPassword").value;
+
+    const passwordInput = document.getElementById("newPassword");
+
+    if (passwordInput.dataset.strength !== "strong") {
+      showToast(
+        "Please choose a stronger password before registering.",
+        "error",
+      );
+      return;
+    }
 
     if (newPassword !== confirmPassword) {
       showToast("Passwords do not match", "info");
