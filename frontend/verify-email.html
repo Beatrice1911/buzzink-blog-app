@@ -132,7 +132,7 @@
 
         try {
           const res = await fetch(
-            `https://buzzink.onrender.com/api/auth/verify-email/${token}`,
+            `https://buzzink.onrender.com/api/auth/verify-email?token=${token}`,
             {
               method: "GET",
             },

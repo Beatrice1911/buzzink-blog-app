@@ -294,7 +294,7 @@ exports.resendVerification = async (req, res) => {
   const token = createVerificationToken();
 
   user.verifyToken = token;
-  user.verifyExpires = Date.now() + 3600000;
+  user.verifyExpires = Date.now() + 30 * 60 * 1000;
 
   await user.save();
 
