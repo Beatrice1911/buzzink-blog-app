@@ -244,12 +244,18 @@ body {
 .pagination button.active,
 .pagination button:hover {
   background-color: #575787;
-} 
+}
+
+.message-flex {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
 
 .badge {
-  margin-left: 20px;
   background-color: #6c63ff;
-  padding: 3px 8px;
+  padding: 3px 5px;
   border-radius: 50%;
 }
 
