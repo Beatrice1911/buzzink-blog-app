@@ -887,7 +887,7 @@ nav a.active::after {
   box-shadow: var(--shadow-lg);
 }
 
-.add-post-btn[disabled], .comment-form button[disabled], #loginForm button[disabled], #registerForm button[disabled], #subscribeForm button[disabled] {
+.add-post-btn[disabled], .comment-form button[disabled], .auth-submit-btn[disabled], #subscribeForm button[disabled] {
   opacity: 0.7;
   cursor: not-allowed;
 }
@@ -1017,7 +1017,7 @@ nav a.active::after {
   text-align: center;
 }
 
-.auth-modal-content input, .auth-form button, #forgotPasswordForm button {
+.auth-modal-content input, .auth-submit-btn, #forgotPasswordForm button {
   width: 100%; 
   padding: 10px; 
   margin: 10px 0;
@@ -1025,7 +1025,7 @@ nav a.active::after {
   border-radius: 5px;
 }
 
-.auth-form button, #forgotPasswordForm button{
+.auth-submit-btn, #forgotPasswordForm button{
   background-color: var(--accent);
   color: var(--text-inverse);
   font-size: 18px;
@@ -1033,7 +1033,7 @@ nav a.active::after {
   transition: all 0.3s ease;
 }
 
-.auth-form button:hover, #forgotPasswordForm button:hover {
+.auth-submit-btn:hover, #forgotPasswordForm button:hover {
   background-color: var(--bg-modal);
 }
 
@@ -1078,6 +1078,7 @@ nav a.active::after {
   border: none;
   cursor: pointer;
   color: var(--text);
+  all: unset;
 }
 
 #forgotPasswordModal h2, #forgotPasswordModal p {

@@ -52,8 +52,8 @@ export async function updateAvatar(user) {
   }
 }
 
-const loginButton = loginForm?.querySelector("button");
-const registerButton = registerForm?.querySelector("button");
+const loginButton = document.getElementById("login-btn");
+const registerButton = document.getElementById("register-btn");
 
 function initLogin() {
   const setPostingState = (isPosting) => {

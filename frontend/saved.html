@@ -173,7 +173,9 @@
           <p class="forgot-password">
             <a href="#" id="forgotPasswordLink">Forgot Password?</a>
           </p>
-          <button type="submit">Login</button>
+          <button type="submit" class="auth-submit-btn" id="login-btn">
+            Login
+          </button>
         </form>
 
         <form id="registerForm" class="auth-form hidden">
@@ -194,11 +196,12 @@
               <i class="fa-solid fa-eye"></i>
             </button>
           </div>
-          <button type="submit">Register</button>
+          <button type="submit" class="auth-submit-btn" id="register-btn">
+            Register
+          </button>
         </form>
       </div>
     </div>
-
     <div id="forgotPasswordModal" class="auth-modal hidden">
       <div class="auth-modal-content">
         <span id="closeForgotModal" class="close">&times;</span>
@@ -211,7 +214,7 @@
             placeholder="Your email"
             required
           />
-          <button type="submit">Send Reset Link</button>
+          <button type="submit" class="auth-submit-btn">Send Reset Link</button>
         </form>
       </div>
     </div>
