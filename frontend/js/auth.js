@@ -105,8 +105,8 @@ function initLogin() {
       loginForm.reset();
       showToast(`Welcome back, ${user.name}!`, "success");
       routeByPage();
-    } catch {
-      setPostingState(false);
+    } catch (err) {
+      console.error(err);
     } finally {
       setPostingState(false);
     }
@@ -125,18 +125,57 @@ function showResendVerificationButton(email) {
     `;
     loginForm.appendChild(container);
 
-    document
-      .getElementById("resendVerificationBtn")
-      .addEventListener("click", async () => {
-        const res = await apiFetch(`${AUTH_URL}/resend-verification`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        });
-        const data = await res.json();
-        showToast("Verification email resent! Check your inbox.", "success");
+    const btn = document.getElementById("resendVerificationBtn");
+
+    btn.addEventListener("click", async () => {
+      const res = await apiFetch(`${AUTH_URL}/resend-verification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       });
+      const data = await res.json();
+      showToast("Verification email resent! Check your inbox.", "success");
+    });
   }
+}
+
+function initPasswordStrength() {
+  const passwordInput = document.querySelector(
+    "#registerPassword, #newPassword",
+  );
+  const bar = document.querySelector(".strength-bar");
+  const text = document.getElementById("strengthText");
+
+  if (!passwordInput || !bar || !text) return;
+
+  passwordInput.addEventListener("input", () => {
+    const val = passwordInput.value;
+    let score = 0;
+
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const states = [
+      { width: "25%", color: "#e74c3c", label: "Weak" },
+      { width: "50%", color: "#f39c12", label: "Fair" },
+      { width: "75%", color: "#3498db", label: "Good" },
+      { width: "100%", color: "#2ecc71", label: "Strong" },
+    ];
+
+    if (!val) {
+      bar.style.width = "0%";
+      text.textContent = "";
+      return;
+    }
+
+    const state = states[Math.max(score - 1, 0)];
+
+    bar.style.width = state.width;
+    bar.style.background = state.color;
+    text.textContent = `Strength: ${state.label}`;
+  });
 }
 
 function initRegister() {
@@ -252,11 +291,11 @@ function initForgotPassword() {
     forgotPasswordForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("forgotEmail").value.trim();
-
-      button.disabled = true;
-      button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+      const button = forgotPasswordForm.querySelector("button");
 
       try {
+        button.disabled = true;
+        button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
         const res = await fetch("/api/auth/forgot-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -280,9 +319,58 @@ function initForgotPassword() {
   }
 }
 
+function initResetPassword() {
+  const resetPasswordForm = document.getElementById("resetPasswordForm");
+  resetPasswordForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const newPassword = document.getElementById("newPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (newPassword !== confirmPassword) {
+      showToast("Passwords do not match", "info");
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (!token) {
+      showToast("Invalid or missing reset token", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://buzzink.onrender.com/api/auth/reset-password/${token}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: newPassword }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.message || "Password reset failed", "error");
+        return;
+      }
+
+      showToast("Password reset successful! You can now log in.", "success");
+      window.location.href = "/index.html";
+    } catch (err) {
+      console.error(err);
+      showToast("Something went wrong", "error");
+    }
+  });
+}
+
 export function initAuth() {
   initLogin();
+  initPasswordStrength();
   initRegister();
   initLogout();
   initForgotPassword();
+  initResetPassword();
 }

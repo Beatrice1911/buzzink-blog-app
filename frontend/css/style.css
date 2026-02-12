@@ -1017,12 +1017,21 @@ nav a.active::after {
   text-align: center;
 }
 
-.auth-modal-content input, .auth-submit-btn, #forgotPasswordForm button {
+.password-field, .auth-submit-btn, #forgotPasswordForm button {
   width: 100%; 
   padding: 10px; 
   margin: 10px 0;
   border: 1px solid var(--divider); 
   border-radius: 5px;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 40px;
 }
 
 .auth-submit-btn, #forgotPasswordForm button{
@@ -1076,9 +1085,10 @@ nav a.active::after {
   transform: translateY(-50%);
   background: none;
   border: none;
+  padding: 0;
+  margin: 0;
   cursor: pointer;
   color: var(--text);
-  all: unset;
 }
 
 #forgotPasswordModal h2, #forgotPasswordModal p {
@@ -1115,6 +1125,20 @@ nav a.active::after {
 
 .resend-btn:hover {
   background-color: var(--bg-modal);
+}
+
+.password-strength {
+  height: 6px;
+  background: #ddd;
+  border-radius: 4px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.strength-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease;
 }
 
 /* Toast Notification Styles */

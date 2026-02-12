@@ -206,7 +206,7 @@ export function initUI() {
   initNavigation();
   initTheme();
 }
-
+            
 let skeletonTimeout;
 let loaderTimeout;
 

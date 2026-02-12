@@ -296,7 +296,7 @@ async function handleCommentSubmit(e) {
     await postComment(slug, commentText, commentsList, commentCountSpan);
     commentInput.value = "";
   } catch (err) {
-    setPostingState(false);
+    console.error(err);
   } finally {
     setPostingState(false);
   }
