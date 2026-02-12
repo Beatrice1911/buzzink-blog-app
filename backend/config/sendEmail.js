@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const Brevo = require("@getbrevo/brevo");
 
 const apiInstance = new Brevo.TransactionalEmailsApi();
