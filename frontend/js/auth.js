@@ -178,7 +178,6 @@ function initRegister() {
       registerForm.reset();
     } catch (err) {
       console.error(err);
-      setPostingState(false);
     } finally {
       setPostingState(false);
     }

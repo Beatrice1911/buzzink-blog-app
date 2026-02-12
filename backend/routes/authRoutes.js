@@ -20,7 +20,7 @@ router.get("/me", requireAuth, me);
 router.get("/verify-email", verifyEmail);
 router.post("/logout", logout);
 router.post("/refresh", refresh);
-app.post("/resend-verification", resendVerification);
+router.post("/resend-verification", resendVerification);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 // router.post('/create-first-admin', createFirstAdmin);

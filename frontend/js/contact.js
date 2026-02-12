@@ -59,7 +59,7 @@ export function initSubscribeForm({
       : "Subscribe";
   };
 
-  if (!form || !emailInput) return;
+  if (!form || !emailInput || !button) return;
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -98,8 +98,13 @@ export function initSubscribeForm({
 
       throw new Error(data.message);
     } catch {
-      showToast("Subscription failed. Try again later.", "error");
-      setPostingState(false);
+      console.error(err);
+
+      if (err.message) {
+        showToast(err.message, "error");
+      } else {
+        showToast("Network error. Try again.", "error");
+      }
     } finally {
       setPostingState(false);
     }
