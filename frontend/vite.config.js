@@ -19,6 +19,8 @@ export default defineConfig({
         write: path.resolve(__dirname, "write.html"),
         profile: path.resolve(__dirname, "profile.html"),
         admin: path.resolve(__dirname, "admin.html"),
+        resetPassword: path.resolve(__dirname, "reset-password.html"),
+        verifyEmail: path.resolve(__dirname, "verify-email.html"),
       },
     },
   }

@@ -90,20 +90,24 @@ exports.register = async (req, res, next) => {
 exports.verifyEmail = async (req, res) => {
   const { token } = req.query;
 
-  const user = await User.findOne({
-    verifyToken: token,
-    verifyExpires: { $gt: Date.now() },
-  });
+  try {
+    const user = await User.findOne({
+      verifyToken: token,
+      verifyExpires: { $gt: Date.now() },
+    });
 
-  if (!user) return res.status(400).send("Invalid or expired link");
+    if (!user) return res.status(400).send("Invalid or expired link");
 
-  user.verified = true;
-  user.verifyToken = null;
-  user.verifyExpires = null;
+    user.verified = true;
+    user.verifyToken = undefined;
+    user.verifyExpires = undefined;
 
-  await user.save();
-
-  res.redirect("/index.html?verified=true");
+    await user.save();
+    res.json({ message: "Email verified successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
 exports.login = async (req, res, next) => {

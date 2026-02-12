@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+
+    <link
+      rel="icon"
+      href="/Images/title-logo_optimized_.png"
+      type="image/png"
+    />
+    <title>Verify Email - BuzzInk</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #6d28d9, #4f46e5);
+        color: #fff;
+      }
+
+      .container {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 40px 30px;
+        border-radius: 15px;
+        text-align: center;
+        min-width: 320px;
+        max-width: 400px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+        color: #fff;
+      }
+
+      p {
+        margin-bottom: 30px;
+        font-size: 1rem;
+        color: #e0e0e0;
+      }
+
+      .spinner {
+        font-size: 2rem;
+        color: #fff;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .message {
+        font-size: 1rem;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+
+      .success {
+        background-color: rgba(46, 204, 113, 0.2);
+        color: #2ecc71;
+      }
+
+      .error {
+        background-color: rgba(231, 76, 60, 0.2);
+        color: #e74c3c;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #fff;
+        color: #4f46e5;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+      }
+
+      .btn:hover {
+        background-color: #6d28d9;
+        color: #fff;
+      }
+    </style>
+    <link rel="stylesheet" crossorigin href="/assets/style-kiLch-iY.css">
+  </head>
+  <body>
+    <div class="container">
+      <i class="fas fa-spinner spinner"></i>
+      <h2>Verifying your email...</h2>
+      <p>Please wait a moment while we confirm your email address.</p>
+      <div id="verifyMessage" class="message"></div>
+      <a id="loginLink" href="/index.html" class="btn" style="display: none"
+        >Go to Login</a
+      >
+    </div>
+    <script>
+      async function verifyEmail() {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+
+        const messageDiv = document.getElementById("verifyMessage");
+        const loginBtn = document.getElementById("loginLink");
+
+        if (!token) {
+          messageDiv.textContent = "Invalid token.";
+          messageDiv.classList.add("error");
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `https://buzzink.onrender.com/api/auth/verify-email/${token}`,
+            {
+              method: "GET",
+            },
+          );
+          const data = await res.json();
+
+          if (res.ok) {
+            messageDiv.textContent =
+              data.message ||
+              "Email verified successfully! You can now log in.";
+            messageDiv.classList.add("success");
+            loginBtn.style.display = "inline-block";
+          } else {
+            messageDiv.textContent = data.message || "Verification failed.";
+            messageDiv.classList.add("error");
+            loginBtn.style.display = "inline-block";
+          }
+        } catch (err) {
+          messageDiv.textContent = "Something went wrong. Try again later.";
+          messageDiv.classList.add("error");
+          loginBtn.style.display = "inline-block";
+          console.error(err);
+        }
+      }
+
+      verifyEmail();
+    </script>
+  </body>
+</html>

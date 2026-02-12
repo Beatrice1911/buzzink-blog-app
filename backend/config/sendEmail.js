@@ -25,7 +25,7 @@ exports.sendResetEmail = async (email, token) => {
 }
 
 exports.sendVerificationEmail = async (email, token) => {
-  const verifyUrl = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+  const verifyUrl = `${process.env.CLIENT_URL}/verify-email.html?token=${token}`;
 
   const message = {
     sender: {
