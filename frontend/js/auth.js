@@ -121,13 +121,15 @@ function showResendVerificationButton(email) {
     container.style.textAlign = "center";
     container.style.marginTop = "10px";
     container.innerHTML = `
-      <button id="resendVerificationBtn" class="resend-btn">Resend verification email</button>
+      <button type="button" id="resendVerificationBtn" class="resend-btn">Resend verification email</button>
     `;
     loginForm.appendChild(container);
 
     const btn = document.getElementById("resendVerificationBtn");
 
     btn.addEventListener("click", async () => {
+      e.preventDefault();
+      e.stopPropagation();
       const res = await apiFetch(`${AUTH_URL}/resend-verification`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

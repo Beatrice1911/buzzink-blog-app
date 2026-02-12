@@ -1111,18 +1111,17 @@ nav a.active::after {
 }
 
 .resend-btn {
-  background-color: var(--accent);
-  color: var(--text-inverse);
-  padding: 8px 12px;
-  border-radius: 6px;
+  background-color: none;
+  color: var(--text);
   border: none;
   cursor: pointer;
+  font-size: 14px;
   font-weight: 500;
   transition: background-color 0.3s ease;
 }
 
 .resend-btn:hover {
-  background-color: var(--bg-modal);
+  text-decoration: underline;
 }
 
 .password-hint {
