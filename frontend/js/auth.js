@@ -148,7 +148,7 @@ function initPasswordStrength() {
 
   if (!passwordInput || !bar || !text) return;
 
-  passwordInput.addEventListener("input", () => {
+  passwordInput?.addEventListener("input", () => {
     const val = passwordInput.value;
     let score = 0;
 
@@ -321,7 +321,7 @@ function initForgotPassword() {
 
 function initResetPassword() {
   const resetPasswordForm = document.getElementById("resetPasswordForm");
-  resetPasswordForm.addEventListener("submit", async (e) => {
+  resetPasswordForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const newPassword = document.getElementById("newPassword").value;
