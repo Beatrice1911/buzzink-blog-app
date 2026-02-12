@@ -80,6 +80,13 @@ function initLogin() {
       console.log("Login response:", data);
 
       if (!res.ok) {
+        if (res.status === 403) {
+          showToast(data.message || "Please verify your email first.", "error");
+
+          showResendVerificationButton(email);
+
+          return;
+        }
         showToast(`Login failed: ${data.message || "Unknown error"}`, "error");
         return;
       }
@@ -106,6 +113,32 @@ function initLogin() {
   });
 }
 
+function showResendVerificationButton(email) {
+  let container = document.getElementById("resendVerificationContainer");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "resendVerificationContainer";
+    container.style.textAlign = "center";
+    container.style.marginTop = "10px";
+    container.innerHTML = `
+      <button id="resendVerificationBtn" class="resend-btn">Resend verification email</button>
+    `;
+    loginForm.appendChild(container);
+
+    document
+      .getElementById("resendVerificationBtn")
+      .addEventListener("click", async () => {
+        const res = await apiFetch(`${AUTH_URL}/resend-verification`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
+        const data = await res.json();
+        showToast("Verification email resent! Check your inbox.", "success");
+      });
+  }
+}
+
 function initRegister() {
   const setPostingState = (isPosting) => {
     registerButton.disabled = isPosting;
@@ -128,8 +161,6 @@ function initRegister() {
       });
 
       const data = await res.json();
-      console.log("Register response:", data);
-
       if (!res.ok) {
         showToast(
           `Registration failed: ${data.message || "Unknown error"}`,
@@ -138,20 +169,15 @@ function initRegister() {
         return;
       }
 
-      const user = normalizeUser(data.user);
-      localStorage.setItem("user", JSON.stringify(user));
-      window.currentUser = user;
-      localStorage.setItem("role", user.role);
-      updateUI(user);
-      updateAvatar(user);
-      authModal.classList.add("hidden");
-      registerForm.reset();
       showToast(
-        `Welcome, ${user.name}! Your account has been created.`,
+        "Registration successful! Please check your email to verify your account.",
         "success",
       );
-      routeByPage();
-    } catch {
+
+      authModal.classList.add("hidden");
+      registerForm.reset();
+    } catch (err) {
+      console.error(err);
       setPostingState(false);
     } finally {
       setPostingState(false);
@@ -227,6 +253,10 @@ function initForgotPassword() {
     forgotPasswordForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("forgotEmail").value.trim();
+
+      button.disabled = true;
+      button.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+
       try {
         const res = await fetch("/api/auth/forgot-password", {
           method: "POST",
@@ -238,10 +268,14 @@ function initForgotPassword() {
           data.message || "Check your email for the reset link.",
           "success",
         );
+        forgotPasswordForm.reset();
         forgotPasswordModal.classList.add("hidden");
       } catch (err) {
         console.error(err);
         showToast("Failed to send reset link. Try again.", "error");
+      } finally {
+        button.disabled = false;
+        button.innerHTML = "Send Reset Link";
       }
     });
   }

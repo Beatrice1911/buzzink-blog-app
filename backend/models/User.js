@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema(
       ref: "Post",
       default: [],
     },
+    verifyToken: { type: String },
+    verifyExpires: { type: Date },
+    verified: { type: Boolean, default: false },
   },
   { timestamps: true },
 );

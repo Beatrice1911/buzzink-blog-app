@@ -1064,6 +1064,22 @@ nav a.active::after {
   color: var(--text);
 }
 
+.password-field {
+  position: relative;
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text);
+}
+
 #forgotPasswordModal h2, #forgotPasswordModal p {
   font-family: 'Poppins', sans-serif;
   margin-bottom: 1rem;
@@ -1085,6 +1101,20 @@ nav a.active::after {
   text-decoration: underline;
 }
 
+.resend-btn {
+  background-color: var(--accent);
+  color: var(--text-inverse);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.resend-btn:hover {
+  background-color: var(--bg-modal);
+}
 
 /* Toast Notification Styles */
 #toast-container {
