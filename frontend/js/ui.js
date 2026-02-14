@@ -206,7 +206,7 @@ export function initUI() {
   initNavigation();
   initTheme();
 }
-            
+
 let skeletonTimeout;
 let loaderTimeout;
 
@@ -277,14 +277,19 @@ export function showSkeleton(containerId = "allPostsContainer", limit = 6) {
 }
 
 export function hideSkeleton() {
-  const postsContainer = document.querySelector(".posts-container");
-  document.querySelectorAll(".skeleton-wrapper").forEach((el) => {
-    el.classList.add("hide");
-    setTimeout(() => {
-      postsContainer.classList.add("show");
-      el.remove();
-    }, 300);
-  });
+  const targetContainer = document.getElementById(containerId);
+  if (!targetContainer) return;
+
+  const skeleton = targetContainer.previousElementSibling;
+
+  if (!skeleton || !skeleton.classList.contains("skeleton-wrapper")) return;
+
+  skeleton.classList.add("hide");
+
+  setTimeout(() => {
+    targetContainer.classList.add("show");
+    skeleton.remove();
+  }, 300);
 }
 
 export function showPostsLoader() {

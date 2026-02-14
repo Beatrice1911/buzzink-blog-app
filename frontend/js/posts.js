@@ -118,7 +118,7 @@ export async function fetchPosts(pageOverride, limit = 6) {
     console.error("Error fetching posts:", err);
     showToast("Something went wrong while displaying posts!", "error");
   } finally {
-    hideSkeleton();
+    hideSkeleton("allPostsContainer");
     hidePostsLoader();
     isFetchingPosts = false;
   }
@@ -158,7 +158,8 @@ export async function fetchLatestPosts(limit = 9) {
   } catch (err) {
     console.error("Failed to load latest posts", err);
   } finally {
-    hideSkeleton();
+    hideSkeleton("latestPostsContainer");
+    hideSkeleton("magazineContainer");
     isFetchingPosts = false;
   }
 }
@@ -210,7 +211,7 @@ export async function fetchMyPosts(pageOverride, limit = 6) {
     console.error("Error fetching my posts:", err);
     showToast("Failed to load your posts!", "error");
   } finally {
-    hideSkeleton();
+    hideSkeleton("myPostsContainer");
     hidePostsLoader();
     isFetchingPosts = false;
   }
@@ -900,7 +901,7 @@ export async function loadSavedPosts(pageOverride, limit = 6) {
     console.error(err);
     container.innerHTML = "<p>Error loading saved posts.</p>";
   } finally {
-    hideSkeleton();
+    hideSkeleton("savedPostsContainer");
     hidePostsLoader();
     isFetchingPosts = false;
   }

@@ -45,6 +45,7 @@ export async function routeByPage() {
   if (path === "/" || path.endsWith("index.html")) {
     restoreFiltersFromUrl();
     showSkeleton("latestPostsContainer", 3);
+    showSkeleton("magazineContainer", 6)
     await fetchLatestPosts();
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
