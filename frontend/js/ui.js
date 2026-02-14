@@ -276,7 +276,7 @@ export function showSkeleton(containerId = "allPostsContainer", limit = 6) {
   }
 }
 
-export function hideSkeleton() {
+export function hideSkeleton(containerId) {
   const targetContainer = document.getElementById(containerId);
   if (!targetContainer) return;
 
