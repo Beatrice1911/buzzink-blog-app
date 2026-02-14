@@ -811,6 +811,7 @@ nav a.active::after {
 .footer-subscribe form {
   display: flex;
   flex-wrap: wrap;
+  gap: 5px;
 }
 
 .footer-subscribe input[type="email"] {
@@ -827,7 +828,6 @@ nav a.active::after {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-left: 5px;
   transition: background 0.3s;
 }
 
