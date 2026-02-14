@@ -500,13 +500,14 @@ nav a.active::after {
   gap: 20px;
 }
 
-/* .trending-section {
-  background: #111;
+.trending-section {
+  background: linear-gradient(180deg, var(--surface-card), var(--surface-card));
   padding: 20px;
   border-radius: 12px;
-} */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-.trending-posts {
+/* .trending-posts {
   max-width: 1100px;
   width: 90%;
   background: linear-gradient(180deg, var(--surface-card), var(--surface-card));
@@ -516,9 +517,9 @@ nav a.active::after {
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   margin: 2rem auto;
   transition: 0.3s ease;
-}
+} */
 
-.trending-posts h2 {
+.trending-posts h3 {
   font-size: 1.5rem;
   color: var(--text);
   display: flex;
@@ -529,7 +530,7 @@ nav a.active::after {
   margin-bottom: 15px;
 }
 
-.trending-posts h2 i {
+.trending-posts h3 i {
   color: var(--trending-dark);
 }
 
