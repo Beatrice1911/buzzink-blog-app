@@ -477,7 +477,11 @@ nav a.active::after {
   color: var(--text-inverse);
 }
 
-.latest-posts h2, .my-posts-section h2, .saved-posts h2, .categories-section h2 {
+.category-scroll {
+  display: none;
+}
+
+.latest-posts h2, .my-posts-section h2, .saved-posts h2, .categories-section h2, .magazine-grid h2 {
   text-align: center;
   font-size: 36px;
   color: var(--text);
@@ -2172,6 +2176,34 @@ nav a.active::after {
     padding: 12px 25px;
     font-size: 1rem;
     margin-bottom: 40px;
+  }
+
+  .category-grid {
+    display: none;
+  }
+
+  .category-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 10px 0;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+  }
+
+    .category-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-scroll button {
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: none;
+    background: var(--surface-footer);
+    color: var(--text-inverse);
+    scroll-snap-align: start;
+    cursor: pointer;
   }
 
   .posts-container{

@@ -266,9 +266,7 @@ export function displayPosts(containerId, limit = null) {
   } else if (containerId === "savedPostsContainer") {
     displayList = [...state.saved];
   } else if (containerId === "magazineContainer") {
-    if (containerId === "magazineContainer") {
-      displayList = displayList.slice(3, 9);
-    }
+    displayList = displayList.slice(3, 9);
   }
 
   if (limit) displayList = displayList.slice(0, limit);
@@ -962,26 +960,33 @@ function renderPagination(context, page, total) {
 }
 
 export function categoryClickLogic() {
+  const handleCategoryClick = (category) => {
+    const currentState = getStateFromUrl();
+
+    updateUrlState({
+      ...currentState,
+      category,
+      page: 1,
+    });
+
+    const filterDropdown = document.getElementById("categoryFilter");
+    if (filterDropdown) {
+      filterDropdown.value = category;
+    }
+
+    window.location.href = `all-posts.html?category=${category}`;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   document.querySelectorAll(".category-card").forEach((card) => {
     card.addEventListener("click", () => {
-      const category = card.dataset.category;
+      handleCategoryClick(card.dataset.category);
+    });
+  });
 
-      const currentState = getStateFromUrl();
-
-      updateUrlState({
-        ...currentState,
-        category,
-        page: 1,
-      });
-
-      const filterDropdown = document.getElementById("categoryFilter");
-      if (filterDropdown) {
-        filterDropdown.value = category;
-      }
-
-      window.location.href = `all-posts.html?category=${category}`;
-
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  document.querySelectorAll(".category-scroll button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      handleCategoryClick(btn.textContent.trim());
     });
   });
 }
