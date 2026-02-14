@@ -124,7 +124,7 @@ export async function fetchPosts(pageOverride, limit = 6) {
   }
 }
 
-export async function fetchLatestPosts(limit = 3) {
+export async function fetchLatestPosts(limit = 9) {
   try {
     const urlState = getStateFromUrl();
     const search = getSearchValue() || urlState.search;
@@ -260,13 +260,13 @@ export function displayPosts(containerId, limit = null) {
   if (containerId === "allPostsContainer") {
     displayList = [...state.all];
   } else if (containerId === "latestPostsContainer") {
-    displayList = [...state.latest];
+    displayList = [...state.latest].slice(0, 3);
   } else if (containerId === "myPostsContainer") {
     displayList = [...state.mine];
   } else if (containerId === "savedPostsContainer") {
     displayList = [...state.saved];
   } else if (containerId === "magazineContainer") {
-    displayList = displayList.slice(3, 9);
+    displayList = [...state.latest].slice(3, 9);
   }
 
   if (limit) displayList = displayList.slice(0, limit);
