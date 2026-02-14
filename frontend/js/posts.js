@@ -154,6 +154,7 @@ export async function fetchLatestPosts(limit = 3) {
     if (isFetchingPosts) return;
     isFetchingPosts = true;
     displayPosts("latestPostsContainer", limit);
+    displayPosts("magazineContainer", 6);
   } catch (err) {
     console.error("Failed to load latest posts", err);
   } finally {
@@ -264,6 +265,10 @@ export function displayPosts(containerId, limit = null) {
     displayList = [...state.mine];
   } else if (containerId === "savedPostsContainer") {
     displayList = [...state.saved];
+  } else if (containerId === "magazineContainer") {
+    if (containerId === "magazineContainer") {
+      displayList = displayList.slice(3, 9);
+    }
   }
 
   if (limit) displayList = displayList.slice(0, limit);

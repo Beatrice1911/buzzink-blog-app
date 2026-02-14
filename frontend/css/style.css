@@ -445,13 +445,10 @@ nav a.active::after {
   transition: all 0.3s ease;
 }
 
-.category-section {
-  padding: 60px 20px;
+.categories-section {
+  max-width: 1100px;
+  padding: 20px;
   text-align: center;
-}
-
-.category-section h2 {
-  margin-bottom: 30px;
 }
 
 .category-grid {
@@ -480,7 +477,7 @@ nav a.active::after {
   color: var(--text-inverse);
 }
 
-.latest-posts h2, .my-posts-section h2, .saved-posts h2, .categories h2 {
+.latest-posts h2, .my-posts-section h2, .saved-posts h2, .categories-section h2 {
   text-align: center;
   font-size: 36px;
   color: var(--text);
@@ -488,26 +485,7 @@ nav a.active::after {
   font-family: "Playfair Display", sans-serif;
 }
 
-.home-feed {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 30px;
-}
-
-.posts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.trending-section {
-  background: linear-gradient(180deg, var(--surface-card), var(--surface-card));
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-/* .trending-posts {
+.trending-posts {
   max-width: 1100px;
   width: 90%;
   background: linear-gradient(180deg, var(--surface-card), var(--surface-card));
@@ -517,9 +495,9 @@ nav a.active::after {
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   margin: 2rem auto;
   transition: 0.3s ease;
-} */
+}
 
-.trending-posts h3 {
+.trending-posts h2 {
   font-size: 1.5rem;
   color: var(--text);
   display: flex;
@@ -530,7 +508,7 @@ nav a.active::after {
   margin-bottom: 15px;
 }
 
-.trending-posts h3 i {
+.trending-posts h2 i {
   color: var(--trending-dark);
 }
 
