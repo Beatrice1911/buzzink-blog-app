@@ -15,7 +15,7 @@ function getSearchValue() {
 
 let state = {
   all: [],
-  featured: [],
+  latest: [],
   mine: [],
   saved: [],
 };
@@ -124,7 +124,7 @@ export async function fetchPosts(pageOverride, limit = 6) {
   }
 }
 
-export async function fetchFeaturedPosts(limit = 3) {
+export async function fetchLatestPosts(limit = 3) {
   try {
     const urlState = getStateFromUrl();
     const search = getSearchValue() || urlState.search;
@@ -150,12 +150,12 @@ export async function fetchFeaturedPosts(limit = 3) {
     const res = await apiFetch(`${API_URL}?${queryParams.toString()}`);
     const data = await res.json();
 
-    state.featured = Array.isArray(data.posts) ? data.posts : [];
+    state.latest = Array.isArray(data.posts) ? data.posts : [];
     if (isFetchingPosts) return;
     isFetchingPosts = true;
-    displayPosts("featuredPostsContainer", limit);
+    displayPosts("latestPostsContainer", limit);
   } catch (err) {
-    console.error("Failed to load featured posts", err);
+    console.error("Failed to load latest posts", err);
   } finally {
     hideSkeleton();
     isFetchingPosts = false;
@@ -258,8 +258,8 @@ export function displayPosts(containerId, limit = null) {
 
   if (containerId === "allPostsContainer") {
     displayList = [...state.all];
-  } else if (containerId === "featuredPostsContainer") {
-    displayList = [...state.featured];
+  } else if (containerId === "latestPostsContainer") {
+    displayList = [...state.latest];
   } else if (containerId === "myPostsContainer") {
     displayList = [...state.mine];
   } else if (containerId === "savedPostsContainer") {
@@ -920,8 +920,8 @@ searchInputs.forEach((input) =>
         fetchPosts(1);
       }
 
-      if (document.getElementById("featuredPostsContainer")) {
-        fetchFeaturedPosts();
+      if (document.getElementById("latestPostsContainer")) {
+        fetchLatestPosts();
       }
 
       if (window.currentUser && document.getElementById("myPostsContainer")) {
@@ -954,4 +954,29 @@ function renderPagination(context, page, total) {
     });
     container.appendChild(btn);
   }
+}
+
+export function categoryClickLogic() {
+  document.querySelectorAll(".category-card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const category = card.dataset.category;
+
+      const currentState = getStateFromUrl();
+
+      updateUrlState({
+        ...currentState,
+        category,
+        page: 1,
+      });
+
+      const filterDropdown = document.getElementById("categoryFilter");
+      if (filterDropdown) {
+        filterDropdown.value = category;
+      }
+
+      window.location.href = `all-posts.html?category=${category}`;
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
 }

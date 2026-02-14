@@ -1,6 +1,6 @@
 import {
   fetchPosts,
-  fetchFeaturedPosts,
+  fetchLatestPosts,
   fetchMyPosts,
   fetchTrendingPosts,
   loadSavedPosts,
@@ -8,6 +8,7 @@ import {
   initPostForm,
   getStateFromUrl,
   restoreFiltersFromUrl,
+  categoryClickLogic,
 } from "./posts.js";
 import { initEvents } from "./events.js";
 import { initAuth, checkUser, updateAvatar } from "./auth.js";
@@ -43,8 +44,8 @@ export async function routeByPage() {
 
   if (path === "/" || path.endsWith("index.html")) {
     restoreFiltersFromUrl();
-    showSkeleton("featuredPostsContainer", 3);
-    await fetchFeaturedPosts();
+    showSkeleton("latestPostsContainer", 3);
+    await fetchLatestPosts();
     await fetchTrendingPosts();
   } else if (path.endsWith("my-posts.html")) {
     restoreFiltersFromUrl();
@@ -87,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     formId: "subscribeForm",
     inputId: "subscribeEmail",
   });
+  categoryClickLogic();
 
   const savedTheme = localStorage.getItem("theme") || "light";
   applyTheme(savedTheme);
