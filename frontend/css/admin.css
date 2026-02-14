@@ -397,7 +397,6 @@ body {
   }
 
   .message-flex a {
-    justify-content: flex-start;
     gap: 6px;
   }
 }
