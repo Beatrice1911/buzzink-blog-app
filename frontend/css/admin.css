@@ -246,17 +246,19 @@ body {
   background-color: #575787;
 }
 
-.message-flex {
+.message-flex a{
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .badge {
   background-color: #6c63ff;
-  padding: 3px 5px;
-  border-radius: 50%;
+  padding: 3px 6px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  flex-shrink: 0;
 }
 
 .message-card {
@@ -392,5 +394,10 @@ body {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+  }
+
+  .message-flex a {
+    justify-content: flex-start;
+    gap: 6px;
   }
 }
